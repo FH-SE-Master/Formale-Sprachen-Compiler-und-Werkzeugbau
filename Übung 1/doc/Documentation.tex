@@ -76,6 +76,11 @@
 % =============================================
 % D O C U M E N T     C O N T E N T
 % =============================================
+% =============================================
+% 2016.10.13: 1 
+% 2016.10.14: 2
+% =============================================
+
 \pagestyle{fancy}
 \begin{document}
 \setlength{\headheight}{15mm}
@@ -83,6 +88,7 @@
 
 % Section gramar and basics 
 \section {Grammatiken - Grundbegriffe}
+\label{sec:grammar-basics}
 Dieser Teil der Dokumentation behandelt die Aufgabe 1 der ersten Übung.
 \subsection{Die Mengen $V_{T}$ und $V_{N}$}
 $V_{N}=\{$ DataStat, DataDeclRest, DataDecl, DataNameList, DataName, DataValueList, DataValue, DataDoList, DataDoListRest $\}$
@@ -92,7 +98,7 @@ Alle Nichtterminalsymbole befinden sich links in der Grammatik, wobei das Nichtt
 \newline
 \newline
 \newline
-$V_{T}=\{$ \enquote{Data},\enquote{,}, \enquote{/}, \enquote{(}, \enquote{)},\enquote{=}, \enquote{*}, \enquote{+}, \enquote{-}, \enquote{=}, expr, id, num, str $\}$
+$V_{T}=\{$ \enquote{DATA},\enquote{,}, \enquote{/}, \enquote{(}, \enquote{)},\enquote{=}, \enquote{*}, \enquote{+}, \enquote{-}, \enquote{=}, expr, id, num, str $\}$
 \newline
 \newline
 Alle Terminalsymbole kommen nicht auf der linken Seite der Grammatik vor und können nicht weiter abgeleitet werden. Das Symbol \enquote{$\epsilon$} ist ein Metasymbol, dass die leere Kette repräsentiert und ist weder ein Nichtterminalsymbol oder ein Terminalsymbol.
@@ -115,7 +121,7 @@ DataStat $\xRightarrow{L}$ \enquote{DATA} \underline{DataDecl} DataDeclRest
 \newline
 \null\hspace{1.55cm} $\xRightarrow{L}$ \enquote{DATA} id \enquote{/} \underline{DataValue} \enquote{/} DataDeclRest
 \newline
-\null\hspace{1.55cm} $\xRightarrow{L}$ \enquote{DATA} id \enquote{/} num  \enquote{/} DataDeclRest
+\null\hspace{1.55cm} $\xRightarrow{L}$ \enquote{DATA} id \enquote{/} num  \enquote{/} \underline{DataDeclRest}
 \newline
 \null\hspace{1.55cm} $\xRightarrow{L}$ \enquote{DATA} id \enquote{/} num  \enquote{/}
 \newline
@@ -132,7 +138,7 @@ DataStat $\xRightarrow{L}$ \enquote{DATA} \underline{DataDecl} DataDeclRest
 \newline
 \null\hspace{1.55cm} $\xRightarrow{L}$ \enquote{DATA} id \enquote{/} \underline{DataValue} \enquote{/} DataDeclRest
 \newline
-\null\hspace{1.55cm} $\xRightarrow{L}$ \enquote{DATA} id \enquote{/} id  \enquote{/} DataDeclRest
+\null\hspace{1.55cm} $\xRightarrow{L}$ \enquote{DATA} id \enquote{/} id  \enquote{/} \underline{DataDeclRest}
 \newline
 \null\hspace{1.55cm} $\xRightarrow{L}$ \enquote{DATA} id \enquote{/} id  \enquote{/}
 \newpage
@@ -147,26 +153,63 @@ DataStat $\xRightarrow{L}$ \enquote{DATA} \underline{DataDecl} DataDeclRest
 \newline
 \null\hspace{1.55cm} $\xRightarrow{L}$ \enquote{DATA} id \enquote{/} \underline{DataValue} \enquote{/} DataDeclRest
 \newline
-\null\hspace{1.55cm} $\xRightarrow{L}$ \enquote{DATA} id \enquote{/} str  \enquote{/} DataDeclRest
+\null\hspace{1.55cm} $\xRightarrow{L}$ \enquote{DATA} id \enquote{/} str  \enquote{/} \underline{DataDeclRest}
 \newline
 \null\hspace{1.55cm} $\xRightarrow{L}$ \enquote{DATA} id \enquote{/} str  \enquote{/}
 \newline
 \newline
-Das Nichtterminalsymbol \emph{DataValue} kann in drei Varianten abgeleitet werden, \emph{id}, \emph{num} und \emph{str}. 
+Das Nichtterminalsymbol \emph{DataValue} kann in drei Varianten abgeleitet werden, \emph{id}, \emph{num} und \emph{str}. Die Satzlänge bleibt bei jeder der drei Ableitungen des Nichtterminalsymbols \emph{DataValue} gleich.
 
 \subsection{Rekursionen der Nichtterminalsymbole}
     \begin{tabularx}{\textwidth}{|>{\centering}X|>{\centering}X|>{\centering\arraybackslash}X|}
     \hline
     \textbf{Nichtterminalsymbol} & \textbf{direkt/indirekt rek.} & \textbf{links/rechts rek.} \\ \hline
     DataDeclRest                 &           direkt rek.         &           links rek.\\ \hline
-    DataDecl                     &                               & \\ \hline
+    DataDecl                     &               -               &             -           
+    \\ \hline
     DataNameList                 &           direkt rek.         &           rechts rek. \\ \hline
-    DataName                     &                               & \\ \hline
+    DataName                     &               -               &             -    
+    \\ \hline
     DataValueList                &           direkt rek.         &           links rek. \\ \hline
-    DataValue                    &                               & \\ \hline
-    DataDoList                   &                               & \\ \hline
-    DataDoListRest               &                               & \\ \hline
+    DataValue                    &               -               &             -    
+    \\ \hline
+    DataDoList                   &           direkt rek.         &           zentral rek.\\ \hline
+    DataDoList                   &           indirekt rek.       &           zentral rek.\\ \hline
+    DataDoListRest               &           indirekt rek.       &           zentral rek.\\ \hline
     \end{tabularx}
+\newline
+\newline
+Die beiden indirekten Rekursionen der Nichtterminalsymbole \emph{DataDoList} und \emph{DataDoListRest} ergeben sich aus der Tatsache, dass wenn es eine indirekte Rekursion gibt, es auch eine zweite Rekursion geben muss. Ich gehe davon aus, dass ich alle Rekursionen gefunden habe, wobei angemerkt sei, dass es sehr schwer ist Rekursionen aus einer Grammatik auszulesen. 
+
+\subsection{Transformation in das Regelsystem der formalen Sprachen}
+\begin{tabularx}{\textwidth}{p{80pt} @{$\rightarrow$ \hspace{10pt}} X}
+	DataStat      & DATA DataDecl DataDeclRest \\
+	DataDeclRest  &  $\epsilon$ $|$  DataDeclRest , DataDecl $|$ DataDeclRest   DataDecl  \\
+	DataDecl       & DataNameList / DataValueList /\\
+	DataNameList   & DataName $|$ DataName , DataNameList\\
+	DataName       & id $|$ DataDoList\\
+	DataValueList  & DataValue $|$ DataValueList , DataValue\\
+	DataValue      & num DerefValue $|$ id DerefValue $|$ NumOrStr\\
+	NumValue       & num $|$ + num $|$ - num\\
+	NumOrStr       & NumValue $|$ str\\
+	DerefValue     & $\epsilon$ $|$ * id $|$ * NumOrStr\\
+	DataDoList     & ( IdList DataDoListRest ) $|$ ( DataDoList DataDoListRest )\\
+	CommaId        & $\epsilon$ $|$ , id CommaId\\
+    IdList         & id ( id CommaId )	\\
+    DataDoListRest & $\epsilon$ $|$ DataDoListRest , DoListRestOpt \\
+    ComaExpr       & $\epsilon$ $|$ , expr CommaExpr\\
+    ExprList       & ( expr CommaExpr )\\
+    OptExpr        & $\epsilon$ $|$ expr\\
+    EqualExpr      & = expr , expr OptExpr\\
+    DoListRestOpt & id ExprList $|$ id EuqlExpr $|$ DataDoList
+\end{tabularx}
+\newpage
+Um diesen Punkt der Aufgabe \ref{sec:grammar-basics} zu lösen wurden die Optionen und Schleifen von innen nach außen aufgelöst und in eigene Nichtterminalsybole ausgelagert. Das ist notwendig, da das Regelwerk der formalen Sprachen diese Konstrukte nicht kennt und die Konstrukte Optionen und Schleifen in Oder Konstrukte umgewandelt werden müssen. Bsp.: [num, str] $\equiv$ $\epsilon$ $|$ num $|$ str
+\newline
+\newline
+Ich halte die Schreibweise der Wirth'schen EBNF für lesbarer, da in dieser Schreibweise mehr Konstrukte wie Optionen und Schleifen zur Verfügung stehen und dadurch die Grammatik durch weniger Regeln definiert werden kann, was die Grammatik übersichtlicher macht.
+
+
 
 %\subsubsection{MainFX.java}
 %Diese Klasse stellt die Main Klasse für die JavaFX Applikation dar.
