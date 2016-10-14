@@ -55,3 +55,6 @@ Temporary Items
 *.gz
 *.log
 _minted*
+
+# intellij
+.idea
