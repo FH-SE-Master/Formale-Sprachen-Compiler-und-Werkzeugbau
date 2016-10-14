@@ -92,7 +92,7 @@ class OCData final {        // short for ObjectCounterData
 
     virtual ~OCData() {
       int nAlive = nConstr - nDestr;
-      if (!cout.good())
+      if (!std::cout.good())
         return;
       std::cout << std::endl;
       std::cout << "ObjectCounter<" << className << ">: " <<
