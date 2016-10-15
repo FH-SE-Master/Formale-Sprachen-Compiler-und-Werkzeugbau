@@ -208,6 +208,47 @@ Um diesen Punkt der Aufgabe \ref{sec:grammar-basics} zu lösen wurden die Option
 \newline
 \newline
 Ich halte die Schreibweise der Wirth'schen EBNF für lesbarer, da in dieser Schreibweise mehr Konstrukte wie Optionen und Schleifen zur Verfügung stehen und dadurch die Grammatik durch weniger Regeln definiert werden kann, was die Grammatik übersichtlicher macht.
+\newpage
+\subsection{Syntaxbaum}
+Die Abbildung \ref{fig:syntaxtree} zeigt den Syntaxbaum des Satzes
+\newline
+\emph{DATA id, id / num * str /, ( id(id), id = expr, expr ) / num * num /}.
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.70,angle=90]{Syntaxtree.jpg}
+\caption{Syntaxbaum}
+\label{fig:syntaxtree}
+\end{figure}
+\ \newline
+Es gibt für den gegebenen Satz nur einen Syntaxbaum, da es keine Möglichkeit gibt, den Satz mit der gegebenen Grammatik über andere Wege in einen anderen Syntaxbaum zu überführen. Das bedeutet aber nicht dass die Grammatik eindeutig ist, da es nötig wäre alle möglichen Sätze in alle ihre möglichen Syntaxbäume zu überführen, was mit der gegebenen Grammatik nicht möglich ist, da mit der gegebenen Grammatik unendliche viele Sätze erstellt werden können.
+\newpage
+
+\subsection{Konstruktion einer Grammatik}
+Dieser Abschnitt behandelt den Punkt e der Aufgabe \ref{sec:grammar-basics}.
+\subsubsection{Mit dem Regelsystem der formalen Sprachen}
+In diesem Abschnitt wird die Grammatik mit dem Regelsystem der formalen Sprachen angeführt.
+\newline
+\newline
+\begin{tabularx}{\textwidth}{p{100pt} @{$\rightarrow$ \hspace{10pt}} X}
+	SignedOddDecimal  & Sign IntegerNoZero AllIntegerOpt, AllIntegerOpt OddInteger\\
+	Sign              & $\epsilon$ $|$ + $|$ -\\
+	OddInteger        & 1 $|$ 3 $|$ 5 $|$ 7 $|$ 9\\ 
+	IntegerNoZero     & 2 $|$ 4 $|$ 6 $|$ 8 $|$ OddInteger\\
+	AllInteger        & 0 $|$ IntegerNoZero\\
+	AllIntegerOpt     & $\epsilon$ $|$ AllInteger $|$ AllIntegerOpt\\
+\end{tabularx}
+
+\subsubsection{Mit der Wirth'schen EBNF}
+In diesem Abschnitt wird die Grammatik mit der With'schen EBNF angeführt.
+\newline
+\newline
+\begin{tabularx}{\textwidth}{p{100pt} @{= \hspace{10pt}} X}
+	SignedOddDecimal  & [+ $|$ -] IntegerNoZero \{0 $|$ IntegerNoZero\}, \{0 $|$ IntegerNoZero\} OddInteger\\
+	OddInteger        & 1 $|$ 3 $|$ 5 $|$ 7 $|$ 9\\ 
+	IntegerNoZero     & 2 $|$ 4 $|$ 6 $|$ 8 $|$ OddInteger\\	
+\end{tabularx}
+\newline
+\newline
 
 
 

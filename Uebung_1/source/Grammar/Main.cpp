@@ -52,7 +52,6 @@ try {
   // S -> A ;
   // A -> a B | B B b
   // B -> b | a b
-
   NTSymbol *S  = sp->ntSymbol("S");
   NTSymbol *A  = sp->ntSymbol("A");
   NTSymbol *B  = sp->ntSymbol("B");
@@ -124,6 +123,9 @@ try {
 
   // cout << "type CR to continue ...";
   // getchar();
+
+  // wait for user input to kep console open
+  std::cin.get();
 
   return 0;
 } // main
