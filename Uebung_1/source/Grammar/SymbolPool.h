@@ -112,8 +112,8 @@ class TSymbol final: public  Symbol,
 
   private:
 
-    TSymbol(const TSymbol *tSy); // prohibit copy construction and ...
-    TSymbol &operator=(const TSymbol *tSy); // ... assignment
+    TSymbol(const TSymbol *tSy)= delete; // prohibit copy construction and ...
+    TSymbol &operator=(const TSymbol *tSy)= delete; // ... assignment
 
   protected:
 
@@ -132,8 +132,8 @@ class NTSymbol final: public  Symbol,
 
   private:
 
-    NTSymbol(const NTSymbol *tSy); // prohibit copy construction and
-    NTSymbol &operator=(const NTSymbol *tSy); // assignment
+    NTSymbol(const NTSymbol *tSy) = delete; // prohibit copy construction and
+    NTSymbol &operator=(const NTSymbol *tSy) = delete; // assignment
 
   protected:
 

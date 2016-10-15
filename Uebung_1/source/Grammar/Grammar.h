@@ -32,6 +32,7 @@ typedef Vocabulary<NTSymbol> VNt;
 typedef Vocabulary< TSymbol> VT;
 typedef Vocabulary<  Symbol> V;
 
+using namespace std;
 
 class Grammar: // no public base class
                private ObjectCounter<Grammar> {
@@ -44,8 +45,8 @@ class Grammar: // no public base class
     mutable VNt   vNtDel;         // deletable nts, subset of vNt,
                                   //   filled by identifyDeletableNTs
 
-    Grammar(const Grammar *g);    // prohibit copy construction and ...
-    Grammar &operator=(const Grammar *g); // ... assignment
+    Grammar(const Grammar *g) = delete;    // prohibit copy construction and ...
+    Grammar &operator=(const Grammar *g) = delete; // ... assignment
 
     void initialize(NTSymbol *root);    // do first part of constructors work
 

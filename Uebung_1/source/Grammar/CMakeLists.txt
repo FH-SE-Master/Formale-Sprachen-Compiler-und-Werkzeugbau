@@ -9,13 +9,15 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 set(SOURCE_FILES
     Grammar.cpp
     Grammar.h
-    Main.cpp
     ObjectCounter.h
     SequenceStuff.cpp
     SequenceStuff.h
     SymbolPool.cpp
     SymbolPool.h
     Vocabulary.cpp
-    Vocabulary.h)
+    Vocabulary.h
+    GrammarUtil.cpp
+    GrammarUtil.hpp
+    Main.cpp)
 
 add_executable(Grammar ${SOURCE_FILES})
