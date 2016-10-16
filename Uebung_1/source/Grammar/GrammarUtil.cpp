@@ -9,20 +9,17 @@
 #include "GrammarUtil.hpp"
 
 namespace GrammarUtil {
-
-    /**
-     * Generates a epsilon free grammar of the this grammar.
-     * @param grammar the grammar to transform to epsilon free grammar
-     * @param symbolPool the pool to generate symbols from
-     * @return the transformed epsilon free grammar, or the given grammar if already epsilon free
-     * @throw invalid_argument if an parameter is null
+/**
+     * Transforms the the sequences of the given rule of an deletable NTSymbol.
+     * @param thr rule of an deletable NTSymbol to be transformed
+     * @return the set of trqansformed sequences. Not of type SequenceSet because SeuqenceSet deletes its items
+     * @throw invalid_argument if the given SequenceSet is a nullptr
      */
-    Grammar *epsilonFreeGrammarOf(Grammar *grammar, SymbolPoolPtr symbolPool) {
+    set<Sequence *> *transformSequence(SequenceSet *oldSequences);
+
+    Grammar *epsilonFreeGrammarOf(Grammar *grammar) {
         if (grammar == nullptr) {
             throw invalid_argument("invalid nullptr for grammar");
-        } // if
-        if (symbolPool == nullptr) {
-            throw invalid_argument("invalid nullptr for symbolPool");
         } // if
 
         // identify deletable rules on given grammar
@@ -33,21 +30,26 @@ namespace GrammarUtil {
             return grammar;
         } // if
 
-        // Create new root which contains the alternative with the epsilon an the old root
-        NTSymbol *root = symbolPool->ntSymbol("S'");
-        NTSymbol *epsilonFreeRoot = symbolPool->ntSymbol("S");
-        TSymbol *epsilon = symbolPool->tSymbol("EPS");
-        Grammar *epsilonFreeGrammar = new Grammar(root);
-        epsilonFreeGrammar->addRule(root, new Sequence(2, root, epsilon, epsilonFreeRoot));
+        // Create new root which contains the alternative with the epsilon an the old root.
+        NTSymbol *root = SymbolPool::getInstance()->ntSymbol(grammar->root->name + "'");
+        Grammar *epsilonFreeGrammar = new Grammar(grammar->root);
+        epsilonFreeGrammar->addRule(root, 2, new Sequence(), new Sequence(grammar->root));
 
         // iterate over all rules
         for (auto &rule: grammar->rules) {
-            if (grammar->isDeletable(rule.first)) {
-                cout << "deletable NT: " << rule.first->name << endl;
+            if (grammar->isDeletable(rule.first)) { // transform sequence if NTSymbol is deletable
+                set<Sequence *> *newSequences = transformSequence(&rule.second);
+                for (auto newSeq : *newSequences) {
+                    epsilonFreeGrammar->addRule(rule.first, 1, *newSeq);
+                } // for
 
-            } else {
-                cout << "not deletable NT: " << rule.first << endl;
-            }// if
+                // delete set (not items !!)
+                delete (newSequences);
+            } else { // copy sequence if NTSymbol is not deletable
+                for (auto oldSeq : rule.second) {
+                    epsilonFreeGrammar->addRule(rule.first, 1, new Sequence(*oldSeq));
+                } // for
+            } // if
         } // for
 
         return epsilonFreeGrammar;
@@ -55,65 +57,100 @@ namespace GrammarUtil {
 
     /**
      * Transforms the the sequences of the given rule of an deletable NTSymbol.
-     * @param thr rule of an deletable NTSymbol to be transformed
+     * @param oldSequences the sequences of the old rule
      * @return the tranformed rule
      * @throw invalid_argument if the given set is a nullptr
      */
-    SequenceSet *TransformRule(SequenceSet *sequences) {
-        if (sequences == nullptr) {
-            throw invalid_argument("Given sequences set is a nullptr.");
+    set<Sequence *> *transformSequence(SequenceSet *oldSequences) {
+        if (oldSequences == nullptr) {
+            throw invalid_argument("Given oldSequences set is a nullptr.");
         }
-        SequenceSet *tranformedSet = new SequenceSet();
 
-        for (Sequence *seq: *sequences) {
+        // use ordinary set and not SequenceSet because SequenceSet deletes its items
+        set<Sequence *> *transformedSet = new set<Sequence *>();
+
+        // iterate over all oldSequences
+        for (Sequence *seq: *oldSequences) {
+            int cursorIdx = -1;
+            int length = seq->length();
+            int innerCursorIdx = 0;
+
             // epsilon not part of transformed
             if (seq->isEpsilon()) {
                 continue;
             } // if
 
-            Sequence *copiedSequence = new Sequence(*seq);
-
             // original sequence is always part of transformed
-            tranformedSet->insert(copiedSequence);
+            Sequence *originalSequence = new Sequence(*seq);
+            if (!transformedSet->insert(originalSequence).second) {
+                delete originalSequence;
+            } // if
 
             // if only terminals, then no transformation needed
-            if (copiedSequence->hasTerminalsOnly()) {
+            if (seq->hasTerminalsOnly()) {
                 continue;
             } // if
 
-            int length = copiedSequence->length();
-            int startIdx = -1;
-            int curIdx = 0;
-            while (startIdx < (copiedSequence->length() - 1)) {
-                Sequence *tmpSequence = new Sequence(*copiedSequence);
-                int itIdx = -1;
-                for (auto it = tmpSequence->begin(); it != tmpSequence->end(); it++) {
-                    itIdx++;
-                    Symbol *symbol = tmpSequence->symbolAt(it);
+            // add sequence with first NT if NTSymbols only, otherwise get lost by following algorithm
+            if (seq->hasNonTerminalsOnly()) {
+                for (auto it = seq->begin(); it != seq->end(); it++) {
+                    Symbol *symbol = seq->symbolAt(it);
+                    if (symbol->isNT()) {
+                        Sequence *firstSymbolSequence = new Sequence(symbol);
+                        if (!transformedSet->insert(firstSymbolSequence).second) {
+                            delete firstSymbolSequence;
+                        } // if
+                        break;
+                    } // if
 
-                    if (itIdx > startIdx) {
-                        // TSymbols cannot be replaced by epsilon
-                        if (symbol->isT()) {
-                            continue;
-                        }
-                        // else replace symbols
-                        tmpSequence->erase(it);
-                        // At first replace all symbols with epsilon = remove
-                        if (startIdx >= 0) {
-                            break;
-                        }
-                    } else {
-                        // skip NTSymbols
-                        if (symbol->isT()) {
-                            break;
-                        }
-                    }
+                    // move cursor by one which will stay one symbol before added one
+                    cursorIdx++;
                 } // for
-                tranformedSet->insert(tmpSequence);
-                startIdx++;
-            } // while
-        }
+            }
 
-        return tranformedSet;
+            // iterate as long the cursorIdx cursor can be moved
+            while (cursorIdx != (length - 1)) {
+                // iterate as long as inner cursor can be moved
+                while (innerCursorIdx < length) {
+                    Sequence *tmpSequence = new Sequence();
+                    int itIdx = -1;
+                    // iterate over each symbol in the sequence
+                    for (auto it = seq->begin(); it != seq->end(); it++) {
+                        itIdx++;
+                        Symbol *symbol = seq->symbolAt(it);
+
+                        // do not escape leading TSymbols
+                        if (symbol->isT()) {
+                            tmpSequence->appendSymbol(symbol);
+                            // move inner cursor if it stands on TSymbol
+                            if (itIdx == innerCursorIdx) {
+                                innerCursorIdx++;
+                            } // if
+                            continue;
+                        } //if
+
+                        // ignore all before cursor and inner cursor position
+                        if ((itIdx > cursorIdx) && (itIdx != innerCursorIdx)) {
+                            tmpSequence->appendSymbol(symbol);
+                        } // if
+                    } // for
+
+                    // move inner cursor
+                    innerCursorIdx++;
+
+                    // insert and delete sequence if insert failed
+                    if ((tmpSequence->empty()) || (!transformedSet->insert(tmpSequence).second)) {
+                        delete tmpSequence;
+                    } // if
+                } // while
+
+                // move cursors
+                cursorIdx++;
+                innerCursorIdx = cursorIdx + 1;
+
+            } // while
+        } // for
+
+        return transformedSet;
     }
 }

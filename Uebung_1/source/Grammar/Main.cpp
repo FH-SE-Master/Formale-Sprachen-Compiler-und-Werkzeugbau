@@ -105,16 +105,54 @@ int main(int argc, char *argv[]) {
 
 
 #elif TESTCASE == 4
+        // Grammar from the presentation
         g = new Grammar(
                 "G(S):                          \n\
                  S -> A B C                     \n\
-                 A -> B B | EPS                 \n\
+                 A -> B  B | EPS                \n\
                  B -> C C | a                   \n\
                  C -> A A | b                     ");
+        Grammar *epsFreeG = GrammarUtil::epsilonFreeGrammarOf(g);
+        epsFreeG->identifyDeletableNTs();
 
-        cout << *g;
+        // Grammar from the internet
+        // http://www.informatikseite.de/theorie/node43.php
+        Grammar *g2 = new Grammar(
+                "G(S):                          \n\
+                 S -> a C b | A C B             \n\
+                 A -> a A A | D D D D | a a b   \n\
+                 B -> A A C | b                 \n\
+                 C -> S B | EPS                 \n\
+                 D -> A a c b S | C E           \n\
+                 E -> C | b c a                 \n");
+        Grammar *epsFreeG2 = GrammarUtil::epsilonFreeGrammarOf(g2);
+        epsFreeG2->identifyDeletableNTs();
 
-        GrammarUtil::epsilonFreeGrammarOf(g, sp);
+        cout << "--------------------------------------------" << endl
+             << "Grammar from the presentation " << endl
+             << "--------------------------------------------" << endl
+             << *g
+             << "--------------------------------------------" << endl
+             << "Epsilon free grammar from the presentation " << endl
+             << "--------------------------------------------" << endl
+             << *epsFreeG << endl
+             << "--------------------------------------------" << endl
+             << "--------------------------------------------" << endl << endl;
+
+        cout << "--------------------------------------------" << endl
+             << "Grammar from the internet " << endl
+             << "--------------------------------------------" << endl
+             << *g2
+             << "--------------------------------------------" << endl
+             << "Epsilon free grammar from the internet " << endl
+             << "--------------------------------------------" << endl
+             << *epsFreeG2 << endl
+             << "--------------------------------------------" << endl
+             << "--------------------------------------------" << endl << endl;
+
+        delete (epsFreeG);
+        delete (epsFreeG2);
+        delete (g2);
 
 #else // none of the TESTCASEs above
 

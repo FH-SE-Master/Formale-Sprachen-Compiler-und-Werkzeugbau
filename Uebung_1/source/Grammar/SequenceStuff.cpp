@@ -110,6 +110,14 @@ bool Sequence::hasTerminalsOnly() const {
   return true;
 } // Sequence::hasTerminalsOnly
 
+bool Sequence::hasNonTerminalsOnly() const {
+  for (const Symbol *sy: *this) {
+    if (sy->isT())
+      return false;
+  } // for
+  return true;
+}
+
 bool Sequence::isEpsilon() const {
   return size() == 0;
 } // Sequence::isEpsilon

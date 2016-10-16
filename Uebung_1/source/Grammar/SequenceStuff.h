@@ -64,6 +64,7 @@ class Sequence: public  std::vector<Symbol *>,
     void replaceSymbolAt(iterator it, Sequence *seq);
 
     bool hasTerminalsOnly() const;
+    bool hasNonTerminalsOnly() const;
 
     bool isEpsilon() const; // <=> length() == 0
 

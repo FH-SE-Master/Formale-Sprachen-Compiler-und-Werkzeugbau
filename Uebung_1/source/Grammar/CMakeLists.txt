@@ -18,6 +18,6 @@ set(SOURCE_FILES
     Vocabulary.h
     GrammarUtil.cpp
     GrammarUtil.hpp
-    Main.cpp)
+    Main.cpp Language.hpp Language.cpp)
 
 add_executable(Grammar ${SOURCE_FILES})
