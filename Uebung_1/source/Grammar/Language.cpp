@@ -16,22 +16,39 @@ Language::Language() {
 
 Language::Language(const Language &ss) : Base(ss), ObjectCounter<Language>() {
     // nothing left to do
-} // Sequence::Sequence
+} // Language::Language
 
 Language::~Language() {
-
-}
+    for (Sequence *sequence: *this) {
+        delete (sequence);
+    } // for
+} // Language::~Language
 //endregion
 
-void Language::appendSequence(Sequence *sequence) {
+bool Language::appendSentence(Sequence *sentence) {
+    if (sentence == nullptr) {
+        throw invalid_argument("Language::appendSentence: invalid nullptr for sentence");
+    } // if
+    return insert(sentence).second;
+} // Language::appendSentence
 
-}
-
-Sequence *Language::sequenceAt(set<Sequence *>::iterator it) const {
-    return nullptr;
-}
-
-bool Language::hasSentence(Sequence *sequence) const {
+bool Language::hasSentence(Sequence *sentence) const {
+    if (sentence == nullptr) {
+        throw invalid_argument("Language::hasSentence: invalid nullptr for sequence");
+    } // if
     return false;
-}
+} // Language::hasSentence
+
+bool LessSequenceComparator::operator()(const Sequence *seq1,
+                                        const Sequence *seq2) const {
+    return seq1->length() <= seq2->length();
+} // LessSequenceComparator::operator()
+
+std::ostream &operator<<(std::ostream &os, const Language &language) {
+    cout << "Language contained sentences:" << endl;
+    for (const Sequence *sentence: language) {
+        cout << *sentence << endl;
+    } // for
+    return os;
+} // operator<<
 

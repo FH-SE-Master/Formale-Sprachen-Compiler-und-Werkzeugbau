@@ -105,6 +105,11 @@ int main(int argc, char *argv[]) {
 
 
 #elif TESTCASE == 4
+        cout << "--------------------------------------------" << endl
+             << "--------------------------------------------" << endl
+             << "Grammar transformation tests" << endl
+             << "--------------------------------------------" << endl
+             << "--------------------------------------------" << endl;
         // Grammar from the presentation
         g = new Grammar(
                 "G(S):                          \n\
@@ -153,16 +158,35 @@ int main(int argc, char *argv[]) {
         delete (epsFreeG);
         delete (epsFreeG2);
         delete (g2);
+        delete (g);
+
+
+        cout << "--------------------------------------------" << endl
+             << "--------------------------------------------" << endl
+             << "Language generation tests" << endl
+             << "--------------------------------------------" << endl
+             << "--------------------------------------------" << endl;
+        g = new Grammar(
+                "G(S):                          \n\
+                 S -> A B C                     \n\
+                 A -> B  B | EPS                \n\
+                 B -> C C | a                   \n\
+                 C -> A A | b                     ");
+        Grammar *epsFreeGrammarForLanguage = GrammarUtil::epsilonFreeGrammarOf(g);
+        epsFreeGrammarForLanguage->identifyDeletableNTs();
+        Language *language = GrammarUtil::generateLanguage(epsFreeGrammarForLanguage, 5);
+        cout << (*language) << endl;
+
+        delete (epsFreeGrammarForLanguage);
+        delete (language);
+        delete (g);
 
 #else // none of the TESTCASEs above
 
         cerr << "ERROR: invalid TESTCASE == " << TESTCASE << endl;
 #endif
-
-        delete g;
         cout << *sp << endl;
         sp->clear(); // or SymbolPool::clear();
-
     } catch (const exception &e) {
         cerr << "ERROR (" << typeid(e).name() << "): " << e.what() << endl;
     } // catch

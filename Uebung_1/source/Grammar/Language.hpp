@@ -7,17 +7,21 @@
 
 using namespace std;
 
+struct LessSequenceComparator { // uses operator<
+    bool operator()(const Sequence *seq1, const Sequence *seq2) const;
+}; // LessSequenceComparator
+
 /**
  * This class represents a set of sentences which are part of the language of a grammar.
  */
-class Language : public std::set<Sequence *>,
+class Language : public std::set<Sequence *, LessSequenceComparator>,
                  private ObjectCounter<Language> {
 
 private:
     /**
      * The custom type definition of the extended Base
      */
-    typedef std::set<Sequence *> Base;
+    typedef std::set<Sequence *, LessSequenceComparator> Base;
 
 public:
 
@@ -42,24 +46,19 @@ public:
 
     /**
      * Appends a sentence to the language
-     * @param sequence the seuqnce representing the sentence
+     * @param sentence the sentence set representing the sentence
+     * @return true if inserted, false otherwise
      * @throws invalid_argument if the seuqnece object is null
      */
-    void appendSequence(Sequence *sequence);
-
-    /**
-     * Gets the sequence at the iterator position
-     * @param it the iterator to get sequence from
-     * @return the seuqence referenced by the iterator
-     * @throws invalid_argument if the iterator object is null
-     */
-    Sequence *sequenceAt(set<Sequence *>::iterator it) const;
+    bool appendSentence(Sequence *sentence);
 
     /**
      * Answers the question if the given sequence is part of this language.
-     * @param sequence the sequence to heck
+     * @param sentence the sequence to check if a sentence of this laguage
      * @return  true if part of this language, false otherwise
      * @throws invalid_argument if the seuqnece object is null
      */
-    bool hasSentence(Sequence *sequence) const;
+    bool hasSentence(Sequence *sentence) const;
 };
+
+std::ostream &operator<<(std::ostream &os, const Language &language);

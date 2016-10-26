@@ -9,35 +9,49 @@
 #include "GrammarUtil.hpp"
 
 namespace GrammarUtil {
-/**
+    /**
      * Transforms the the sequences of the given rule of an deletable NTSymbol.
+     *
      * @param thr rule of an deletable NTSymbol to be transformed
      * @return the set of trqansformed sequences. Not of type SequenceSet because SeuqenceSet deletes its items
      * @throw invalid_argument if the given SequenceSet is a nullptr
      */
-    set<Sequence *> *transformSequence(SequenceSet *oldSequences);
+    set<Sequence *> *transformSequence(SequenceSet *_oldSequences);
 
-    Grammar *epsilonFreeGrammarOf(Grammar *grammar) {
-        if (grammar == nullptr) {
-            throw invalid_argument("invalid nullptr for grammar");
+    /**
+     * Generates the language with recursion and builds all sentences up to maxLength.
+     * This function does not validate the maxLength, the curLength and the the grammar.
+     * Make sure the calls are save to this function
+     *
+     * @param _grammar the grammar to generate sentences for
+     * @param _language the language to append generated sentences too
+     * @param _maxLength the max length of the to generate sentences
+     * @param _curLength the current length of the in the invocation generated sentence length
+     * @return the generated language
+     */
+    Language *generateLanguageRecursive(Grammar *_grammar, Language *_language, int _maxLength, int _curLength);
+
+    Grammar *epsilonFreeGrammarOf(Grammar *_grammar) {
+        if (_grammar == nullptr) {
+            throw invalid_argument("invalid nullptr for _grammar");
         } // if
 
-        // identify deletable rules on given grammar
-        grammar->identifyDeletableNTs();
+        // identify deletable rules on given _grammar
+        _grammar->identifyDeletableNTs();
 
-        // return grammar if already epsilon free
-        if (grammar->isEpsilonFree()) {
-            return grammar;
+        // return _grammar if already epsilon free
+        if (_grammar->isEpsilonFree()) {
+            return _grammar;
         } // if
 
         // Create new root which contains the alternative with the epsilon an the old root.
-        NTSymbol *root = SymbolPool::getInstance()->ntSymbol(grammar->root->name + "'");
-        Grammar *epsilonFreeGrammar = new Grammar(grammar->root);
-        epsilonFreeGrammar->addRule(root, 2, new Sequence(), new Sequence(grammar->root));
+        NTSymbol *root = SymbolPool::getInstance()->ntSymbol(_grammar->root->name + "'");
+        Grammar *epsilonFreeGrammar = new Grammar(_grammar->root);
+        epsilonFreeGrammar->addRule(root, 2, new Sequence(), new Sequence(_grammar->root));
 
         // iterate over all rules
-        for (auto &rule: grammar->rules) {
-            if (grammar->isDeletable(rule.first)) { // transform sequence if NTSymbol is deletable
+        for (auto &rule: _grammar->rules) {
+            if (_grammar->isDeletable(rule.first)) { // transform sequence if NTSymbol is deletable
                 set<Sequence *> *newSequences = transformSequence(&rule.second);
                 for (auto newSeq : *newSequences) {
                     epsilonFreeGrammar->addRule(rule.first, 1, *newSeq);
@@ -57,20 +71,20 @@ namespace GrammarUtil {
 
     /**
      * Transforms the the sequences of the given rule of an deletable NTSymbol.
-     * @param oldSequences the sequences of the old rule
+     * @param _oldSequences the sequences of the old rule
      * @return the tranformed rule
      * @throw invalid_argument if the given set is a nullptr
      */
-    set<Sequence *> *transformSequence(SequenceSet *oldSequences) {
-        if (oldSequences == nullptr) {
-            throw invalid_argument("Given oldSequences set is a nullptr.");
+    set<Sequence *> *transformSequence(SequenceSet *_oldSequences) {
+        if (_oldSequences == nullptr) {
+            throw invalid_argument("Given _oldSequences set is a nullptr.");
         }
 
         // use ordinary set and not SequenceSet because SequenceSet deletes its items
         set<Sequence *> *transformedSet = new set<Sequence *>();
 
-        // iterate over all oldSequences
-        for (Sequence *seq: *oldSequences) {
+        // iterate over all _oldSequences
+        for (Sequence *seq: *_oldSequences) {
             int cursorIdx = -1;
             int length = seq->length();
             int innerCursorIdx = 0;
@@ -153,4 +167,57 @@ namespace GrammarUtil {
 
         return transformedSet;
     }
+
+    Language *generateLanguage(Grammar *_grammar, int _maxLength) {
+        if (_grammar == nullptr) {
+            throw invalid_argument("GrammarUtil::Language *generateLanguage: invalid nullptr for grammar");
+        } // if
+        if (_maxLength <= 0) {
+            throw invalid_argument("GrammarUtil::Language *generateLanguage: maxLength must be greater than zero");
+        } // if
+
+        return generateLanguageRecursive(_grammar, nullptr, _maxLength, -1);
+    } // Language *generateLanguage
+
+    Language *generateLanguageRecursive(Grammar *_grammar, Language *_language, int _maxLength, int _curLength) {
+        // initialize
+        if (_language == nullptr) {
+            _language = new Language();
+            for (auto it = _grammar->vT.begin(); it != _grammar->vT.end(); it++) {
+                _language->appendSentence(new Sequence(SymbolPool::getInstance()->tSymbol((*it)->name)));
+            } // for
+        }
+            // Generate sentences
+        else {
+            for (auto it = _grammar->vT.begin(); it != _grammar->vT.end(); it++) {
+                set<Sequence *> generatedSentences;
+
+                for (auto sentenceIt = _language->begin(); sentenceIt != _language->end(); sentenceIt++) {
+                    if ((*sentenceIt)->length() == _curLength) {
+                        Sequence *sentence = new Sequence(**sentenceIt);
+                        sentence->appendSymbol(SymbolPool::getInstance()->tSymbol((*it)->name));
+                        if (!generatedSentences.insert(sentence).second) { ;
+                            delete (sentence);
+                        }
+                    }
+                } // for
+
+                for (auto generatedIt = generatedSentences.begin();
+                     generatedIt != generatedSentences.end(); generatedIt++) {
+                    Sequence *sentence = *generatedIt;
+                    // TODO: Add check if valid sentence
+                    if (!_language->appendSentence(sentence)) { ;
+                        delete (sentence);
+                    }
+                } // for
+            } // for
+        } // if
+
+        // anchor
+        if (_maxLength == _curLength) {
+            return _language;
+        } // if
+
+        return generateLanguageRecursive(_grammar, _language, _maxLength, (_curLength + 1));
+    } // Language *generateLanguageRecursive
 }
