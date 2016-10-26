@@ -15,7 +15,9 @@ using namespace std;
 #include "SequenceStuff.h"
 #include "Vocabulary.h"
 #include "Grammar.h"
+#include "Language.hpp"
 #include "GrammarUtil.hpp"
+#include "LanguageUtils.hpp"
 
 // Activation (with 1) allows simple build via command line
 //   * for GNU       use:  g++ -std=c++11 Main.cpp
@@ -117,12 +119,28 @@ int main(int argc, char *argv[]) {
                  A -> B  B | EPS                \n\
                  B -> C C | a                   \n\
                  C -> A A | b                     ");
+
         Grammar *epsFreeG = GrammarUtil::epsilonFreeGrammarOf(g);
-        epsFreeG->identifyDeletableNTs();
+        if (epsFreeG != nullptr) {
+            epsFreeG->identifyDeletableNTs();
+
+            cout << "--------------------------------------------" << endl
+                 << "Grammar from the presentation " << endl
+                 << "--------------------------------------------" << endl
+                 << *g
+                 << "--------------------------------------------" << endl
+                 << "Epsilon free grammar from the presentation " << endl
+                 << "--------------------------------------------" << endl
+                 << *epsFreeG << endl
+                 << "--------------------------------------------" << endl
+                 << "--------------------------------------------" << endl << endl;
+            delete (epsFreeG);
+        }
+        delete (g);
 
         // Grammar from the internet
         // http://www.informatikseite.de/theorie/node43.php
-        Grammar *g2 = new Grammar(
+        g = new Grammar(
                 "G(S):                          \n\
                  S -> a C b | A C B             \n\
                  A -> a A A | D D D D | a a b   \n\
@@ -130,36 +148,23 @@ int main(int argc, char *argv[]) {
                  C -> S B | EPS                 \n\
                  D -> A a c b S | C E           \n\
                  E -> C | b c a                 \n");
-        Grammar *epsFreeG2 = GrammarUtil::epsilonFreeGrammarOf(g2);
-        epsFreeG2->identifyDeletableNTs();
+        epsFreeG = GrammarUtil::epsilonFreeGrammarOf(g);
+        if (epsFreeG != nullptr) {
+            epsFreeG->identifyDeletableNTs();
 
-        cout << "--------------------------------------------" << endl
-             << "Grammar from the presentation " << endl
-             << "--------------------------------------------" << endl
-             << *g
-             << "--------------------------------------------" << endl
-             << "Epsilon free grammar from the presentation " << endl
-             << "--------------------------------------------" << endl
-             << *epsFreeG << endl
-             << "--------------------------------------------" << endl
-             << "--------------------------------------------" << endl << endl;
-
-        cout << "--------------------------------------------" << endl
-             << "Grammar from the internet " << endl
-             << "--------------------------------------------" << endl
-             << *g2
-             << "--------------------------------------------" << endl
-             << "Epsilon free grammar from the internet " << endl
-             << "--------------------------------------------" << endl
-             << *epsFreeG2 << endl
-             << "--------------------------------------------" << endl
-             << "--------------------------------------------" << endl << endl;
-
-        delete (epsFreeG);
-        delete (epsFreeG2);
-        delete (g2);
+            cout << "--------------------------------------------" << endl
+                 << "Grammar from the internet " << endl
+                 << "--------------------------------------------" << endl
+                 << *g
+                 << "--------------------------------------------" << endl
+                 << "Epsilon free grammar from the internet " << endl
+                 << "--------------------------------------------" << endl
+                 << *epsFreeG << endl
+                 << "--------------------------------------------" << endl
+                 << "--------------------------------------------" << endl << endl;
+            delete (epsFreeG);
+        }
         delete (g);
-
 
         cout << "--------------------------------------------" << endl
              << "--------------------------------------------" << endl
@@ -168,18 +173,25 @@ int main(int argc, char *argv[]) {
              << "--------------------------------------------" << endl;
         g = new Grammar(
                 "G(S):                          \n\
-                 S -> A B C                     \n\
-                 A -> B  B | EPS                \n\
-                 B -> C C | a                   \n\
-                 C -> A A | b                     ");
-        Grammar *epsFreeGrammarForLanguage = GrammarUtil::epsilonFreeGrammarOf(g);
-        epsFreeGrammarForLanguage->identifyDeletableNTs();
-        Language *language = GrammarUtil::generateLanguage(epsFreeGrammarForLanguage, 5);
-        cout << (*language) << endl;
+                 S -> a B | b A                 \n\
+                 A -> a | a S  | b A A          \n\
+                 B -> b | b S | a B B              ");
+        g->identifyDeletableNTs();
+        Language *language = LanguageUtil::generateLanguage(g, 6);
+        cout << *g << endl
+             << (*language) << endl;
 
-        delete (epsFreeGrammarForLanguage);
-        delete (language);
         delete (g);
+        delete (language);
+
+//        Sequence *sentence = new Sequence(5,
+//                                          sp->tSymbol("a"),
+//                                          sp->tSymbol("b"),
+//                                          sp->tSymbol("a"),
+//                                          sp->tSymbol("b"),
+//                                          sp->tSymbol("a"),
+//                                          sp->tSymbol("b"));
+
 
 #else // none of the TESTCASEs above
 

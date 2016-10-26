@@ -1,14 +1,30 @@
 //
 // Created by Thomas on 10/15/16.
 //
+#ifndef _INCLUDES_LANGUAGE_UTILS_HPP
+#define _INCLUDES_LANGUAGE_UTILS_HPP
 #include "Grammar.h"
-#include "Language.hpp"
 #include "string"
+
+#endif
+
 
 using namespace std;
 
 // see: http://www.informatikseite.de/theorie/node43.php
 namespace GrammarUtil {
+
+    typedef struct _GrammarMetaData {
+    public:
+        int minLength = 0;
+        int maxLength = 0;
+    } GrammarMetadata;
+
+    NTSymbol reduceToNTSymbol(Sequence *sequence);
+
+    GrammarMetadata collectGrammarMetadata(const Grammar *_grammar);
+
+    NTSymbol *findNTSymbolForSequence(const Grammar *grammar, Sequence *_sequence);
 
     /**
      * Generates a epsilon free grammar of the this grammar.
@@ -16,13 +32,5 @@ namespace GrammarUtil {
      * @return the transformed epsilon free grammar, or the given grammar if already epsilon free
      * @throw invalid_argument if an parameter is null
      */
-    Grammar *epsilonFreeGrammarOf(Grammar *_grammar);
-
-    /**
-     * Generates a language of the given grammar with sentences length up to given maxLength
-     * @param grammar the grammar to generate language for
-     * @param maxLength the max length of the to generate sentences
-     * @return the generatd language
-     */
-    Language *generateLanguage(Grammar *grammar, int maxLength);
+    Grammar *epsilonFreeGrammarOf(const Grammar *_grammar);
 }

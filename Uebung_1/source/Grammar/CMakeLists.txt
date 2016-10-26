@@ -16,8 +16,12 @@ set(SOURCE_FILES
     SymbolPool.h
     Vocabulary.cpp
     Vocabulary.h
+    Language.hpp
+    Language.cpp
     GrammarUtil.cpp
     GrammarUtil.hpp
-    Main.cpp Language.hpp Language.cpp)
+    LanguageUtils.cpp
+    LanguageUtils.hpp
+    Main.cpp)
 
 add_executable(Grammar ${SOURCE_FILES})

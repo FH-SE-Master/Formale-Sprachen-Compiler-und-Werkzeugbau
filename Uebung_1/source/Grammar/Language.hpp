@@ -1,13 +1,18 @@
 //
 // Created by Thomas on 10/16/16.
 //
+#ifndef _INCLUDES_LANGUAGE_HPP
+#define _INCLUDES_LANGUAGE_HPP
 
 #include "SequenceStuff.h"
 #include "ObjectCounter.h"
+#include "Grammar.h"
+
+#endif
 
 using namespace std;
 
-struct LessSequenceComparator { // uses operator<
+struct LessSequenceComparator {
     bool operator()(const Sequence *seq1, const Sequence *seq2) const;
 }; // LessSequenceComparator
 
@@ -25,11 +30,13 @@ private:
 
 public:
 
+    const Grammar *grammar;
+
     /**
      * Empty constructo for creating an empty Language
      * @return the empty language instance
      */
-    Language();
+    Language(const Grammar *grammar);
 
     /**
      * Copy constructor for copying the Language
@@ -46,19 +53,19 @@ public:
 
     /**
      * Appends a sentence to the language
-     * @param sentence the sentence set representing the sentence
+     * @param _sentence the sentence set representing the sentence
      * @return true if inserted, false otherwise
      * @throws invalid_argument if the seuqnece object is null
      */
-    bool appendSentence(Sequence *sentence);
+    bool appendSentence(Sequence *_sentence);
 
     /**
      * Answers the question if the given sequence is part of this language.
-     * @param sentence the sequence to check if a sentence of this laguage
+     * @param _sentence the sequence to check if a sentence of this laguage
      * @return  true if part of this language, false otherwise
      * @throws invalid_argument if the seuqnece object is null
      */
-    bool hasSentence(Sequence *sentence) const;
+    bool hasSentence(Sequence *_sentence);
 };
 
 std::ostream &operator<<(std::ostream &os, const Language &language);
