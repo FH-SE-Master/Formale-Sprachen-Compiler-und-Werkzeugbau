@@ -17,7 +17,7 @@ using namespace std;
 #include "Grammar.h"
 #include "Language.hpp"
 #include "GrammarUtil.hpp"
-#include "LanguageUtils.hpp"
+#include "LanguageUtil.hpp"
 
 // Activation (with 1) allows simple build via command line
 //   * for GNU       use:  g++ -std=c++11 Main.cpp
@@ -174,6 +174,15 @@ int main(int argc, char *argv[]) {
         Language *language = LanguageUtil::generateLanguage(g, 6);
         cout << *g << endl
              << (*language) << endl;
+
+        int counter  =0;
+        for(const auto &sentence : *language){
+            if(!language->hasSentence(sentence)) {
+                counter++;
+            }
+        }
+        cout << "Invalid sentence of language: " << counter << endl << endl;
+
         delete (language);
         delete (g);
 

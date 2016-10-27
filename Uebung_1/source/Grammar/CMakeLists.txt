@@ -20,8 +20,8 @@ set(SOURCE_FILES
     Language.cpp
     GrammarUtil.cpp
     GrammarUtil.hpp
-    LanguageUtils.cpp
-    LanguageUtils.hpp
+        LanguageUtil.cpp
+        LanguageUtil.hpp
     Main.cpp)
 
 add_executable(Grammar ${SOURCE_FILES})

@@ -37,7 +37,7 @@
 
 
 % the default java directory structure and the main packages
-\newcommand{\srcDir}{/src/main/java}
+\newcommand{\srcDir}{../source/Grammar/}
 % =============================================
 % Code Settings
 % =============================================
@@ -89,7 +89,7 @@
 % Section gramar and basics 
 \section {Grammatiken - Grundbegriffe}
 \label{sec:grammar-basics}
-Dieser Teil der Dokumentation behandelt die Aufgabe 1 der ersten Übung.
+Dieser Abschnitt behandelt die Aufgabe 1 der ersten Übung.
 \subsection{Die Mengen $V_{T}$ und $V_{N}$}
 $V_{N}=\{$ DataStat, DataDeclRest, DataDecl, DataNameList, DataName, DataValueList, DataValue, DataDoList, DataDoListRest $\}$
 \newline
@@ -101,7 +101,7 @@ Alle Nichtterminalsymbole befinden sich links in der Grammatik, wobei das Nichtt
 $V_{T}=\{$ \enquote{DATA},\enquote{,}, \enquote{/}, \enquote{(}, \enquote{)},\enquote{=}, \enquote{*}, \enquote{+}, \enquote{-}, \enquote{=}, expr, id, num, str $\}$
 \newline
 \newline
-Alle Terminalsymbole kommen nicht auf der linken Seite der Grammatik vor und können nicht weiter abgeleitet werden. Das Symbol \enquote{$\epsilon$} ist ein Metasymbol, dass die leere Kette repräsentiert und ist weder ein Nichtterminalsymbol oder ein Terminalsymbol.
+Alle Terminalsymbole kommen nicht auf der linken Seite der Grammatik vor und können nicht weiter abgeleitet werden. Das Symbol \enquote{$\epsilon$} ist ein Metasymbol, das die leere Kette repräsentiert und ist weder ein Nichtterminalsymbol noch ein Terminalsymbol.
 \newline
 \newline
 \newline
@@ -204,7 +204,7 @@ Die beiden indirekten Rekursionen der Nichtterminalsymbole \emph{DataDoList} und
     DoListRestOpt & id ExprList $|$ id EuqlExpr $|$ DataDoList
 \end{tabularx}
 \newpage
-Um diesen Punkt der Aufgabe \ref{sec:grammar-basics} zu lösen wurden die Optionen und Schleifen von innen nach außen aufgelöst und in eigene Nichtterminalsybole ausgelagert. Das ist notwendig, da das Regelwerk der formalen Sprachen diese Konstrukte nicht kennt und die Konstrukte Optionen und Schleifen in Oder Konstrukte umgewandelt werden müssen. Bsp.: [num, str] $\equiv$ $\epsilon$ $|$ num $|$ str
+Um diesen Punkt der Aufgabe \ref{sec:grammar-basics} zu lösen wurden die Optionen und Schleifen von innen nach außen aufgelöst und in eigene Nichtterminalsybole ausgelagert. Das ist notwendig, da das Regelwerk der formalen Sprachen diese Konstrukte nicht kennt und die Konstrukte Optionen und Schleifen in \emph{Oder} Konstrukte umgewandelt werden müssen. Bsp.: [num, str] $\equiv$ $\epsilon$ $|$ num $|$ str
 \newline
 \newline
 Ich halte die Schreibweise der Wirth'schen EBNF für lesbarer, da in dieser Schreibweise mehr Konstrukte wie Optionen und Schleifen zur Verfügung stehen und dadurch die Grammatik durch weniger Regeln definiert werden kann, was die Grammatik übersichtlicher macht.
@@ -223,9 +223,9 @@ Die Abbildung \ref{fig:syntaxtree} zeigt den Syntaxbaum des Satzes
 Es gibt für den gegebenen Satz nur einen Syntaxbaum, da es keine Möglichkeit gibt, den Satz mit der gegebenen Grammatik über andere Wege in einen anderen Syntaxbaum zu überführen. Das bedeutet aber nicht dass die Grammatik eindeutig ist, da es nötig wäre alle möglichen Sätze in alle ihre möglichen Syntaxbäume zu überführen, was mit der gegebenen Grammatik nicht möglich ist, da mit der gegebenen Grammatik unendliche viele Sätze erstellt werden können.
 \newpage
 
-\subsection{Konstruktion einer Grammatik}
-Dieser Abschnitt behandelt den Punkt e der Aufgabe \ref{sec:grammar-basics}.
-\subsubsection{Mit dem Regelsystem der formalen Sprachen}
+\section{Konstruktion einer Grammatik}
+Dieser Abschnitt behandelt die Aufgabe 2 der ersten Übung.
+\subsection{Mit dem Regelsystem der formalen Sprachen}
 In diesem Abschnitt wird die Grammatik mit dem Regelsystem der formalen Sprachen angeführt.
 \newline
 \newline
@@ -238,8 +238,8 @@ In diesem Abschnitt wird die Grammatik mit dem Regelsystem der formalen Sprachen
 	AllIntegerOpt     & $\epsilon$ $|$ AllInteger $|$ AllIntegerOpt\\
 \end{tabularx}
 
-\subsubsection{Mit der Wirth'schen EBNF}
-In diesem Abschnitt wird die Grammatik mit der With'schen EBNF angeführt.
+\subsection{Mit der Wirth'schen EBNF}
+Dieser Abschnitt wird die Grammatik mit der With'schen EBNF angeführt.
 \newline
 \newline
 \begin{tabularx}{\textwidth}{p{100pt} @{= \hspace{10pt}} X}
@@ -250,7 +250,91 @@ In diesem Abschnitt wird die Grammatik mit der With'schen EBNF angeführt.
 \newline
 \newline
 
+% Section Oo-implementation of an grammar
+\section {Oo-Implementierung von Grammatiken}
+\label{sec:oo-grammar-impl}
+Dieser Abschnitt behandelt die Aufgabe 3 der ersten Übung.
+\subsection{\emph{Grammar *epsilonFreeGrammarOf(Grammar *grammar)}}
+\label{sec:epsilon-free-grammar-subsc}
+Die Implementierung erfolgte in den Quelltextdateien \emph{GrammarUtil.hpp} und \emph{GrammarUtil.cpp} und wurde im Namensraum \emph{GrammarUtil} organisiert.
+\subsubsection{Quelltexte}
+\begin{code}
+	\caption{GrammarUtil.hpp}
+	\cppSourceFile{\srcDir/GrammarUtil.hpp}
+\end{code}
+\begin{code}
+	\caption{GrammarUtil.cpp}
+	\label{source:grammar-util}
+	\cppSourceFile{\srcDir/GrammarUtil.cpp}
+\end{code}
+\ \newpage
 
+\subsubsection{Tests}
+Dieser Abschnitt behandelt die Tests der Implementierung aus dem Abschnitt \ref{sec:epsilon-free-grammar-subsc}.
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.80]{tests_epsilon_free_1.JPG}
+\caption{Epsilonfreie Grammatik der vorgegebenen Grammatik}
+\label{fig:hands-on-material-epsilon-free}
+\end{figure}
+\ \newline
+Die Tests aus Abbildung \ref{fig:hands-on-material-epsilon-free} zeigen die vorgegebenen Grammatik aus den Vorlesungsunterlagen und die epsilonfreie Variante dieser Grammatik. 
+
+\ \newpage
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.80]{tests_epsilon_free_2.JPG}
+\caption{Epsilonfreie Grammatik des Internetbeispiels}
+\label{fig:internet-epsilon-free}
+\end{figure}
+\ \newline
+Die Tests aus Abbildung \ref{fig:internet-epsilon-free} zeigen eine Grammatik, die im Internet unter folgender \emph{URL} \url{http://www.informatikseite.de/theorie/node43.php} gefunden werden kann und die epsilonfreie Variante dieser Grammatik. 
+\newpage
+
+\subsection{\emph{Language *generateLanguage(Grammar *g, int maxLen)}}
+\label{sec:generate-language-subsec}
+Alle möglichen Sätze der Sprache bis zur maximal erlaubten Länge, die durch die vorgegebene Grammatik möglich sind, werden in der Funktion \inlineCpp{derive(const Grammar *_grammar, int maxLength)} durch das Ermitteln aller möglichen Ableitungen bis zur erlaubten Satzlänge der Grammatik ermittelt.
+\newline
+\newline
+Die Sätze der Sprache bestehen aus Wiederholungen von \emph{ab}, \emph{ba} und Folgen von nur \emph{a} oder nur \emph{b}. Die Wiederholungen von \emph{ab} und \emph{ba} lassen sich schon aus der Grammatik aus den beiden Sequenzen \emph{bS} und \emph{aS} auslesen. 
+
+\subsubsection{Quelltexte}
+In diesem Abschnitt werden die Quelltextdateien der Implementierung angeführt. Die Implementierung erfolgte in den Quelltextdateien \emph{LanguageUtil.hpp}, \emph{LanguageUtil.cpp}, \emph{Language.hpp} und \emph{Language.hpp}.
+\begin{code}
+	\caption{Language.hpp}
+	\cppSourceFile{\srcDir/Language.hpp}
+\end{code}
+\begin{code}
+	\caption{Language.cpp}
+	\label{source:language}
+	\cppSourceFile{\srcDir/Language.cpp}
+\end{code}
+\begin{code}
+	\caption{LanguageUtil.hpp}
+	\cppSourceFile{\srcDir/LanguageUtil.hpp}
+\end{code}
+\begin{code}
+	\caption{LanguageUtil.cpp}
+	\cppSourceFile{\srcDir/LanguageUtil.cpp}
+\end{code}
+
+\subsubsection{Tests}
+Dieser Abschnitt behandelt die Tests der Implementierung aus dem Abschnitt \ref{sec:generate-language-subsec}.
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.75]{tests_generate_language_1.JPG}
+\caption{Tests der Generierung der Sprache}
+\label{fig:generate-tests-language}
+\end{figure}
+\ \newline
+Die Tests aus Abbildung \ref{fig:generate-tests-language} zeigen die generierte Sprache für die vorgegebene Grammatik. 
+\newpage
+
+\subsection{\emph{bool Language::hasSentence(Sequence *s) const}}
+Dieser Abschnitt behandelt die Implementierung der Klassenmethode \emph{hasSentence} für die Klasse \emph{Language}, die überprüft ob ein gegebener Satz ein Satz dieser Sprache ist. Die Implementierung ermittelt rekursiv ob ein Satz über Reduktion zum Satzsymbol reduziert werden kann. Kann ein Satz bis zum Satzsymbol reduziert werden, dann ist dieser Satz auch ein Satz dieser Sprache. Da der implementierte Algorithmus alle möglichen Reduktionen durchprobiert verschlechtert sich das Laufzeitverhalten dieser Methode erheblich je länger die Sätze sind.
+
+\subsubsection{Quelltexte}
+Die Quelltexte der Implementierung sind bereits in den Quelltexten \ref{source:language}[Language.cpp] und \ref{source:grammar-util}[GrammarUtil.cpp] angeführt.
 
 %\subsubsection{MainFX.java}
 %Diese Klasse stellt die Main Klasse für die JavaFX Applikation dar.
