@@ -9,27 +9,10 @@
 
 #endif
 
-
 using namespace std;
 
 // see: http://www.informatikseite.de/theorie/node43.php
 namespace GrammarUtil {
-
-    typedef struct _GrammarMetaData {
-    public:
-        int minLength = 0;
-        int maxLength = 0;
-    } GrammarMetadata;
-
-    NTSymbol reduceToNTSymbol(Sequence *sequence);
-
-    GrammarMetadata collectGrammarMetadata(const Grammar *_grammar);
-
-    set<NTSymbol *> findNTSymbolSForSequence(const Grammar *grammar, Sequence *_sequence);
-
-    Symbol *reduce(const Grammar *grammar, Sequence _sentence);
-
-    set<Sequence *> derive(const Grammar *grammar, Sequence* sentence);
 
     /**
      * Generates a epsilon free grammar of the this grammar.
@@ -38,4 +21,21 @@ namespace GrammarUtil {
      * @throw invalid_argument if an parameter is null
      */
     Grammar *epsilonFreeGrammarOf(const Grammar *_grammar);
+
+    /**
+     * Finds all NTSymbols the given sequence can be reduced to.
+     * @param grammar the related grammar
+     * @param _sequence the sequene to be tried to be reduced
+     * @return the set of found NTSymbols
+     */
+    set<NTSymbol *> findNTSymbolSForSequence(const Grammar *grammar, Sequence *_sequence);
+
+    /**
+     * Reduces the given sentences up to the root NTSymbol.
+     * @param grammar the related grammar
+     * @param _sentence the sentence to be reduced
+     * @return the last symbol which should be the root symbol of the grammar if the sentence
+     *          is a sentence of the grammar related language
+     */
+    Symbol *reduce(const Grammar *grammar, Sequence _sentence);
 }

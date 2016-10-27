@@ -39,7 +39,8 @@ bool Language::appendSentence(Sequence *_sentence) {
     if (_sentence == nullptr) {
         throw invalid_argument("Language::appendSentence: invalid nullptr for _sentence");
     } // if
-    return (hasSentence(_sentence)) ? insert(_sentence).second : false;
+
+    return (!containsSentence(_sentence)) ? insert(_sentence).second : false;
 } // Language::appendSentence
 
 bool Language::hasSentence(Sequence *_sentence) {
@@ -51,6 +52,16 @@ bool Language::hasSentence(Sequence *_sentence) {
 
     return ((ntSymbol != nullptr) && (this->grammar->root->name == ntSymbol->name));
 } // Language::hasSentence
+
+bool Language::containsSentence(Sequence *_sentence) {
+    for (Sequence *tmp : *this) {
+        if (*tmp == *_sentence) {
+            return true;
+        } // if
+    } // for
+
+    return false;
+} // Language::containsSentence
 //endregion
 
 //region Other stuff

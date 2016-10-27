@@ -14,6 +14,8 @@
 #endif
 
 namespace GrammarUtil {
+
+    //region Private Functions Definition
     /**
      * Transforms the the sequences of the given rule of an deletable NTSymbol.
      *
@@ -22,10 +24,9 @@ namespace GrammarUtil {
      * @throw invalid_argument if the given SequenceSet is a nullptr
      */
     set<Sequence *> *transformSequence(const SequenceSet *_oldSequences);
+    //endregion
 
-    void deriveRecursive(const Grammar *_grammar, Sequence _currentSentence, set<Sequence *> *_currentSentences,
-                         int maxLength);
-
+    //region Public Functions  Implementation
     Grammar *epsilonFreeGrammarOf(const Grammar *_grammar) {
         if (_grammar == nullptr) {
             throw invalid_argument("invalid nullptr for _grammar");
@@ -64,8 +65,55 @@ namespace GrammarUtil {
         return epsilonFreeGrammar;
     } // Grammar::epsilonFreeGrammarOf
 
+    set<NTSymbol *> findNTSymbolSForSequence(const Grammar *_grammar, Sequence *_sequence) {
+        if (_grammar == nullptr) {
+            throw invalid_argument("Language::reduceToNTSymbol: invalid nullptr for grammar");
+        } // if
+        if (_sequence == nullptr) {
+            throw invalid_argument("Language::reduceToNTSymbol: invalid nullptr for sentence");
+        } // if
+
+        set<NTSymbol *> result;
+        for (auto ruleIt = _grammar->rules.begin(); ruleIt != _grammar->rules.end(); ruleIt++) {
+            if (ruleIt->second.find(_sequence) != ruleIt->second.end()) {
+                result.insert(ruleIt->first);
+            } // if
+        } // for
+
+        return result;
+    } // Grammar::Rule findRuleForSequence
+
+
+    Symbol *reduce(const Grammar *grammar, Sequence _sentence) {
+        Symbol *result = nullptr;
+        if ((_sentence.length() == 1) && ((*_sentence.begin())->isNT())) {
+            result = *_sentence.begin();
+        }
+        for (int i = 0; i < _sentence.length(); ++i) {
+            for (int j = i; j < _sentence.length(); ++j) {
+                Sequence sequence;
+                sequence.insert(sequence.begin(), _sentence.begin() + i, _sentence.begin() + j + 1);
+
+                set<NTSymbol *> ntSymbols = findNTSymbolSForSequence(grammar, &sequence);
+                if (!ntSymbols.empty()) {
+                    for (auto foundSymbol: ntSymbols) {
+                        Sequence tmp(_sentence);
+                        tmp.erase(tmp.begin() + i, tmp.begin() + j + 1);
+                        tmp.insert(tmp.begin() + i, foundSymbol);
+                        result = reduce(grammar, tmp);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+    //endregion
+
+    //region Private Functions Implementation
     /**
      * Transforms the the sequences of the given rule of an deletable NTSymbol.
+     *
      * @param _oldSequences the sequences of the old rule
      * @return the tranformed rule
      * @throw invalid_argument if the given set is a nullptr
@@ -163,94 +211,5 @@ namespace GrammarUtil {
 
         return transformedSet;
     }
-
-    GrammarMetadata collectGrammarMetadata(const Grammar *_grammar) {
-        if (_grammar == nullptr) {
-            throw invalid_argument("Language::reduceToNTSymbol: invalid nullptr for _grammar");
-        } // if
-        GrammarMetadata result;
-        result.minLength = -1;
-        for (auto ruleIt = _grammar->rules.begin(); ruleIt != _grammar->rules.end(); ruleIt++) {
-            for (auto sequenceIt = ruleIt->second.begin(); sequenceIt != ruleIt->second.end(); sequenceIt++) {
-                const int curLength = (*sequenceIt)->length();
-                if (result.maxLength < curLength) {
-                    result.maxLength = curLength;
-                }
-                if ((result.minLength == -1)
-                    || (result.minLength > curLength)) {
-                    result.minLength = curLength;
-                }
-            } // for
-        } // for
-
-        return result;
-    } // GrammarMetadata collectGrammarMetadata
-
-    set<NTSymbol *> findNTSymbolSForSequence(const Grammar *_grammar, Sequence *_sequence) {
-        if (_grammar == nullptr) {
-            throw invalid_argument("Language::reduceToNTSymbol: invalid nullptr for grammar");
-        } // if
-        if (_sequence == nullptr) {
-            throw invalid_argument("Language::reduceToNTSymbol: invalid nullptr for sentence");
-        } // if
-
-        set<NTSymbol *> result;
-        for (auto ruleIt = _grammar->rules.begin(); ruleIt != _grammar->rules.end(); ruleIt++) {
-            if (ruleIt->second.find(_sequence) != ruleIt->second.end()) {
-                result.insert(ruleIt->first);
-            } // if
-        } // for
-
-        return result;
-    } // Grammar::Rule findRuleForSequence
-
-
-    Symbol *reduce(const Grammar *grammar, Sequence _sentence) {
-        Symbol *result = nullptr;
-        if ((_sentence.length() == 1) && ((*_sentence.begin())->isNT())) {
-            result = *_sentence.begin();
-        }
-        for (int i = 0; i < _sentence.length(); ++i) {
-            for (int j = i; j < _sentence.length(); ++j) {
-                Sequence sequence;
-                sequence.insert(sequence.begin(), _sentence.begin() + i, _sentence.begin() + j + 1);
-
-                set<NTSymbol *> ntSymbols = findNTSymbolSForSequence(grammar, &sequence);
-                if (!ntSymbols.empty()) {
-                    for (auto foundSymbol: ntSymbols) {
-                        Sequence tmp(_sentence);
-                        tmp.erase(tmp.begin() + i, tmp.begin() + j + 1);
-                        tmp.insert(tmp.begin() + i, foundSymbol);
-                        result = reduce(grammar, tmp);
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
-    set<Sequence *> derive(const Grammar *grammar, Sequence sentence) {
-        set<Sequence *> sentences;
-    }
-
-    void deriveRecursive(const Grammar *_grammar,
-                         NTSymbol *_currentSymbol,
-                         Sequence _currentSentence,
-                         set<Sequence *> sentences,
-                         int maxLength) {
-        if (_currentSentence.hasTerminalsOnly()) {
-            sentences.insert(&_currentSentence);
-            return;
-        } else if (_currentSentence.length() >= maxLength) {
-            return;
-        }
-
-        auto rule = _grammar->rules.find(_currentSymbol);
-        if (rule != _grammar->rules.end()) {
-
-        }
-
-
-    }
+    //endregion
 }

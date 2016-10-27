@@ -22,4 +22,12 @@ namespace LanguageUtil {
      * @return the generatd language
      */
     Language *generateLanguage(Grammar *grammar, int maxLength);
+
+    /**
+     * Derives the given grammar to all sentences with TSymbols only up to maxLength.
+     * @param _grammar the grammar to derive sentences for
+     * @param maxLength the maximum length of the sentences to derive
+     * @return the set of all possible sentences
+     */
+    set<Sequence *> derive(const Grammar *_grammar, int maxLength);
 }

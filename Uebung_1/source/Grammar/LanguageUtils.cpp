@@ -12,21 +12,21 @@
 #endif
 
 namespace LanguageUtil {
-/**
-     * Generates the language with recursion and builds all sentences up to maxLength.
-     * This function does not validate the maxLength, the curLength and the the grammar.
-     * Make sure the calls are save to this function
+
+    //region Private Functions Definition
+    /**
+     * Derives the given grammar recursively to all possible sentences with TSymbols only up to maxLength.
      *
-     * @param _grammar the grammar to generate sentences for
-     * @param _language the language to append generated sentences too
-     * @param _maxLength the max length of the to generate sentences
-     * @param _curLength the current length of the in the invocation generated sentence length
-     * @return the generated language
+     * @param _grammar the grammar to get sentences up to maxLenth for the language of the grammar
+     * @param _currentSentence the current sentence to derive
+     * @param sentences the sentences set holding all TSymbols sentences only
+     * @param maxLength the maximum length of the sentences
      */
-    set<Sequence *> *
-    generateLanguageRecursive(Grammar *_grammar, set<Sequence *> *current, int _maxLength, int _curLength);
+    void deriveRecursive(const Grammar *_grammar, Sequence _currentSentence, set<Sequence *> *sentences,
+                         const int maxLength);
+    //endregion
 
-
+    //region Public Functions Implementation
     Language *generateLanguage(Grammar *_grammar, int _maxLength) {
         if (_grammar == nullptr) {
             throw invalid_argument("GrammarUtil::Language *generateLanguage: invalid nullptr for grammar");
@@ -35,48 +35,52 @@ namespace LanguageUtil {
             throw invalid_argument("GrammarUtil::Language *generateLanguage: maxLength must be greater than zero");
         } // if
 
-        set<Sequence *> *result = generateLanguageRecursive(_grammar, nullptr, _maxLength, -1);
+        set<Sequence *> result = derive(_grammar, _maxLength);
         Language *language = new Language(_grammar);
-        for (Sequence *sequence : *result) {
-            language->appendSentence(sequence);
-        }
+        for (Sequence *sequence : result) {
+            if (!language->appendSentence(sequence)) {
+                delete (sequence);
+            } // if
+        } // for
         return language;
     } // Language *generateLanguage
 
-    set<Sequence *> *
-    generateLanguageRecursive(Grammar *_grammar, set<Sequence *> *current, int _maxLength, int _curLength) {
-        set<Sequence *> generatedSentences;
-        // initialize
-        if (current == nullptr) {
-            current = new set<Sequence *>();
-            // Empty sentence always part of language
-            current->insert(new Sequence());
-            for (auto it = _grammar->vT.begin(); it != _grammar->vT.end(); it++) {
-                current->insert(new Sequence(SymbolPool::getInstance()->tSymbol((*it)->name)));
-            } // for
-        }
-            // Generate sentences
-        else {
-            for (auto it = _grammar->vT.begin(); it != _grammar->vT.end(); it++) {
-                for (auto sentenceIt = current->begin(); sentenceIt != current->end(); sentenceIt++) {
-                    if ((*sentenceIt)->length() == _curLength) {
-                        Sequence *sentence = new Sequence(**sentenceIt);
-                        sentence->appendSymbol(*it);
-                        if (!generatedSentences.insert(sentence).second) {
-                            cout << "declined: " << *sentence << endl;
-                            delete (sentence);
-                        }
-                    }
-                } // for
-            } // for
-        } // if
+    set<Sequence *> derive(const Grammar *_grammar, int maxLength) {
+        set<Sequence *> sentences;
+        Sequence sentence(_grammar->root);
+        deriveRecursive(_grammar, sentence, &sentences, maxLength);
+        return sentences;
+    } // set<Sequence *> derive
+    //endregion
 
-        current->insert(generatedSentences.begin(), generatedSentences.end());
+    //region Private Functions Implementation
+    void deriveRecursive(const Grammar *_grammar, Sequence _currentSentence, set<Sequence *> *sentences,
+                         const int maxLength) {
         // anchor
-        if (_maxLength == _curLength) {
-            return current;
+        if (_currentSentence.hasTerminalsOnly()) {
+            if (_currentSentence.length() <= maxLength) {
+                sentences->insert(new Sequence(_currentSentence));
+            }
+            return;
+        } else if (_currentSentence.length() > maxLength) {
+            return;
         } // if
 
-        return generateLanguageRecursive(_grammar, current, _maxLength, (_curLength + 1));
-    } // Language *generateLanguageRecursive
+        for (int i = 0; i < _currentSentence.length(); i++) {
+            Symbol *symbol = _currentSentence[i];
+            if (symbol->isNT()) {
+                auto const rule = _grammar->rules.find((NTSymbol *) symbol);
+                if (rule != _grammar->rules.end()) {
+                    for (const auto sequence : rule->second) {
+                        Sequence newSentence;
+                        newSentence.insert(newSentence.begin(), _currentSentence.begin(), _currentSentence.begin() + i);
+                        newSentence.insert(newSentence.end(), sequence->begin(), sequence->end());
+                        newSentence.insert(newSentence.end(), _currentSentence.begin() + i + 1, _currentSentence.end());
+                        deriveRecursive(_grammar, newSentence, sentences, maxLength);
+                    } // for
+                } // if
+            } // if
+        } // for
+    } // void deriveRecursive
+    //endregion
 }

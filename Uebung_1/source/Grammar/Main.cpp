@@ -108,9 +108,7 @@ int main(int argc, char *argv[]) {
 
 #elif TESTCASE == 4
         cout << "--------------------------------------------" << endl
-             << "--------------------------------------------" << endl
              << "Grammar transformation tests" << endl
-             << "--------------------------------------------" << endl
              << "--------------------------------------------" << endl;
         // Grammar from the presentation
         g = new Grammar(
@@ -131,8 +129,7 @@ int main(int argc, char *argv[]) {
                  << "--------------------------------------------" << endl
                  << "Epsilon free grammar from the presentation " << endl
                  << "--------------------------------------------" << endl
-                 << *epsFreeG << endl
-                 << "--------------------------------------------" << endl
+                 << *epsFreeG
                  << "--------------------------------------------" << endl << endl;
             delete (epsFreeG);
         }
@@ -159,17 +156,14 @@ int main(int argc, char *argv[]) {
                  << "--------------------------------------------" << endl
                  << "Epsilon free grammar from the internet " << endl
                  << "--------------------------------------------" << endl
-                 << *epsFreeG << endl
-                 << "--------------------------------------------" << endl
+                 << *epsFreeG
                  << "--------------------------------------------" << endl << endl;
             delete (epsFreeG);
         }
         delete (g);
 
         cout << "--------------------------------------------" << endl
-             << "--------------------------------------------" << endl
              << "Language generation tests" << endl
-             << "--------------------------------------------" << endl
              << "--------------------------------------------" << endl;
         g = new Grammar(
                 "G(S):                          \n\
@@ -177,40 +171,11 @@ int main(int argc, char *argv[]) {
                  A -> a | a S  | b A A          \n\
                  B -> b | b S | a B B              ");
         g->identifyDeletableNTs();
-        Language *language = LanguageUtil::generateLanguage(g, 3);
+        Language *language = LanguageUtil::generateLanguage(g, 6);
         cout << *g << endl
              << (*language) << endl;
         delete (language);
-
-//        Language *language2 = new Language(g);
-//        Sequence *sentence = new Sequence(4,
-//                                          sp->tSymbol("a"),
-//                                          sp->tSymbol("b"),
-//                                          sp->tSymbol("a"),
-//                                          sp->tSymbol("b"));
-//        cout << language2->hasSentence(sentence) << ": '" << *sentence << "'" << endl;
-//        language2->appendSentence(sentence);
-//
-//        delete (sentence);
-//        sentence = new Sequence(2,
-//                                sp->tSymbol("a"),
-//                                sp->tSymbol("b"));
-//        cout << language2->hasSentence(sentence) << ": '" << *sentence << "'" << endl;
-//        language2->appendSentence(sentence);
-//
-//        delete (sentence);
-//        sentence = new Sequence(4,
-//                                sp->tSymbol("b"),
-//                                sp->tSymbol("b"),
-//                                sp->tSymbol("a"),
-//                                sp->tSymbol("a"));
-//        cout << language2->hasSentence(sentence) << ": '" << *sentence << "'" << endl;
-//        language2->appendSentence(sentence);
-//
-//        cout << *language2 <<endl;
-////        delete (sentence);
-//        delete (g);
-//        delete (language2);
+        delete (g);
 
 
 #else // none of the TESTCASEs above

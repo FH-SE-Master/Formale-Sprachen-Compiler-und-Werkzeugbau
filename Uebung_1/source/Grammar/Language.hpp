@@ -12,6 +12,9 @@
 
 using namespace std;
 
+/**
+ * Orders the sequences ascending by the symbol length
+ */
 struct LessSequenceComparator {
     bool operator()(const Sequence *seq1, const Sequence *seq2) const;
 }; // LessSequenceComparator
@@ -66,6 +69,20 @@ public:
      * @throws invalid_argument if the seuqnece object is null
      */
     bool hasSentence(Sequence *_sentence);
+
+    /**
+     * Answers the question if a sentence represented by the given sequence is already part of this language instance
+     * @param _sentence the pointer to the sequence object
+     * @return true if sentece already registered in language, false otherwise
+     */
+    bool containsSentence(Sequence *_sentence);
 };
 
+/**
+ * The outstream operator implementation.
+ *
+ * @param os the current ouput stream
+ * @param language the language object to be put on stream
+ * @return the manipulated output stream
+ */
 std::ostream &operator<<(std::ostream &os, const Language &language);
