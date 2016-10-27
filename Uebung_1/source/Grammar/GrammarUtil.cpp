@@ -23,6 +23,9 @@ namespace GrammarUtil {
      */
     set<Sequence *> *transformSequence(const SequenceSet *_oldSequences);
 
+    void deriveRecursive(const Grammar *_grammar, Sequence _currentSentence, set<Sequence *> *_currentSentences,
+                         int maxLength);
+
     Grammar *epsilonFreeGrammarOf(const Grammar *_grammar) {
         if (_grammar == nullptr) {
             throw invalid_argument("invalid nullptr for _grammar");
@@ -225,5 +228,29 @@ namespace GrammarUtil {
         }
 
         return result;
+    }
+
+    set<Sequence *> derive(const Grammar *grammar, Sequence sentence) {
+        set<Sequence *> sentences;
+    }
+
+    void deriveRecursive(const Grammar *_grammar,
+                         NTSymbol *_currentSymbol,
+                         Sequence _currentSentence,
+                         set<Sequence *> sentences,
+                         int maxLength) {
+        if (_currentSentence.hasTerminalsOnly()) {
+            sentences.insert(&_currentSentence);
+            return;
+        } else if (_currentSentence.length() >= maxLength) {
+            return;
+        }
+
+        auto rule = _grammar->rules.find(_currentSymbol);
+        if (rule != _grammar->rules.end()) {
+
+        }
+
+
     }
 }

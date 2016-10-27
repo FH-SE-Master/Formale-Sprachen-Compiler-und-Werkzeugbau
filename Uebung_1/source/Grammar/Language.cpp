@@ -39,7 +39,7 @@ bool Language::appendSentence(Sequence *_sentence) {
     if (_sentence == nullptr) {
         throw invalid_argument("Language::appendSentence: invalid nullptr for _sentence");
     } // if
-    return insert(_sentence).second;
+    return (hasSentence(_sentence)) ? insert(_sentence).second : false;
 } // Language::appendSentence
 
 bool Language::hasSentence(Sequence *_sentence) {

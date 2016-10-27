@@ -3,6 +3,7 @@
 //
 #ifndef _INCLUDES_LANGUAGE_UTILS_HPP
 #define _INCLUDES_LANGUAGE_UTILS_HPP
+
 #include "Grammar.h"
 #include "string"
 
@@ -27,6 +28,8 @@ namespace GrammarUtil {
     set<NTSymbol *> findNTSymbolSForSequence(const Grammar *grammar, Sequence *_sequence);
 
     Symbol *reduce(const Grammar *grammar, Sequence _sentence);
+
+    set<Sequence *> derive(const Grammar *grammar, Sequence* sentence);
 
     /**
      * Generates a epsilon free grammar of the this grammar.

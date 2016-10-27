@@ -177,20 +177,40 @@ int main(int argc, char *argv[]) {
                  A -> a | a S  | b A A          \n\
                  B -> b | b S | a B B              ");
         g->identifyDeletableNTs();
-        Language *language = LanguageUtil::generateLanguage(g, 6);
+        Language *language = LanguageUtil::generateLanguage(g, 3);
         cout << *g << endl
              << (*language) << endl;
-
-        delete (g);
         delete (language);
 
-//        Sequence *sentence = new Sequence(5,
-//                                          sp->tSymbol("a"),
-//                                          sp->tSymbol("b"),
+//        Language *language2 = new Language(g);
+//        Sequence *sentence = new Sequence(4,
 //                                          sp->tSymbol("a"),
 //                                          sp->tSymbol("b"),
 //                                          sp->tSymbol("a"),
 //                                          sp->tSymbol("b"));
+//        cout << language2->hasSentence(sentence) << ": '" << *sentence << "'" << endl;
+//        language2->appendSentence(sentence);
+//
+//        delete (sentence);
+//        sentence = new Sequence(2,
+//                                sp->tSymbol("a"),
+//                                sp->tSymbol("b"));
+//        cout << language2->hasSentence(sentence) << ": '" << *sentence << "'" << endl;
+//        language2->appendSentence(sentence);
+//
+//        delete (sentence);
+//        sentence = new Sequence(4,
+//                                sp->tSymbol("b"),
+//                                sp->tSymbol("b"),
+//                                sp->tSymbol("a"),
+//                                sp->tSymbol("a"));
+//        cout << language2->hasSentence(sentence) << ": '" << *sentence << "'" << endl;
+//        language2->appendSentence(sentence);
+//
+//        cout << *language2 <<endl;
+////        delete (sentence);
+//        delete (g);
+//        delete (language2);
 
 
 #else // none of the TESTCASEs above
