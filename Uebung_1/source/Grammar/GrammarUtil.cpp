@@ -183,7 +183,7 @@ namespace GrammarUtil {
         return result;
     } // GrammarMetadata collectGrammarMetadata
 
-    NTSymbol *findNTSymbolForSequence(const Grammar *_grammar, Sequence *_sequence) {
+    set<NTSymbol *> findNTSymbolSForSequence(const Grammar *_grammar, Sequence *_sequence) {
         if (_grammar == nullptr) {
             throw invalid_argument("Language::reduceToNTSymbol: invalid nullptr for grammar");
         } // if
@@ -191,12 +191,39 @@ namespace GrammarUtil {
             throw invalid_argument("Language::reduceToNTSymbol: invalid nullptr for sentence");
         } // if
 
+        set<NTSymbol *> result;
         for (auto ruleIt = _grammar->rules.begin(); ruleIt != _grammar->rules.end(); ruleIt++) {
             if (ruleIt->second.find(_sequence) != ruleIt->second.end()) {
-                return ruleIt->first;
+                result.insert(ruleIt->first);
             } // if
         } // for
 
-        return nullptr;
+        return result;
     } // Grammar::Rule findRuleForSequence
+
+
+    Symbol *reduce(const Grammar *grammar, Sequence _sentence) {
+        Symbol *result = nullptr;
+        if ((_sentence.length() == 1) && ((*_sentence.begin())->isNT())) {
+            result = *_sentence.begin();
+        }
+        for (int i = 0; i < _sentence.length(); ++i) {
+            for (int j = i; j < _sentence.length(); ++j) {
+                Sequence sequence;
+                sequence.insert(sequence.begin(), _sentence.begin() + i, _sentence.begin() + j + 1);
+
+                set<NTSymbol *> ntSymbols = findNTSymbolSForSequence(grammar, &sequence);
+                if (!ntSymbols.empty()) {
+                    for (auto foundSymbol: ntSymbols) {
+                        Sequence tmp(_sentence);
+                        tmp.erase(tmp.begin() + i, tmp.begin() + j + 1);
+                        tmp.insert(tmp.begin() + i, foundSymbol);
+                        result = reduce(grammar, tmp);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
 }

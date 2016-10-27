@@ -55,11 +55,11 @@ namespace LanguageUtil {
                     if ((*sentenceIt)->length() == _curLength) {
                         Sequence *sentence = new Sequence(**sentenceIt);
                         sentence->appendSymbol(*it);
-//                        if (_language->hasSentence(sentence)) {
+                        if (_language->hasSentence(sentence)) {
                             if (generatedSentences.insert(sentence).second) {
                                 continue;
                             }
-//                        }
+                        }
                         delete (sentence);
                     }
                 } // for

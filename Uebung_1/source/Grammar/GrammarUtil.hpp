@@ -24,7 +24,9 @@ namespace GrammarUtil {
 
     GrammarMetadata collectGrammarMetadata(const Grammar *_grammar);
 
-    NTSymbol *findNTSymbolForSequence(const Grammar *grammar, Sequence *_sequence);
+    set<NTSymbol *> findNTSymbolSForSequence(const Grammar *grammar, Sequence *_sequence);
+
+    Symbol *reduce(const Grammar *grammar, Sequence _sentence);
 
     /**
      * Generates a epsilon free grammar of the this grammar.
