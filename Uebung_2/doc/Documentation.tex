@@ -119,18 +119,61 @@ Folgende Ableitung beweist, dass der Satz $-v * (v + v / v)$ ein Satz der Sprach
 Folgende Reduktion beweist das der Satz $((v + v) * v / v) - (v / v)$ ein Satz der Sprache ist, die durch die vorgegebene Grammatik definiert ist.
 \subsubsection{Linkskanonische Reduktion}
 \begin{tabularx}{\textwidth}{p{120pt} @{$\xvdash{L}$ \hspace{10pt}} X}
-$((\underline{v} + v) * v / v) - (v / v)$ & $((\underline{F} + v) * v / v) - (v / v)$ \\                       
+                  & $((\underline{v} + v) * v / v) - (v / v)$ \\
+                  & $((\underline{F} + v) * v / v) - (v / v)$ \\                       
                   & $((\underline{T} + v) * v / v) - (v / v)$ \\                       
                   & $((E + \underline{v}) * v / v) - (v / v)$ \\
+                  & $((E + \underline{F}) * v / v) - (v / v)$ \\
                   & $((\underline{E + T}) * v / v) - (v / v)$ \\
-                  & $((\underline{E}) * v / v) - (v / v)$ \\
-                  & $((\underline{F}) * v / v) - (v / v)$ \\
-                  & $((\underline{T}) * v / v) - (v / v)$ \\
-                  & $(E * v / v) - (v / v)$ \\
+                  & $ (\underline{(E}) * v / v) - (v / v)$ \\
+                  & $ (\underline{F} * v / v) - (v / v)$ \\
+                  & $ (T * \underline{v} / v) - (v / v)$ \\
+                  & $ (\underline{T * F} / v) - (v / v)$ \\
+                  & $ (T / \underline{v}) - (v / v)$ \\
+                  & $ (\underline{T / F}) - (v / v)$ \\
+                  & $ (\underline{T}) - (v / v)$ \\
+                  & $ (\underline{E}) - (v / v)$ \\
+                  & $ \underline{F} - (v / v)$ \\
+                  & $ \underline{T} - (v / v)$ \\
+                  & $ E - (\underline{v} / v)$ \\
+                  & $ E - (\underline{F} / v)$ \\
+                  & $ E - (\underline{T} / v)$ \\
+                  & $ E - (\underline{T / F})$ \\
+                  & $ E - (\underline{T})$ \\
+                  & $ E - (\underline{E})$ \\
+                  & $ E - \underline{F}$ \\
+                  & $ \underline{E - T}$ \\
+                  & $ E $ \\
 \end{tabularx}
-// TODO: Finished reduction
+
 \subsubsection{Rechtskanonische Reduktion}
-// TODO: Implement reduction
+\begin{tabularx}{\textwidth}{p{120pt} @{$\xvdash{R}$ \hspace{10pt}} X}
+                  & $((v + v) * v / v) - (v / \underline{v})$ \\
+                  & $((v + v) * v / v) - (\underline{v} / F)$ \\                       
+                  & $((v + v) * v / v) - (\underline{F} / F)$ \\                       
+                  & $((v + v) * v / v) - (\underline{T / F})$ \\
+                  & $((v + v) * v / v) - (\underline{T})$ \\
+                  & $((v + v) * v / v) - \underline{(E)}$ \\
+                  & $((v + v) * v / v) - \underline{F}$ \\
+                  & $((v + v) * v / \underline{v}) - T$ \\
+                  & $((v + v) * \underline{v} / F) - T$ \\
+                  & $((v + \underline{v}) * F / F) - T$ \\
+                  & $((v + \underline{F}) * F / F) - T$ \\
+                  & $((\underline{v} + T) * F / F) - T$ \\
+                  & $((\underline{F} + T) * F / F) - T$ \\
+                  & $((\underline{T} + T) * F / F) - T$ \\
+                  & $((\underline{E + T}) * F / F) - T$ \\
+                  & $((\underline{E}) * F / F) - T$ \\
+                  & $(\underline{F} * F / F) - T$ \\
+                  & $(\underline{T * F} / F) - T$ \\
+                  & $(\underline{T / F}) - T$ \\
+                  & $(\underline{T}) - T$ \\
+                  & $(\underline{E}) - T$ \\
+                  & $\underline{F} - T$ \\
+                  & $\underline{T} - T$ \\
+                  & $\underline{E - T}$ \\
+                  & $ E $ \\
+\end{tabularx}
 
 \section{Mehrdeutigkeit, Beschreibung und Schreibweise}
 \subsection{Mehrdeutigkeit der Grammatik}
@@ -143,6 +186,7 @@ Folgendes Beispiel zeigt das die vorgegebene Grammatik für den Satz $+ 1.5$ meh
 \caption{Syntaxbaum 1}
 \label{fig:syntaxtree}
 \end{figure}
+\ \newpage
 
 \begin{figure}[h]
 \centering
@@ -150,6 +194,18 @@ Folgendes Beispiel zeigt das die vorgegebene Grammatik für den Satz $+ 1.5$ meh
 \caption{Syntaxbaum 2}
 \label{fig:syntaxtree}
 \end{figure}
+\ \newline
+
+
+\begin{tabularx}{\textwidth}{p{120pt} @{$\Rightarrow$ \hspace{10pt}} X}
+real  & mant $|$ mant exp \\
+mant  & sign int $|$ sign int . frac \\
+int   & n $|$ int n\\
+frac  & n $|$ frac n \\
+sign  & + $|$ - \\
+exp   & E sign int \\
+n     & 0 $|$ 1 $|$ 2 $|$ 3 $|$ 4 $|$ 5 $|$ 6 $|$ 7 $|$ 8 $|$ 9 $|$  $\epsilon$  \\
+\end{tabularx}
 
 \subsection{Grammatik mit Wirth'scher Schreibweise}
 Folgende Grammatik ist die vorgegebene Grammatik in der Wirth'schen Schreibweise.
@@ -170,6 +226,8 @@ G = [\enquote{+} $|$ \enquote{+}] n \{n\} [\enquote{.} \{n\} ] [\enquote{E} [\en
 Folgende Grammatik wurde aus dem Automaten abgeleitet. Diese Grammatik muss aber noch angepasst werden, denn die Regel S $\rightarrow \epsilon$ ist in einer regulären Grammatik nicht gültig.
 \newline
 \newline
+Die folgende Grammatik 
+\newline
 \begin{tabularx}{\textwidth}{p{20pt} @{$\rightarrow$ \hspace{10pt}} X}
 E & Ab $|$ Bb \\                      
 A & Ab $|$ \sout{S}b \\
@@ -177,19 +235,26 @@ B & \sout{S}a $|$ Ca \\
 C & Bb        \\
 \sout{S} & \sout{$\epsilon$}\\ 
 \end{tabularx}
+\ \newline
+wird umgeformt zu
 \newline
 \newline
-
 \begin{tabularx}{\textwidth}{p{20pt} @{$\rightarrow$ \hspace{10pt}} X}
 E & Ab $|$ Bb \\                      
 A & Ab $|$ b  \\
 B & a $|$ Ca  \\
 C & Bb        \\ 
 \end{tabularx}
-\newline
-\newline
+
 
 \subsection{Umgekehrte reguläre Grammatik}
+Die folgende Auflistung zeigt die drei regulären Ausdrücke, welche die Grammatik aus der Aufgabenstellung 3 beschreiben.
+\newline
+\begin{enumerate}
+	\item $\epsilon+$
+	\item $bb*b+$
+	\item $a(ba)*b$
+\end{enumerate}
 
 \subsection{Regulärer Ausdruck der Grammatik}
 Folgender regulärer Ausdruck beschreibt die Grammatik aus der Aufgabenstellung 3.
@@ -197,4 +262,71 @@ Folgender regulärer Ausdruck beschreibt die Grammatik aus der Aufgabenstellung 
 \newline
 $L = \epsilon + bb*b + a(ba)* b$
 
+\section{Bezeichner in der Programmiersprache Ada}
+Dieser Abschnitt beschäftigt sich mit der Aufgabenstellung 4 der dritten Übung.
+
+\subsection{Reguälre Grammatik}
+\begin{figure}[h]
+\centering
+\includegraphics[scale=1]{ada_state_machine.JPG}
+\caption{Ada reguläre Grammatik}
+\label{fig:ada-state-machine}
+\end{figure}
+
+\begin{tabularx}{\textwidth}{p{20pt} @{$\rightarrow$ \hspace{10pt}} X}
+S & lE $|$ l \\                      
+E & lE $|$ dE $|$ $"\_"$U $|$ l $|$ d \\
+U & lE $|$ dE $|$ l $|$ d \\
+\end{tabularx}
+
+\subsection{Umgekehrte reguläre Grammatik}
+\begin{tabularx}{\textwidth}{p{20pt} @{$\rightarrow$ \hspace{10pt}} X}
+E & El $|$ Ed $|$ Ul $|$ Ud $|$ l \\                      
+U & E$"\_"$ \\
+\end{tabularx}
+
+\subsection{Regulärer Ausdruck}
+$l((l+d) + (\_(l+d))*$
+
+\section{Transformation der Darstellungsformen der regulären Sprachen}
+\subsection{Reguälre Grammatik}
+\begin{figure}[h]
+\centering
+\includegraphics[scale=1]{transformed_regular_exp.JPG}
+\caption{Nicht deterministischer Zustandsautomat des transformierten Ausdrucks}
+\label{fig:ada-state-machine}
+\end{figure}
+\ \newline
+\textbf{Zustandsüberführungsfunktion}
+\newline
+\begin{tabularx}{10cm}{p{30pt} XX}
+    & a & b \\
+ S  & \{A,B\} & \{D\} \\
+ A  & \{A\} & \{\} \\
+ B  & \{\} & \{C\} \\
+ C  & \{B\} & \{D\} \\
+ D  & \{E\} & \{\} \\
+ E  & \{\} & \{D\} \\
+\end{tabularx}
+\ \newline
+\newline
+\newline
+\textbf{transformierte Zustandsüberführungsfunktion}
+\newline
+\begin{tabularx}{10cm}{p{30pt} XX}
+    & a & b \\
+ S        & \{A,B\} & \{D\} \\
+ \{A,B\}  & \{A\} & \{C\} \\
+ A        & \{A\} & \{\} \\
+ B        & \{\} & \{C\} \\
+ C        & \{B\} & \{D\} \\
+ D        & \{E\} & \{\} \\
+ E        & \{\} & \{D\} \\
+\end{tabularx}
+\begin{figure}[h]
+\centering
+\includegraphics[scale=1]{transformed_regular_exp_determeneistic.JPG}
+\caption{Deterministischer Zustandsautomat des transformierten Ausdrucks}
+\label{fig:ada-state-machine}
+\end{figure}
 \end{document}
