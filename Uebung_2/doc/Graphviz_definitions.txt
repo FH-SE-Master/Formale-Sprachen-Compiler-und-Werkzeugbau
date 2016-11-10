@@ -65,3 +65,19 @@ digraph finite_state_machine {
         D -> E  [ label = "a" ];
         E -> D  [ label = "b" ];
 }
+
+-- 0 1 chains mod 3 == 0
+digraph finite_state_machine {
+	rankdir=LR;
+	size="8,5"
+	node [shape = doublecircle]; R0;
+	node [shape = circle] R1 R2;
+	node [shape = point] START;
+        START -> R0
+	R0   -> R0 [label = "0"];
+	R0   -> R1 [label = "1"];
+	R1   -> R0 [label = "1"];
+	R1   -> R2 [label = "0"];
+	R2   -> R1 [label = "0"];
+	R2   -> R2 [label = "1"];
+}

@@ -94,10 +94,11 @@
 
 % Section gramar and basics 
 \section {Kanonische Ableitung und Reduktion}
-\label{sec:derive}
+\label{sec:derive-and-reduce}
 Dieser Abschnitt behandelt die Aufgabe 1 der zweiten Übung.
+
 \subsection{Rechtskanonische Ableitung}
-Folgende Ableitung beweist, dass der Satz $-v * (v + v / v)$ ein Satz der Sprache ist, die durch die gegebene Grammatik definiert ist.
+Folgende rechtskanonische Ableitung beweist, dass der Satz $-v * (v + v / v)$ ein Satz der Sprache ist, die durch die gegebene Grammatik definiert ist.
 \newline
 \newline
 \begin{tabularx}{\textwidth}{p{20pt} @{$\xRightarrow{L}$ \hspace{10pt}} X}
@@ -115,9 +116,32 @@ Folgende Ableitung beweist, dass der Satz $-v * (v + v / v)$ ein Satz der Sprach
 	         & $- v * (v + v / \underline{F})$\\
 	         & $- v * (v + v / v)$\\
 \end{tabularx}
-\subsection{Kanonische Reduktion}
-Folgende Reduktion beweist das der Satz $((v + v) * v / v) - (v / v)$ ein Satz der Sprache ist, die durch die vorgegebene Grammatik definiert ist.
+
+\subsection{Linkskanonische Ableitung}
+Folgende linkskanonische Ableitung beweist, dass der Satz $-v * (v + v / v)$ ein Satz der Sprache ist, die durch die gegebene Grammatik definiert ist.
+\newline
+\newline
+\begin{tabularx}{\textwidth}{p{20pt} @{$\xRightarrow{L}$ \hspace{10pt}} X}
+	$E$      & $\underline{-T}$ \\
+	         & $T * \underline{F}$\\
+	         & $T * (\underline{E})$\\
+	         & $T * (E * \underline{T})$\\
+	         & $T * (E * T / \underline{F})$\\
+	         & $T * (E * \underline{T} / v)$\\
+	         & $T * (E * \underline{F} / v)$\\
+	         & $T * (\underline{E} * v / v)$\\
+	         & $T * (\underline{T} * v / v)$\\
+	         & $T * (\underline{F} * v / v)$\\
+	         & $\underline{T} * (v * v / v)$\\
+	         & $\underline{F} * (v * v / v)$\\
+	         & $v * (v * v / v)$\\
+\end{tabularx}
+\ \newpage
+
 \subsubsection{Linkskanonische Reduktion}
+Folgende linkskanonische Reduktion beweist das der Satz $((v + v) * v / v) - (v / v)$ ein Satz der Sprache ist, die durch die vorgegebene Grammatik definiert ist.
+\newline
+\newline
 \begin{tabularx}{\textwidth}{p{120pt} @{$\xvdash{L}$ \hspace{10pt}} X}
                   & $((\underline{v} + v) * v / v) - (v / v)$ \\
                   & $((\underline{F} + v) * v / v) - (v / v)$ \\                       
@@ -145,8 +169,12 @@ Folgende Reduktion beweist das der Satz $((v + v) * v / v) - (v / v)$ ein Satz d
                   & $ \underline{E - T}$ \\
                   & $ E $ \\
 \end{tabularx}
+\ \newpage
 
 \subsubsection{Rechtskanonische Reduktion}
+Folgende rechtskanonische Reduktion beweist das der Satz $((v + v) * v / v) - (v / v)$ ein Satz der Sprache ist, die durch die vorgegebene Grammatik definiert ist.
+\newline
+\newline
 \begin{tabularx}{\textwidth}{p{120pt} @{$\xvdash{R}$ \hspace{10pt}} X}
                   & $((v + v) * v / v) - (v / \underline{v})$ \\
                   & $((v + v) * v / v) - (\underline{v} / F)$ \\                       
@@ -174,59 +202,67 @@ Folgende Reduktion beweist das der Satz $((v + v) * v / v) - (v / v)$ ein Satz d
                   & $\underline{E - T}$ \\
                   & $ E $ \\
 \end{tabularx}
+\ \newpage
 
 \section{Mehrdeutigkeit, Beschreibung und Schreibweise}
 \subsection{Mehrdeutigkeit der Grammatik}
-Folgendes Beispiel zeigt das die vorgegebene Grammatik für den Satz $+ 1.5$ mehrdeutig ist, was durch die Regel $frac \rightarrow \epsilon | fract n $ verursacht wird.
+Die beiden Syntaxbäume aus den Abbildungen \ref{fig:multip-syntaxtree-1} und \ref{fig:multip-syntaxtree-2} zeigen, dass die vorgegebene Grammatik für den Satz $+ 1.5$ mehrdeutig ist, was durch die Regel $frac \rightarrow n \hspace{2mm} | \hspace{2mm} frac \hspace{2mm} n \hspace{2mm} | \hspace{2mm} \epsilon $ verursacht wird.
 \newline
 
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.8]{syntax_tree_real_1.png}
-\caption{Syntaxbaum 1}
-\label{fig:syntaxtree}
+\includegraphics[scale=0.6]{syntax_tree_real_1.png}
+\caption{Erster Syntaxbaum}
+\label{fig:multip-syntaxtree-1}
 \end{figure}
-\ \newpage
 
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.8]{syntax_tree_real_2.png}
-\caption{Syntaxbaum 2}
-\label{fig:syntaxtree}
+\includegraphics[scale=0.6]{syntax_tree_real_2.png}
+\caption{Zweiter Syntaxbaum}
+\label{fig:multip-syntaxtree-2}
 \end{figure}
 \ \newline
-
-
-\begin{tabularx}{\textwidth}{p{120pt} @{$\Rightarrow$ \hspace{10pt}} X}
+\hspace{2mm} 
+\begin{tabularx}{\textwidth}{p{120pt} @{$\rightarrow$ \hspace{10pt}} X}
 real  & mant $|$ mant exp \\
 mant  & sign int $|$ sign int . frac \\
 int   & n $|$ int n\\
 frac  & n $|$ frac n \\
 sign  & + $|$ - \\
 exp   & E sign int \\
-n     & 0 $|$ 1 $|$ 2 $|$ 3 $|$ 4 $|$ 5 $|$ 6 $|$ 7 $|$ 8 $|$ 9 $|$  $\epsilon$  \\
+n     & 0 $|$ 1 $|$ 2 $|$ 3 $|$ 4 $|$ 5 $|$ 6 $|$ 7 $|$ 8 $|$ 9 \\
 \end{tabularx}
+\ \newline
+\newline
+Wenn das $\epsilon$ aus der Regel $frac$ entfernt wird, dann ist die Sprache für den Beispielsatz $+ 1.5$ eindeutig.
 
 \subsection{Grammatik mit Wirth'scher Schreibweise}
 Folgende Grammatik ist die vorgegebene Grammatik in der Wirth'schen Schreibweise.
 \newline
 \newline
-G = [\enquote{+} $|$ \enquote{+}] n \{n\} [\enquote{.} \{n\} ] [\enquote{E} [\enquote{+} $|$ \enquote{+}] n \{n\}].
+\begin{tabularx}{\textwidth}{p{120pt} @{= \hspace{10pt}} X}
+G     & [\enquote{+} $|$ \enquote{-}] n \{n\} [\enquote{.} \{n\} ] [\enquote{E} [\enquote{+} $|$ \enquote{-}] n \{n\}]. \\
+n     & 0 $|$ 1 $|$ 2 $|$ 3 $|$ 4 $|$ 5 $|$ 6 $|$ 7 $|$ 8 $|$ 9. \\
+\end{tabularx}
 \newpage
 
 \section{Reguläre Sprachen}
+Dieser Abschnitt behandelt die Aufgabenstellung 3 der zweiten Übung.
+
 \subsection{Reguläre Grammatik}
 \begin{figure}[h]
 \centering
-\includegraphics[scale=1]{regular_grammar_automat.PNG}
-\caption{Automat}
-\label{fig:syntaxtree}
+\includegraphics[scale=0.6]{regular_grammar_automat.PNG}
+\caption{Automat für die reguläre Grammatik}
+\label{fig:state-machine-reg-grammar}
 \end{figure}
 \ \newline
-Folgende Grammatik wurde aus dem Automaten abgeleitet. Diese Grammatik muss aber noch angepasst werden, denn die Regel S $\rightarrow \epsilon$ ist in einer regulären Grammatik nicht gültig.
+Folgende Grammatik wurde aus dem Automaten aus Abbildung \ref{fig:state-machine-reg-grammar} abgeleitet. Diese Grammatik muss aber noch angepasst werden, denn die Regel S $\rightarrow \epsilon$ ist in einer regulären Grammatik nicht gültig.
 \newline
 \newline
-Die folgende Grammatik 
+Die Grammatik 
+\newline
 \newline
 \begin{tabularx}{\textwidth}{p{20pt} @{$\rightarrow$ \hspace{10pt}} X}
 E & Ab $|$ Bb \\                      
@@ -236,16 +272,16 @@ C & Bb        \\
 \sout{S} & \sout{$\epsilon$}\\ 
 \end{tabularx}
 \ \newline
+\newline
 wird umgeformt zu
 \newline
 \newline
 \begin{tabularx}{\textwidth}{p{20pt} @{$\rightarrow$ \hspace{10pt}} X}
-E & Ab $|$ Bb \\                      
+E & Ab $|$ Bb $|$ $\epsilon$\\                      
 A & Ab $|$ b  \\
 B & a $|$ Ca  \\
 C & Bb        \\ 
 \end{tabularx}
-
 
 \subsection{Umgekehrte reguläre Grammatik}
 Die folgende Auflistung zeigt die drei regulären Ausdrücke, welche die Grammatik aus der Aufgabenstellung 3 beschreiben.
@@ -257,50 +293,61 @@ Die folgende Auflistung zeigt die drei regulären Ausdrücke, welche die Grammat
 \end{enumerate}
 
 \subsection{Regulärer Ausdruck der Grammatik}
-Folgender regulärer Ausdruck beschreibt die Grammatik aus der Aufgabenstellung 3.
+Dieser reguläre Ausdruck beschreibt die Sprache der Grammatik aus der Aufgabenstellung 3.
 \newline
 \newline
 $L = \epsilon + bb*b + a(ba)* b$
 
 \section{Bezeichner in der Programmiersprache Ada}
-Dieser Abschnitt beschäftigt sich mit der Aufgabenstellung 4 der dritten Übung.
+Dieser Abschnitt beschäftigt sich mit der Aufgabenstellung 4 der zweiten Übung.
 
 \subsection{Reguälre Grammatik}
+Der Automat aus Abbildung \ref{fig:ada-state-machine} wurde aus den regulären Ausdruck $(ab)*(ba)* + aa*$ abgeleitet.
 \begin{figure}[h]
 \centering
-\includegraphics[scale=1]{ada_state_machine.JPG}
-\caption{Ada reguläre Grammatik}
-\label{fig:ada-state-machine}
-\end{figure}
-
-\begin{tabularx}{\textwidth}{p{20pt} @{$\rightarrow$ \hspace{10pt}} X}
-S & lE $|$ l \\                      
-E & lE $|$ dE $|$ $"\_"$U $|$ l $|$ d \\
-U & lE $|$ dE $|$ l $|$ d \\
-\end{tabularx}
-
-\subsection{Umgekehrte reguläre Grammatik}
-\begin{tabularx}{\textwidth}{p{20pt} @{$\rightarrow$ \hspace{10pt}} X}
-E & El $|$ Ed $|$ Ul $|$ Ud $|$ l \\                      
-U & E$"\_"$ \\
-\end{tabularx}
-
-\subsection{Regulärer Ausdruck}
-$l((l+d) + (\_(l+d))*$
-
-\section{Transformation der Darstellungsformen der regulären Sprachen}
-\subsection{Reguälre Grammatik}
-\begin{figure}[h]
-\centering
-\includegraphics[scale=1]{transformed_regular_exp.JPG}
-\caption{Nicht deterministischer Zustandsautomat des transformierten Ausdrucks}
+\includegraphics[scale=0.5]{ada_state_machine.JPG}
+\caption{Automat für Ada Grammatik}
 \label{fig:ada-state-machine}
 \end{figure}
 \ \newline
-\textbf{Zustandsüberführungsfunktion}
+Diese Grammatik wurde aus dem Automaten aus Abbildung \ref{fig:ada-state-machine} abgeleitet.
+\newline
+\newline
+\begin{tabularx}{\textwidth}{p{20pt} @{$\rightarrow$ \hspace{10pt}} X}
+S & lE $|$ l \\                      
+E & lE $|$ dE $|$ \_ D $|$ l $|$ d \\
+D & lE $|$ dE $|$ l $|$ d \\
+\end{tabularx}
+
+\subsection{Umgekehrte reguläre Grammatik}
+Diese umgekehrte Grammatik wurde aus dem Automaten aus Abbildung \ref{fig:ada-state-machine} abgeleitet.
+\newline
+\newline
+\begin{tabularx}{\textwidth}{p{20pt} @{$\rightarrow$ \hspace{10pt}} X}
+E & El $|$ Ed $|$ Dl $|$ Dd $|$ l \\                      
+D & E \_ \\
+\end{tabularx}
+
+\subsection{Regulärer Ausdruck}
+Der reguläre Ausdruck $l((l+d)+ (\_(l+d))*$ beschreibt alle Bezeichner in der Programmiersprache Ada.
+\newpage
+
+\section{Transformation der Darstellungsformen der regulären Sprachen}
+Dieser Abschnitt beschäftigt sich mit der Aufgabenstellung 5 der zweiten Übung.
+\subsection{Reguälre Grammatik}
+Der Automat aus Abbildung \ref{fig:5-reg-state-machine} wurde aus dem regulären Ausdruck $(ab)*(ba)*+aa*$ abgeleitet.
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.55]{transformed_regular_exp.JPG}
+\caption{Nicht deterministischer Automat}
+\label{fig:5-reg-state-machine}
+\end{figure}
+\ \newline
+Die folgende Zustandsüberführungstabelle wurde aus dem Automaten aus Abbildung \ref{fig:5-reg-state-machine} abgeleitet.
+\newline
 \newline
 \begin{tabularx}{10cm}{p{30pt} XX}
-    & a & b \\
+    & \textbf{a} & \textbf{b} \\
  S  & \{A,B\} & \{D\} \\
  A  & \{A\} & \{\} \\
  B  & \{\} & \{C\} \\
@@ -311,12 +358,14 @@ $l((l+d) + (\_(l+d))*$
 \ \newline
 \newline
 \newline
-\textbf{transformierte Zustandsüberführungsfunktion}
+\newline
+Die folgende Tabelle zeigt die transformierte Zustandsüberführungstabelle, wobei die neue Zustandsmenge  $\{A,B\}$ entstanden ist.
+\newline
 \newline
 \begin{tabularx}{10cm}{p{30pt} XX}
-    & a & b \\
+    & \textbf{a} & \textbf{b} \\
  S        & \{A,B\} & \{D\} \\
- \{A,B\}  & \{A\} & \{C\} \\
+ \textbf{\{A,B\}}  &  \textbf{\{A\}} & \textbf{\{C\}} \\
  A        & \{A\} & \{\} \\
  B        & \{\} & \{C\} \\
  C        & \{B\} & \{D\} \\
@@ -325,8 +374,50 @@ $l((l+d) + (\_(l+d))*$
 \end{tabularx}
 \begin{figure}[h]
 \centering
-\includegraphics[scale=1]{transformed_regular_exp_determeneistic.JPG}
-\caption{Deterministischer Zustandsautomat des transformierten Ausdrucks}
+\includegraphics[scale=0.55]{transformed_regular_exp_determeneistic.JPG}
+\caption{Deterministischer Automat}
 \label{fig:ada-state-machine}
+\end{figure}
+\ \newpage
+
+\subsection{Automat für die Mengen aller Ketten aus 0 und 1}
+Die folgende Tabelle zeigt die Veränderung der Teilbarkeit wenn zu einer Binärzahl eine $0$ oder $1$ hinzugefügt wird.
+\newline
+\newline
+\begin{tabularx}{10cm}{XX}
+    \textbf{Binährzahl} & \textbf{Rest} \\
+    0          & 0 \\
+    00         & 0 \\
+    01         & 1 \\
+    1          & 1 \\
+    10         & 2 \\
+    11         & 0 \\
+\end{tabularx}
+\ \newline
+\newline
+\newline
+Aus der Tabelle lassen sich jetzt die drei folgenden Restklassen ableiten.
+\begin{enumerate}
+	\item$R_{0} = 0 Rest$
+	\item$R_{1} = 1 Rest$
+	\item$R_{2} = 2 Rest$
+\end{enumerate}
+\ \newline
+Die folgende Auflistung zeigt die Zustandsänderungen, die entstehen wenn eienr Restklasse eine $0$ oder $1$ hinzugefügt wird.
+\begin{enumerate}
+	\item$R_{0} + 0 \rightarrow R_{0}$
+	\item$R_{0} + 1 \rightarrow R_{1}$
+	\item$R_{1} + 0 \rightarrow R_{2}$
+	\item$R_{1} + 1 \rightarrow R_{0}$
+	\item$R_{2} + 0 \rightarrow R_{1}$
+	\item$R_{2} + 1 \rightarrow R_{2}$
+\end{enumerate}
+Mit den aufgelisteten Zuständen kann der Automat aus Abbildung \ref{fig:5-state-machine-01} erstellt werden.
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.55]{01state-machine.JPG}
+\caption{Automat für 01 Ketten}
+\label{fig:5-state-machine-01}
 \end{figure}
 \end{document}
