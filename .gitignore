@@ -55,6 +55,7 @@ Temporary Items
 *.blg
 *.gz
 *.log
+*.obj
 _minted*
 
 # intellij
