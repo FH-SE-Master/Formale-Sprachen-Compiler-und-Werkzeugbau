@@ -10,10 +10,15 @@
 
 using namespace std;
 
-class Mealy : public DFA {
-public:
+typedef std::function<char(char)> Mapper;
 
-    Mealy();
+class Mealy : public DFA {
+
+private:
+    Mapper mapper;
+
+public:
+    Mealy(Mapper mapper): mapper(mapper){}
 };
 
 

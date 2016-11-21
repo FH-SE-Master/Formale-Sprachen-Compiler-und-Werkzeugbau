@@ -16,6 +16,8 @@ set(SOURCE_FILES
         Grammar.cpp
         SequenceStuff.cpp
         AutomateUtil.cpp
+        Mealy.hpp
+        Mealy.cpp
         Test.cpp)
 
 # Executable for Deterministic automats
