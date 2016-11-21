@@ -13,7 +13,6 @@
 
 
 #include <iostream>
-#include <map>
 #include <stdexcept>
 #include <string>
 #include <typeinfo>
@@ -29,7 +28,7 @@
 
 
   template <class UDC>
-  class ObjectCounter {     // dummy object counter
+  class ObjectCounter {     // dummy object counter, does nothing
   }; // ObjectCounter<UDC>
 
 
@@ -37,11 +36,11 @@
 
 
 template <class UDC>
-class ObjectCounterData;    // see below
+class ObjectCounterData;    // data for ObjectCounter, implementation see below
 
-template <class UDC>        // UDC is a user defined class
-class ObjectCounter {       // privately derived from ObjectCounter
-  // which counts objects of class UDC using an ObjectCounterData object
+template <class UDC>        // UDC is a user defined class ...
+class ObjectCounter {       //   ... privately derived from ObjectCounter ...
+  // ... which counts objects of class UDC using an ObjectCounterData object
 
   private:
 
@@ -50,22 +49,23 @@ class ObjectCounter {       // privately derived from ObjectCounter
     void CountConstruction() {
       auto ir = ocd.om.insert(std::make_pair(this, ++ocd.nConstr));
       if (!ir.second)       // this already has been an element of om
-        throw std::logic_error("re-construction of object");
+        throw std::logic_error(std::string("re-construction of object of class ") +
+                               typeid(UDC).name());
     } // CountConstruction
 
   protected:
 
-    ObjectCounter() {       // called by UDC's constr.
+    ObjectCounter() {       // called by UDC's default constr.
       CountConstruction();
     } // ObjectCounter
 
-    ObjectCounter(const ObjectCounter &oc) { // called by UDC's copy constr.
+    ObjectCounter(const ObjectCounter &/*oc*/) { // called by UDC's copy constr.
       CountConstruction();
     } // ObjectCounter
 
     virtual ~ObjectCounter() { // called by UDC's destr.
       auto ec = ocd.om.erase(this);
-      if (ec == 1) // this has been an element of om
+      if (ec == 1) // ok, this has been an element of om
         ocd.nDestr++;
       else // (ec == 0) => this has not been registered in om
         ocd.nDestrUnreg++;
@@ -109,7 +109,7 @@ class ObjectCounterData final {
         std::cout << ", destr. of unreg. obj. = " << nDestrUnreg;
       std::cout << std::endl;
       if (nAlive > 0) {
-        std::map<int, void *> iom; // inverted om: nConstr -> address
+        std::unordered_map<int, void *> iom; // inverted om: nConstr -> address
         for (auto &e: om) {
           iom[e.second] = e.first;
         } // for

@@ -17,7 +17,6 @@
 #include "StateStuff.h"
 #include "FA.h"
 
-using namespace std;
 
 class DFA: public  FA,
            private ObjectCounter<DFA> {

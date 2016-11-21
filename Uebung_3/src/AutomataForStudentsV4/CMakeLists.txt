@@ -7,32 +7,20 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
 set(SOURCE_FILES
         CharSet.cpp
-        CharSet.h
-        DFA.cpp
-        DFA.h
-        DFATest.cpp
-        FA.cpp
-        FA.h
-        Mappers.cpp
-        Mappers.h
-        NFA.cpp
-        NFA.h
-        NFATest.cpp
-        ObjectCounter.h
-        StateStuff.cpp
-        StateStuff.h
         SymbolStuff.cpp
-        SymbolStuff.h
-        Grammar.h
+        StateStuff.cpp
+        Mappers.cpp
+        FA.cpp
+        DFA.cpp
+        NFA.cpp
         Grammar.cpp
-        SequenceStuff.h
         SequenceStuff.cpp
-        Vocabulary.h
-        Vocabulary.cpp
-        Mealy.hpp
-        Mealy.cpp)
+        AutomateUtil.cpp
+        Test.cpp)
 
 # Executable for Deterministic automats
-add_executable(DFATest DFATest.cpp)
+#add_executable(DFATest DFATest.cpp)
 # Executable for Non-deterministic automats
-add_executable(NFATest NFATest.cpp)
+#add_executable(NFATest NFATest.cpp)
+# Executable for AutomateUtil test
+add_executable(Test ${SOURCE_FILES})

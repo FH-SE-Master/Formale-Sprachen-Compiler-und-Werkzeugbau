@@ -89,7 +89,7 @@ class Grammar: // no public base class
     void addRule(NTSymbol *nt, initializer_list<Sequence *> seqs);
 #endif
 
-    Sequence *newSequenceOf(const string &str) const; // based on vT and vNt,
+    Sequence *newSequenceOf(const std::string &str) const; // based on vT and vNt,
       // e.g., "a B" => Sequence(2, sp->tSymbol("a"), sp->ntSymbol("B")))
 
     void identifyDeletableNTs() const;    // inserts del. NTs into vNtDel

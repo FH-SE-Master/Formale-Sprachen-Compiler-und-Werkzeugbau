@@ -1,0 +1,14 @@
+//
+// Created by Thomas on 11/21/16.
+//
+
+#ifndef AUTOMATAFORSTUDENTSV4_XFA_HPP
+#define AUTOMATAFORSTUDENTSV4_XFA_HPP
+
+
+class XFA {
+
+};
+
+
+#endif //AUTOMATAFORSTUDENTSV4_XFA_HPP

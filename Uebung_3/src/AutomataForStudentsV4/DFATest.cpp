@@ -63,7 +63,7 @@ bool acceptsIdentifier(const TapeSymbol tape[]) {
 
 } // acceptsIdentifier
 
-#if 1
+
 int main(int argc, char *argv[]) {
 
   cout << "START: DFATest" << endl;
@@ -167,7 +167,7 @@ try {
 
   return 0;
 } // main
-#endif
+
 
 // end of DFATest.cpp
 //======================================================================

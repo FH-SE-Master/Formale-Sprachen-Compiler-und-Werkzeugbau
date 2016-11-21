@@ -17,7 +17,6 @@
 #include "FA.h"
 #include "DFA.h"
 
-using namespace std;
 
 class NFA: public FA,
            private ObjectCounter<NFA> {

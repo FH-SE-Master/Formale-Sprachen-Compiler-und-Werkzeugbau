@@ -10,12 +10,12 @@
 #include <map>
 #include <sstream>
 
+using namespace std;
+
 #include "SymbolStuff.h"
 #include "StateStuff.h"
 #include "Mappers.h"
 #include "DFA.h"
-
-using namespace std;
 
 #define DEBUG
 

@@ -4,9 +4,6 @@
 // sets of symbols on the tape for various types of automata.
 //======================================================================
 
-#ifndef CHAR_SET_CPP
-#define CHAR_SET_CPP
-
 #include <algorithm>
 #include <iostream>
 #include <set>
@@ -122,7 +119,6 @@ try {
   return 0;
 } // main
 
-#endif
 #endif
 
 
