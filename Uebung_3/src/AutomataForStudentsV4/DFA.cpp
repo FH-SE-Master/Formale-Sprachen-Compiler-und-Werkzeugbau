@@ -116,6 +116,8 @@ bool DFA::accepts(const TapeSymbol tape[]) const {
       return false;          // s undefined, no acceptance*/
     i++;
     sy = tape[i];            // fetch next symbol
+    // Call method for observing current set type symbol
+    observeCurrentTapeSymbol(&sy);
   } // while
 
   return F.contains(s);      // accepted <==> s element of F

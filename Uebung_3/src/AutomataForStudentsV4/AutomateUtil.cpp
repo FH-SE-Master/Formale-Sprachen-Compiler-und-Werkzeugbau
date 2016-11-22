@@ -78,5 +78,16 @@ Grammar *AutomateUtil::grammarOfNfa(const NFA *nfa) {
     return grammar;
 } // Grammra *AutomateUtil::grammarOfNfa
 
+bool AutomateUtil::isMinimalAutomat(const DFA *dfa) {
+    if (dfa == nullptr) {
+        throw invalid_argument("DFA must not be null");
+    } // if
+
+    // transform transition table
+    // http://www.fh-wedel.de/~si/vorlesungen/cb/LexikalischeAnalyse/DFAmin.html
+
+    return false;
+} // bool AutomateUtil::isMinimalAutomat
+
 
 

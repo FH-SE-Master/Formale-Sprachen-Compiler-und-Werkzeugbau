@@ -10,6 +10,7 @@
 #include <iosfwd>
 #include <map>
 #include <string>
+#include <ctime>
 
 #include "ObjectCounter.h"
 #include "SymbolStuff.h"
@@ -17,25 +18,26 @@
 #include "FA.h"
 #include "DFA.h"
 
+class NFA : public FA,
+            private ObjectCounter<NFA> {
 
-class NFA: public FA,
-           private ObjectCounter<NFA> {
-
-  private:
+private:
 
     void initialize();         // initialize delta only
     virtual void addTransition(State src, TapeSymbol sy, State dest);
-    virtual StateSet   deltaAt(State src, TapeSymbol sy) const;
 
-  public:
+    virtual StateSet deltaAt(State src, TapeSymbol sy) const;
+
+public:
 
     // data components inherited from base class: S, V, s1, and F
 
-    StateSet  delta[STATES][SYMBOLS]; // state transition table, alternatively
+    StateSet delta[STATES][SYMBOLS]; // state transition table, alternatively
     // std::map< std::pair<State, TapeSymbol>, StateSet > deltaMap;
 
     NFA();                     // construct programmaticaly (later on)
     NFA(const NFA &nfa);
+
     NFA(const std::string &fileName); // construct from text file
     NFA(const char *nfaStr);   // construct from C string literal
 
@@ -44,7 +46,7 @@ class NFA: public FA,
     bool accepts(const TapeSymbol tape[]) const; // uses backtracking via method:
     bool accepts(State s, const TapeSymbol tape[], int i) const;
 
-    StateSet epsilonClosureOf(      State     src) const; // calls:
+    StateSet epsilonClosureOf(State src) const; // calls:
     StateSet epsilonClosureOf(const StateSet &src) const;
 
     StateSet allDestinationsFor(const StateSet &src, TapeSymbol sy) const;

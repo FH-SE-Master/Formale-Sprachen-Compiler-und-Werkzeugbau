@@ -18,16 +18,22 @@
 #include "FA.h"
 
 
-class DFA: public  FA,
-           private ObjectCounter<DFA> {
+class DFA : public FA,
+            private ObjectCounter<DFA> {
 
-  private:
+private:
 
     void initialize();         // initialize delta only
     virtual void addTransition(State src, TapeSymbol sy, State dest);
-    virtual StateSet   deltaAt(State src, TapeSymbol sy) const;
 
-  public:
+    virtual StateSet deltaAt(State src, TapeSymbol sy) const;
+
+protected:
+    virtual inline void observeCurrentTapeSymbol(const TapeSymbol *symbol) const {
+        // We do nothing here. Just for class which inherits this one
+    };
+
+public:
 
     // data components inherited from base class: S, V, s1, and F
 
@@ -36,6 +42,7 @@ class DFA: public  FA,
 
     DFA();                     // construct programmatically (later on)
     DFA(const DFA &dfa);
+
     DFA(const std::string &fileName); // construct from text file
     DFA(const char *dfaStr);   // construct from C string literal
 

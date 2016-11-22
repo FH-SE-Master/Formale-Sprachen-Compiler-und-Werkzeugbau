@@ -15,10 +15,17 @@ typedef std::function<char(char)> Mapper;
 class Mealy : public DFA {
 
 private:
-    Mapper mapper;
+    std::function<char(char)> mapper;
+
+protected:
+    inline void observeCurrentTapeSymbol(const TapeSymbol *symbol) const {
+        if (mapper != nullptr) {
+            cout << "translated '" << *symbol << "' -> '" << mapper(*symbol) << "'" << endl;
+        }
+    };
 
 public:
-    Mealy(Mapper mapper): mapper(mapper){}
+    Mealy(Mapper mapper) : mapper(mapper) {}
 };
 
 

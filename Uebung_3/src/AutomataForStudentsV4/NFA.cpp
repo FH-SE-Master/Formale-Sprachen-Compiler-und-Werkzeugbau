@@ -25,7 +25,7 @@ using namespace std;
 void NFA::initialize() {
   // initialize delta with undefined transitions only
   for (State s = 0; s < STATES; s++) {
-    for (TapeSymbol sy = 0; sy < SYMBOLS; sy++) { // includes EPS (== '£')
+    for (TapeSymbol sy = 0; sy < SYMBOLS; sy++) { // includes EPS (== 'ï¿½')
       delta[s][sy] = StateSet(); // empty set, {}
     } // for
   } // for
@@ -52,7 +52,7 @@ NFA::NFA() {
 NFA::NFA(const NFA &nfa)
 : FA(nfa) {
   for (State s = 0; s < STATES; s++) {
-    for (TapeSymbol sy = 0; sy < SYMBOLS; sy++) { // includes EPS (== '£')
+    for (TapeSymbol sy = 0; sy < SYMBOLS; sy++) { // includes EPS (== 'ï¿½')
       delta[s][sy] = nfa.delta[s][sy];
     } // for
   } // for

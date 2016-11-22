@@ -5,10 +5,28 @@
 #ifndef AUTOMATAFORSTUDENTSV4_AUTOMATEUTIL_HPP
 #define AUTOMATAFORSTUDENTSV4_AUTOMATEUTIL_HPP
 
+#include <ctime>
+#include <string>
 #include "Grammar.h"
 #include "NFA.h"
+#include "DFA.h"
 
 namespace AutomateUtil {
+
+    struct Clock {
+        double duration = 0;
+        std::clock_t start;
+        std::clock_t end;
+
+        void startMeasure() {
+            start = end = std::clock();
+        }
+
+        void endMeasure() {
+            end = std::clock();
+            std::cout << "Duration: " << (duration = (end - start) / (double) CLOCKS_PER_SEC) << std::endl;
+        }
+    };
 
     /**
      * Converts a grammar to a non-determenistic automat called NFA.
@@ -19,5 +37,7 @@ namespace AutomateUtil {
     NFA *nfaOfGrammar(const Grammar *grammar);
 
     Grammar *grammarOfNfa(const NFA *nfa);
+
+    bool isMinimalAutomat(const DFA *dfa);
 }
 #endif //AUTOMATAFORSTUDENTSV4_AUTOMATEUTIL_HPP
