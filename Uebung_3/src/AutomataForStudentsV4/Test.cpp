@@ -157,7 +157,7 @@ void test_dfa_rgb() {
     dfa.generateGraphVizFile("2c-automat.gv");
     DFA minimizedDfa = dfa.minimalDfaOf();
     minimizedDfa.generateGraphVizFile("2c-minimized-automat.gv");
-    cout << "Is minimal DFA ? " << (AutomateUtil::isMinimalAutomat(&dfa) ? "true" : "false") << endl;
+    cout << endl << "Is minimal DFA ? " << (AutomateUtil::isMinimalAutomat(&minimizedDfa) ? "true" : "false") << endl;
 }
 
 int main(int argc, char **args) {

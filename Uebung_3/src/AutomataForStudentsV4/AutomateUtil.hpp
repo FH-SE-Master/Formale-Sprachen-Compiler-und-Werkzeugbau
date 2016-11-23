@@ -11,7 +11,13 @@
 #include "NFA.h"
 #include "DFA.h"
 
+#define UNDEF_ENTRY  'u'
+#define EQUIVALENT_ENTRY 'e'
+#define NOT_EQUIVALENT_ENTRY  'n'
+
 namespace AutomateUtil {
+
+    typedef char TableEntry;
 
     struct Clock {
         double duration = 0;
