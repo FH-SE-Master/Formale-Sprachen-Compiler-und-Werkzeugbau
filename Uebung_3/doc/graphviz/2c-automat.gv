@@ -1,0 +1,48 @@
+digraph finite_state_machine {
+
+  rankdir = LR;
+
+  node [shape = doublecircle]; T V X Z;
+  node [shape = circle];
+
+  null [shape = plaintext label=""]
+  null -> O;
+
+  O -> S [label = "a"]; 
+  O -> Q [label = "b"]; 
+  O -> P [label = "c"]; 
+  P -> V [label = "a"]; 
+  P -> R [label = "b"]; 
+  P -> P [label = "c"]; 
+  Q -> X [label = "a"]; 
+  Q -> Q [label = "b"]; 
+  Q -> R [label = "c"]; 
+  R -> Z [label = "a"]; 
+  R -> R [label = "b"]; 
+  R -> R [label = "c"]; 
+  S -> T [label = "a"]; 
+  S -> W [label = "b"]; 
+  S -> U [label = "c"]; 
+  T -> T [label = "a"]; 
+  T -> W [label = "b"]; 
+  T -> U [label = "c"]; 
+  U -> V [label = "a"]; 
+  U -> Y [label = "b"]; 
+  U -> U [label = "c"]; 
+  V -> V [label = "a"]; 
+  V -> Y [label = "b"]; 
+  V -> U [label = "c"]; 
+  W -> X [label = "a"]; 
+  W -> W [label = "b"]; 
+  W -> Y [label = "c"]; 
+  X -> X [label = "a"]; 
+  X -> W [label = "b"]; 
+  X -> Y [label = "c"]; 
+  Y -> Z [label = "a"]; 
+  Y -> Y [label = "b"]; 
+  Y -> Y [label = "c"]; 
+  Z -> Z [label = "a"]; 
+  Z -> Y [label = "b"]; 
+  Z -> Y [label = "c"]; 
+
+}

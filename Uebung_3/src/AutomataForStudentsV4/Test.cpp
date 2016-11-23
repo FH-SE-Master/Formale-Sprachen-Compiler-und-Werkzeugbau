@@ -151,13 +151,6 @@ void test_dfa_rgb() {
     cout << "accepts2(): " << ((nfa.accepts2(tape.data())) ? "true" : "false") << endl;
     clock.endMeasure();
     cout << "---------------------------------------------------" << endl;
-
-    // Calculate deterministic automat
-    DFA dfa = nfa.dfaOf();
-    dfa.generateGraphVizFile("2c-automat.gv");
-    DFA minimizedDfa = dfa.minimalDfaOf();
-    minimizedDfa.generateGraphVizFile("2c-minimized-automat.gv");
-    cout << endl << "Is minimal DFA ? " << (AutomateUtil::isMinimalAutomat(&minimizedDfa) ? "true" : "false") << endl;
 }
 
 int main(int argc, char **args) {

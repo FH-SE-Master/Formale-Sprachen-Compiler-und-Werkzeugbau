@@ -20,9 +20,42 @@ set(SOURCE_FILES
         Mealy.cpp
         Test.cpp)
 
+set(SOURCE_FILE_MEALY
+        CharSet.cpp
+        SymbolStuff.cpp
+        StateStuff.cpp
+        Mappers.cpp
+        FA.cpp
+        DFA.cpp
+        NFA.cpp
+        Grammar.cpp
+        SequenceStuff.cpp
+        AutomateUtil.cpp
+        Mealy.hpp
+        Mealy.cpp
+        TestMealy.cpp)
+
+set(SOURCE_FILE_NFA_DFA
+        CharSet.cpp
+        SymbolStuff.cpp
+        StateStuff.cpp
+        Mappers.cpp
+        FA.cpp
+        DFA.cpp
+        NFA.cpp
+        Grammar.cpp
+        SequenceStuff.cpp
+        AutomateUtil.cpp
+        Mealy.hpp
+        Mealy.cpp
+        TestNfaToDfa.cpp)
+
+
 # Executable for Deterministic automats
 #add_executable(DFATest DFATest.cpp)
 # Executable for Non-deterministic automats
 #add_executable(NFATest NFATest.cpp)
 # Executable for AutomateUtil test
 add_executable(Test ${SOURCE_FILES})
+add_executable(TestMealy ${SOURCE_FILE_MEALY})
+add_executable(TestNfaToDfa ${SOURCE_FILE_NFA_DFA})

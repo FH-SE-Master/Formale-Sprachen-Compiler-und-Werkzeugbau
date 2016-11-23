@@ -17,8 +17,14 @@
 
 namespace AutomateUtil {
 
+    /**
+     * The type for the table entries used during minimal check
+     */
     typedef char TableEntry;
 
+    /**
+     * Simple Clock for time measureing
+     */
     struct Clock {
         double duration = 0;
         std::clock_t start;
@@ -42,8 +48,12 @@ namespace AutomateUtil {
      */
     NFA *nfaOfGrammar(const Grammar *grammar);
 
+    /**
+     * Creates the Grammar corresponding zu the given NFA.
+     * @param nfa the nfa instance to get grammar for
+     * @return the created grammar
+     * @throw invalid_argument if the nfa instance is null
+     */
     Grammar *grammarOfNfa(const NFA *nfa);
-
-    bool isMinimalAutomat(const DFA *dfa);
 }
 #endif //AUTOMATAFORSTUDENTSV4_AUTOMATEUTIL_HPP
