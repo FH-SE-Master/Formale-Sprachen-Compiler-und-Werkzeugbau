@@ -15,7 +15,6 @@
 \usepackage[autostyle=false, style=english]{csquotes}
 \usepackage{mathtools}
 \usepackage{tabularx}
-\usepackage{ulem}
 % http://www.artofproblemsolving.com/wiki/index.php/LaTeX:Symbols#Operators
 % =============================================
 % Layout & Colors
@@ -90,9 +89,8 @@
 \pagestyle{fancy}
 \begin{document}
 \setlength{\headheight}{15mm}
-\includepdf[pages={1,3}]{Fcw1x03A.pdf}
+\includepdf[pages={1,2,3}]{Fcw1x03A.pdf}
 
-% Section gramar and basics 
 \section{OO-Implementierung endlicher Automaten}
 \label{sec:oo-finite-automat}
 Dieser Abschnitt behandelt die Aufgabe 1 der dritten Übung.
@@ -147,7 +145,7 @@ Es fällt auf, dass die Methode \emph{accepts2} bei langen Bändern deutlich lan
 
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.8, angle=90]{\imageDir/test_nfa_dfa_minimal.JPG}
+\includegraphics[scale=1, angle=90]{\imageDir/test_nfa_dfa_minimal.JPG}
 \caption{Tests für minimalen Automaten}
 \label{fig:test-nfa-dfa-minimal}
 \end{figure}
@@ -191,25 +189,26 @@ Folgende Tabelle zeigt die Zustandsüberführungsfunktionen des Kellerautomaten.
 \newline
 \begin{tabularx}{\textwidth}{X X X X X X}
   \emph{$Zustand_P$} & \emph{$Eingabe_P$} & \emph{$Keller_P$} & \emph{$Zustand_F$} & \emph{$Keller_F$} & \emph{Schritt} \\
+  &&&& \\
   Declaration & VAR         & -    & E1          & -     & 1 \\
   Declaration & $\epsilon$  & -    & VarDeclList & -     & 2 \\
   VarDeclList & $\epsilon$  & -    & E2          & -     & 3 \\
   VarDeclList & $\epsilon$  & \$2  & VarDecl     & \$2   & 4 \\
-  \$2         & ;           & -    & VarDeclList & -   & 5 \\
-  VarDeclList & $\epsilon$  & -    & E2          & -     & 9 \\
-  VarDecl     & $\epsilon$  & \$3  & IdentList   & \$3   & 10 \\
-  \$3         & ;           & -    & Type        & -     & 11 \\
-  Type        & $\epsilon$  & \$4  & OptArray    & \$4   & 13 \\
-  \$4         & $\epsilon$  & -    & TypeIdent   & -     & 14 \\
-  TypeIdent   & INTEGER     & -    & E3          & -     & 16 \\
-  TypeIdent   & BOOLEAN     & -    & E3          & -     & 17 \\
-  TypeIdent   & CHAR        & -    & E3          & -     & 18 \\
-  OptArray    & $\epsilon$  & -    & E4          & -     & 20 \\
-  OptArray    & ARRAY       & \$5  & -           & \$5   & 21 \\
-  \$5         & (           & \$6  & -           & \$6   & 22 \\
-  \$6         & number      & \$7  & -           & \$7   & 22 \\
-  \$7         & )           & \$8  & -           & \$8   & 22 \\
-  \$8         & OF          & -    & E5          & -     & 22 \\
+  \$2         & ;           & -    & VarDeclList & -     & 5 \\
+  VarDeclList & $\epsilon$  & -    & E2          & -     & 6 \\
+  VarDecl     & $\epsilon$  & \$3  & IdentList   & \$3   & 7 \\
+  \$3         & ;           & -    & Type        & -     & 8 \\
+  Type        & $\epsilon$  & \$4  & OptArray    & \$4   & 9 \\
+  \$4         & $\epsilon$  & -    & TypeIdent   & -     & 10 \\
+  TypeIdent   & INTEGER     & -    & E3          & -     & 11 \\
+  TypeIdent   & BOOLEAN     & -    & E3          & -     & 12 \\
+  TypeIdent   & CHAR        & -    & E3          & -     & 13 \\
+  OptArray    & $\epsilon$  & -    & E4          & -     & 14 \\
+  OptArray    & ARRAY       & \$5  & -           & \$5   & 15 \\
+  \$5         & (           & \$6  & -           & \$6   & 16 \\
+  \$6         & number      & \$7  & -           & \$7   & 17 \\
+  \$7         & )           & \$8  & -           & \$8   & 18 \\
+  \$8         & OF          & -    & E5          & -     & 19 \\
  \end{tabularx}
  
 \section{LL(k)-Bedingung und Transformation}
