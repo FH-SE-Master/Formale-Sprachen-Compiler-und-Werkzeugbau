@@ -62,3 +62,5 @@ _minted*
 .idea
 bin
 obj
+*.zip
+*.rar

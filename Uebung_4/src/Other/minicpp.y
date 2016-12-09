@@ -176,9 +176,11 @@ ExprList:
   | ExprList ',' Expr
   ;
 IfStat:
-  IF '(' Expr ')' Stat
-  | IF '(' Expr ')' Stat ELSE Stat
+  IF '(' Expr ')' Stat ElseStatOpt
   ;
+ElseStatOpt:
+  /* EPSILON */
+  | ELSE Stat ;
 WhileStat:
   WHILE '(' Expr ')' Stat
   ;
@@ -258,9 +260,9 @@ Term:
   ;
 TermList:
   /* EPSILON */
-  | TermList OptOperator NotFact
+  | TermList OptNotFactOperator NotFact
   ;
-OptOperator:
+OptNotFactOperator:
   MULT
   | DIV
   | MOD
