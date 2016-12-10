@@ -86,7 +86,7 @@ VarDef:
   ;
 VarDefList:
   /* EPSILON */
-  | ',' OptAsterixList IDENT OptInit
+  | VarDefList ',' OptAsterixList IDENT OptInit
   ;
 OptAsterixList:
   /* EPSILON */

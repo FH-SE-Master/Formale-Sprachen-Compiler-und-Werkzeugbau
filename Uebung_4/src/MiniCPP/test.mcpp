@@ -9,9 +9,10 @@ void main() {
   }
 } // main
 
-void Sieve(int n) { // definition
-  int col, i, j;
-  bool *sieve = 0;
+
+void Sieve(int n) {
+int col, i, j;
+ bool *sieve = 0;
   sieve = new bool[n + 1];
   i = 2;
   while (i <= n) {
