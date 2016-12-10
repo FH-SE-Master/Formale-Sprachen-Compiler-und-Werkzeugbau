@@ -74,7 +74,7 @@ delete { return DELETE; }
 "--"   { return DEC;    }
 "+"    { return PLUS;   }
 "-"    { return MINUS;  }
-"*"    { return ASTERIX;   }
+"*"    { return ASTERIX;}
 "/"    { return DIV;    }
 "%"    { return MOD;    }
 "!"    { return SIGNCALL;}

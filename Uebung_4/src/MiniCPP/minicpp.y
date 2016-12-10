@@ -164,7 +164,7 @@ DecStat:
   IDENT DEC ';'
   ;
 AssignStat:
-  IDENT AssignOptExpr '=' Expr ';'
+  IDENT AssignOptExpr ASSIGN Expr ';'
   ;
 AssignOptExpr:
   /* EPSILON */
@@ -244,7 +244,7 @@ RelExpr:
   ;
 OptRelExpr:
   /* EPSILON */
-  | OptRelExpr OptOperator SimpleExpr
+  | OptOperator SimpleExpr
   ;
 OptOperator:
   EQ
@@ -257,13 +257,17 @@ OptOperator:
 SimpleExpr:
   OptSign Term SimpleExprList
   ;
-OptSign:
+Sign:
   PLUS
   | MINUS
   ;
+OptSign:
+  /* EPSILON */
+  | Sign
+  ;
 SimpleExprList:
   /* EPSILON */
-  | SimpleExprList OptSign Term
+  | SimpleExprList Sign Term
   ;
 Term:
   NotFact TermList

@@ -1032,7 +1032,7 @@ YY_RULE_SETUP
 case 38:
 YY_RULE_SETUP
 #line 77 "minicpp.l"
-{ return ASTERIX;   }
+{ return ASTERIX;}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
