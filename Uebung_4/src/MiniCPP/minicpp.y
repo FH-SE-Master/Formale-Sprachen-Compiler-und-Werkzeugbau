@@ -14,10 +14,11 @@
 
   // Variable declarations
   FILE *outFile = NULL; // The output file
-  int yylex(void);
-  int yyerror(char *msg);
   char *methodArr[255]; // Array of calls per method. TODO Should be dynamic.
   int curLen    = 0;          // Current methodArr index
+
+  int yylex(void);
+  int yyerror(char *msg);
 %}
 
 %token VOID
@@ -43,6 +44,7 @@
 %token AND
 %token SHIFTR
 %token SHIFTL
+%token ASSIGN
 %token NEQ
 %token EQ
 %token LE
@@ -55,10 +57,10 @@
 %token GT
 %token PLUS
 %token MINUS
-%token MULT
+%token ASTERIX
 %token DIV
 %token MOD
-%token SIGNCALL;
+%token SIGNCALL
 
 %%
 MiniCpp:
@@ -72,7 +74,7 @@ ConstDecl:
     CONST Type IDENT Init ';'
     ;
 Init:
-    '=' TypeVal
+    ASSIGN TypeVal
     ;
 TypeVal:
   FALSE
@@ -80,15 +82,15 @@ TypeVal:
   | NUMBER
   ;
 VarDef:
-  Type OptAsterix IDENT OptInit VarDefList ';'
+  Type OptAsterixList IDENT OptInit VarDefList ';'
   ;
 VarDefList:
   /* EPSILON */
-  | ',' OptAsterix IDENT OptInit
+  | ',' OptAsterixList IDENT OptInit
   ;
-OptAsterix:
+OptAsterixList:
   /* EPSILON */
-  | '*'
+  | OptAsterixList ASTERIX
   ;
 OptInit:
   /* EPSILON */
@@ -111,12 +113,12 @@ FuncDef:
                   }
   ;
 FuncHead:
-  Type OptAsterix IDENT '(' FormParList ')'
+  Type OptAsterixList IDENT '(' FormParList ')' {$$ = $4;}
   ;
 FormParList:
   /* EPSILON */
   | VOID
-  | Type OptAsterix IDENT OptBrackets FormParListList
+  | Type OptAsterixList IDENT OptBrackets FormParListList
   ;
 OptBrackets:
   /* EPSILON */
@@ -124,7 +126,7 @@ OptBrackets:
   ;
 FormParListList:
   /* EPSILON */
-  | FormParListList ',' Type OptAsterix IDENT OptBrackets
+  | FormParListList ',' Type OptAsterixList IDENT OptBrackets
   ;
 Type:
   VOID
@@ -169,7 +171,7 @@ AssignOptExpr:
   | '[' Expr ']'
   ;
 CallStat:
-  IDENT '(' OptActParList ')' ';'
+  IDENT '(' OptActParList ')' ';' { methodArr[curLen]=$1; curLen++; }
   ;
 OptActParList:
   /* EPSILON */
@@ -271,7 +273,7 @@ TermList:
   | TermList OptNotFactOperator NotFact
   ;
 OptNotFactOperator:
-  MULT
+  ASTERIX
   | DIV
   | MOD
   ;

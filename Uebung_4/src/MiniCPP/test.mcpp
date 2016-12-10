@@ -26,4 +26,5 @@ void main() {
 
 void testE(int i) {
     int i = 1;
+    int **ar = false; // Only [true|false|NUMBER] initializations supported
 }

@@ -63,6 +63,7 @@ delete { return DELETE; }
 "&&"   { return AND;    }
 ">>"   { return SHIFTR; }
 "<<"   { return SHIFTL; }
+"="    { return ASSIGN; }
 "!="   { return NEQ;    }
 "=="   { return EQ;     }
 "<="   { return LE;     }
@@ -73,7 +74,7 @@ delete { return DELETE; }
 "--"   { return DEC;    }
 "+"    { return PLUS;   }
 "-"    { return MINUS;  }
-"*"    { return MULT;   }
+"*"    { return ASTERIX;   }
 "/"    { return DIV;    }
 "%"    { return MOD;    }
 "!"    { return SIGNCALL;}

@@ -361,8 +361,8 @@ static void yy_fatal_error (yyconst char msg[]  );
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
 
-#define YY_NUM_RULES 46
-#define YY_END_OF_BUFFER 47
+#define YY_NUM_RULES 47
+#define YY_END_OF_BUFFER 48
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -372,18 +372,18 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[115] =
     {   0,
-        0,    0,   47,   45,    1,   44,   40,   45,   39,   45,
-       37,   35,   36,   38,   43,   31,   45,   32,   41,   41,
-       41,   41,   41,   41,   41,   41,   41,   41,   41,   41,
-       41,   45,    1,   27,    0,   42,   24,   33,   34,    2,
-        3,   43,   26,   29,   28,   30,   25,   41,   41,   41,
-       41,   41,   41,   41,   41,   41,   41,   16,   41,   41,
-       41,   41,   41,   41,   41,   41,   23,   41,   41,    9,
-       41,   41,   41,   41,   41,   41,   41,    5,   21,   41,
-       41,   41,   41,   41,   41,    6,   41,   41,    8,   41,
-       17,   10,   41,   41,   41,   41,   41,   13,    4,   41,
+        0,    0,   48,   46,    1,   45,   41,   46,   40,   46,
+       38,   36,   37,   39,   44,   32,   27,   33,   42,   42,
+       42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
+       42,   46,    1,   28,    0,   43,   24,   34,   35,    2,
+        3,   44,   26,   30,   29,   31,   25,   42,   42,   42,
+       42,   42,   42,   42,   42,   42,   42,   16,   42,   42,
+       42,   42,   42,   42,   42,   42,   23,   42,   42,    9,
+       42,   42,   42,   42,   42,   42,   42,    5,   21,   42,
+       42,   42,   42,   42,   42,    6,   42,   42,    8,   42,
+       17,   10,   42,   42,   42,   42,   42,   13,    4,   42,
 
-       19,   15,   41,   14,   11,   41,   41,   41,   18,   22,
+       19,   15,   42,   14,   11,   42,   42,   42,   18,   22,
        12,   20,    7,    0
     } ;
 
@@ -977,106 +977,111 @@ YY_RULE_SETUP
 case 27:
 YY_RULE_SETUP
 #line 66 "minicpp.l"
-{ return NEQ;    }
+{ return ASSIGN; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 67 "minicpp.l"
-{ return EQ;     }
+{ return NEQ;    }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
 #line 68 "minicpp.l"
-{ return LE;     }
+{ return EQ;     }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
 #line 69 "minicpp.l"
-{ return GE;     }
+{ return LE;     }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
 #line 70 "minicpp.l"
-{ return LT;     }
+{ return GE;     }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
 #line 71 "minicpp.l"
-{ return GT;     }
+{ return LT;     }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
 #line 72 "minicpp.l"
-{ return INC;    }
+{ return GT;     }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
 #line 73 "minicpp.l"
-{ return DEC;    }
+{ return INC;    }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
 #line 74 "minicpp.l"
-{ return PLUS;   }
+{ return DEC;    }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
 #line 75 "minicpp.l"
-{ return MINUS;  }
+{ return PLUS;   }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
 #line 76 "minicpp.l"
-{ return MULT;   }
+{ return MINUS;  }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
 #line 77 "minicpp.l"
-{ return DIV;    }
+{ return ASTERIX;   }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
 #line 78 "minicpp.l"
-{ return MOD;    }
+{ return DIV;    }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
 #line 79 "minicpp.l"
-{ return SIGNCALL;}
+{ return MOD;    }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 81 "minicpp.l"
-{ yylval = strdup(yytext); return IDENT; }
+#line 80 "minicpp.l"
+{ return SIGNCALL;}
 	YY_BREAK
 case 42:
-/* rule 42 can match eol */
 YY_RULE_SETUP
 #line 82 "minicpp.l"
-{ ; return STRING;  }
+{ yylval = strdup(yytext); return IDENT; }
 	YY_BREAK
 case 43:
+/* rule 43 can match eol */
 YY_RULE_SETUP
 #line 83 "minicpp.l"
-{ ; return NUMBER;  }
+{ ; return STRING;  }
 	YY_BREAK
 case 44:
-/* rule 44 can match eol */
 YY_RULE_SETUP
 #line 84 "minicpp.l"
-{ yylineno++;       }
+{ ; return NUMBER;  }
 	YY_BREAK
 case 45:
+/* rule 45 can match eol */
 YY_RULE_SETUP
 #line 85 "minicpp.l"
-{ return yytext[0]; } /* all other chars as tokens for parsers */
+{ yylineno++;       }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 87 "minicpp.l"
+#line 86 "minicpp.l"
+{ return yytext[0]; } /* all other chars as tokens for parsers */
+	YY_BREAK
+case 47:
+YY_RULE_SETUP
+#line 88 "minicpp.l"
 ECHO;
 	YY_BREAK
-#line 1080 "minicpp-lex.yy.c"
+#line 1085 "minicpp-lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2070,7 +2075,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 87 "minicpp.l"
+#line 88 "minicpp.l"
 
 
 
