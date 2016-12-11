@@ -312,7 +312,7 @@ int yyerror(char *msg) {
 
 int main(int argc, char *argv[]) {
     //if(argc > 1) {
-        FILE *f_handle = fopen("../test.mcpp","r"); // fopen(argv[1],"r");
+        FILE *f_handle = fopen("../test.cpp","r"); // fopen(argv[1],"r");
         if(f_handle != NULL){
             yyin = f_handle;
         } else {

@@ -1,7 +1,8 @@
-/* C comments are allowed here. Seems that comment are not supported everywhere in the text */
+/* Lexical specification of the MiniC language */
 %{
 
 	#include "minic.tab.h"
+
 	extern int yylval;
 	extern int yylineno;
 
@@ -9,21 +10,20 @@
 
 %%
 
-[ \t]+      { ; }
-int         { return INT; }
-main        { return MAIN; }
-printf      { return PRINTF; }
-scanf       { return SCANF; }
-void        { return VOID; }
-[a-zA-Z][a-zA-z0-9]* { return IDENT; }
-[0-9]+               { yylval=atoi(yytext); return NUMBER; }
-\n          { yylineno++; }
-\*           { return yytext[0]; }
-\+           { return yytext[0]; }
+void                    { return VOID;  }
+main                    { return MAIN;  }
+int                     { return INT;   }
+scanf                   { return SCANF; }
+printf                  { return PRINTF;}
+
+[ \t\n\r]+              { ; }                   /*ignore white space: blanks and tabs       */
+"/""/"[^\n\r]*          { ; }                   /* skip line comments */
+[0-9]+                  { return NUMBER;}
+[a-zA-Z][_a-zA-Z0-9]*   { return IDENT; }
+.                       { return yytext[0]; }   /*return all other chars as tokens to parser: '+', ...      */
 
 %%
 
 int yywrap() {
 	return 1;
 }
-

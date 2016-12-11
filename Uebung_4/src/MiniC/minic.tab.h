@@ -34,7 +34,7 @@
 # define YY_YY_MINIC_TAB_H_INCLUDED
 /* Enabling traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -52,7 +52,11 @@ extern int yydebug;
      SCANF = 261,
      VOID = 262,
      IDENT = 263,
-     NUMBER = 264
+     NUMBER = 264,
+     PLUS = 265,
+     MINUS = 266,
+     DIV = 267,
+     MULT = 268
    };
 #endif
 

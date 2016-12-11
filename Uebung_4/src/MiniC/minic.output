@@ -1,0 +1,547 @@
+Terminals unused in grammar
+
+   PLUS
+   MINUS
+   DIV
+   MULT
+
+
+Grammar
+
+    0 $accept: MC $end
+
+    1 MC: VOID MAIN '(' ')' '{' OptVarDecl StateSeq '}'
+
+    2 OptVarDecl: /* empty */
+    3           | VarDecl
+
+    4 VarDecl: INT IdentList ';'
+
+    5 IdentList: IDENT
+    6          | IdentList ',' IDENT
+
+    7 StateSeq: Stat StatList
+
+    8 StatList: /* empty */
+    9         | StatList Stat
+
+   10 Stat: OptStat ';'
+
+   11 OptStat: /* empty */
+   12        | IDENT '=' Expr
+   13        | SCANF '(' IDENT ')'
+   14        | PRINTF '(' Expr ')'
+
+   15 Expr: Term TermList
+
+   16 TermList: /* empty */
+   17         | TermList Sign Term
+
+   18 Sign: '+'
+   19     | '-'
+
+   20 Term: Fact FactList
+
+   21 FactList: /* empty */
+   22         | FactList Operator Fact
+
+   23 Operator: '*'
+   24         | '/'
+
+   25 Fact: IDENT
+   26     | NUMBER
+   27     | '(' Expr ')'
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'(' (40) 1 13 14 27
+')' (41) 1 13 14 27
+'*' (42) 23
+'+' (43) 18
+',' (44) 6
+'-' (45) 19
+'/' (47) 24
+';' (59) 4 10
+'=' (61) 12
+'{' (123) 1
+'}' (125) 1
+error (256)
+INT (258) 4
+MAIN (259) 1
+PRINTF (260) 14
+SCANF (261) 13
+VOID (262) 1
+IDENT (263) 5 6 12 13 25
+NUMBER (264) 26
+PLUS (265)
+MINUS (266)
+DIV (267)
+MULT (268)
+
+
+Nonterminals, with rules where they appear
+
+$accept (25)
+    on left: 0
+MC (26)
+    on left: 1, on right: 0
+OptVarDecl (27)
+    on left: 2 3, on right: 1
+VarDecl (28)
+    on left: 4, on right: 3
+IdentList (29)
+    on left: 5 6, on right: 4 6
+StateSeq (30)
+    on left: 7, on right: 1
+StatList (31)
+    on left: 8 9, on right: 7 9
+Stat (32)
+    on left: 10, on right: 7 9
+OptStat (33)
+    on left: 11 12 13 14, on right: 10
+Expr (34)
+    on left: 15, on right: 12 14 27
+TermList (35)
+    on left: 16 17, on right: 15 17
+Sign (36)
+    on left: 18 19, on right: 17
+Term (37)
+    on left: 20, on right: 15 17
+FactList (38)
+    on left: 21 22, on right: 20 22
+Operator (39)
+    on left: 23 24, on right: 22
+Fact (40)
+    on left: 25 26 27, on right: 20 22
+
+
+State 0
+
+    0 $accept: . MC $end
+
+    VOID  shift, and go to state 1
+
+    MC  go to state 2
+
+
+State 1
+
+    1 MC: VOID . MAIN '(' ')' '{' OptVarDecl StateSeq '}'
+
+    MAIN  shift, and go to state 3
+
+
+State 2
+
+    0 $accept: MC . $end
+
+    $end  shift, and go to state 4
+
+
+State 3
+
+    1 MC: VOID MAIN . '(' ')' '{' OptVarDecl StateSeq '}'
+
+    '('  shift, and go to state 5
+
+
+State 4
+
+    0 $accept: MC $end .
+
+    $default  accept
+
+
+State 5
+
+    1 MC: VOID MAIN '(' . ')' '{' OptVarDecl StateSeq '}'
+
+    ')'  shift, and go to state 6
+
+
+State 6
+
+    1 MC: VOID MAIN '(' ')' . '{' OptVarDecl StateSeq '}'
+
+    '{'  shift, and go to state 7
+
+
+State 7
+
+    1 MC: VOID MAIN '(' ')' '{' . OptVarDecl StateSeq '}'
+
+    INT  shift, and go to state 8
+
+    $default  reduce using rule 2 (OptVarDecl)
+
+    OptVarDecl  go to state 9
+    VarDecl     go to state 10
+
+
+State 8
+
+    4 VarDecl: INT . IdentList ';'
+
+    IDENT  shift, and go to state 11
+
+    IdentList  go to state 12
+
+
+State 9
+
+    1 MC: VOID MAIN '(' ')' '{' OptVarDecl . StateSeq '}'
+
+    PRINTF  shift, and go to state 13
+    SCANF   shift, and go to state 14
+    IDENT   shift, and go to state 15
+
+    $default  reduce using rule 11 (OptStat)
+
+    StateSeq  go to state 16
+    Stat      go to state 17
+    OptStat   go to state 18
+
+
+State 10
+
+    3 OptVarDecl: VarDecl .
+
+    $default  reduce using rule 3 (OptVarDecl)
+
+
+State 11
+
+    5 IdentList: IDENT .
+
+    $default  reduce using rule 5 (IdentList)
+
+
+State 12
+
+    4 VarDecl: INT IdentList . ';'
+    6 IdentList: IdentList . ',' IDENT
+
+    ';'  shift, and go to state 19
+    ','  shift, and go to state 20
+
+
+State 13
+
+   14 OptStat: PRINTF . '(' Expr ')'
+
+    '('  shift, and go to state 21
+
+
+State 14
+
+   13 OptStat: SCANF . '(' IDENT ')'
+
+    '('  shift, and go to state 22
+
+
+State 15
+
+   12 OptStat: IDENT . '=' Expr
+
+    '='  shift, and go to state 23
+
+
+State 16
+
+    1 MC: VOID MAIN '(' ')' '{' OptVarDecl StateSeq . '}'
+
+    '}'  shift, and go to state 24
+
+
+State 17
+
+    7 StateSeq: Stat . StatList
+
+    $default  reduce using rule 8 (StatList)
+
+    StatList  go to state 25
+
+
+State 18
+
+   10 Stat: OptStat . ';'
+
+    ';'  shift, and go to state 26
+
+
+State 19
+
+    4 VarDecl: INT IdentList ';' .
+
+    $default  reduce using rule 4 (VarDecl)
+
+
+State 20
+
+    6 IdentList: IdentList ',' . IDENT
+
+    IDENT  shift, and go to state 27
+
+
+State 21
+
+   14 OptStat: PRINTF '(' . Expr ')'
+
+    IDENT   shift, and go to state 28
+    NUMBER  shift, and go to state 29
+    '('     shift, and go to state 30
+
+    Expr  go to state 31
+    Term  go to state 32
+    Fact  go to state 33
+
+
+State 22
+
+   13 OptStat: SCANF '(' . IDENT ')'
+
+    IDENT  shift, and go to state 34
+
+
+State 23
+
+   12 OptStat: IDENT '=' . Expr
+
+    IDENT   shift, and go to state 28
+    NUMBER  shift, and go to state 29
+    '('     shift, and go to state 30
+
+    Expr  go to state 35
+    Term  go to state 32
+    Fact  go to state 33
+
+
+State 24
+
+    1 MC: VOID MAIN '(' ')' '{' OptVarDecl StateSeq '}' .
+
+    $default  reduce using rule 1 (MC)
+
+
+State 25
+
+    7 StateSeq: Stat StatList .
+    9 StatList: StatList . Stat
+
+    PRINTF  shift, and go to state 13
+    SCANF   shift, and go to state 14
+    IDENT   shift, and go to state 15
+
+    ';'       reduce using rule 11 (OptStat)
+    $default  reduce using rule 7 (StateSeq)
+
+    Stat     go to state 36
+    OptStat  go to state 18
+
+
+State 26
+
+   10 Stat: OptStat ';' .
+
+    $default  reduce using rule 10 (Stat)
+
+
+State 27
+
+    6 IdentList: IdentList ',' IDENT .
+
+    $default  reduce using rule 6 (IdentList)
+
+
+State 28
+
+   25 Fact: IDENT .
+
+    $default  reduce using rule 25 (Fact)
+
+
+State 29
+
+   26 Fact: NUMBER .
+
+    $default  reduce using rule 26 (Fact)
+
+
+State 30
+
+   27 Fact: '(' . Expr ')'
+
+    IDENT   shift, and go to state 28
+    NUMBER  shift, and go to state 29
+    '('     shift, and go to state 30
+
+    Expr  go to state 37
+    Term  go to state 32
+    Fact  go to state 33
+
+
+State 31
+
+   14 OptStat: PRINTF '(' Expr . ')'
+
+    ')'  shift, and go to state 38
+
+
+State 32
+
+   15 Expr: Term . TermList
+
+    $default  reduce using rule 16 (TermList)
+
+    TermList  go to state 39
+
+
+State 33
+
+   20 Term: Fact . FactList
+
+    $default  reduce using rule 21 (FactList)
+
+    FactList  go to state 40
+
+
+State 34
+
+   13 OptStat: SCANF '(' IDENT . ')'
+
+    ')'  shift, and go to state 41
+
+
+State 35
+
+   12 OptStat: IDENT '=' Expr .
+
+    $default  reduce using rule 12 (OptStat)
+
+
+State 36
+
+    9 StatList: StatList Stat .
+
+    $default  reduce using rule 9 (StatList)
+
+
+State 37
+
+   27 Fact: '(' Expr . ')'
+
+    ')'  shift, and go to state 42
+
+
+State 38
+
+   14 OptStat: PRINTF '(' Expr ')' .
+
+    $default  reduce using rule 14 (OptStat)
+
+
+State 39
+
+   15 Expr: Term TermList .
+   17 TermList: TermList . Sign Term
+
+    '+'  shift, and go to state 43
+    '-'  shift, and go to state 44
+
+    $default  reduce using rule 15 (Expr)
+
+    Sign  go to state 45
+
+
+State 40
+
+   20 Term: Fact FactList .
+   22 FactList: FactList . Operator Fact
+
+    '*'  shift, and go to state 46
+    '/'  shift, and go to state 47
+
+    $default  reduce using rule 20 (Term)
+
+    Operator  go to state 48
+
+
+State 41
+
+   13 OptStat: SCANF '(' IDENT ')' .
+
+    $default  reduce using rule 13 (OptStat)
+
+
+State 42
+
+   27 Fact: '(' Expr ')' .
+
+    $default  reduce using rule 27 (Fact)
+
+
+State 43
+
+   18 Sign: '+' .
+
+    $default  reduce using rule 18 (Sign)
+
+
+State 44
+
+   19 Sign: '-' .
+
+    $default  reduce using rule 19 (Sign)
+
+
+State 45
+
+   17 TermList: TermList Sign . Term
+
+    IDENT   shift, and go to state 28
+    NUMBER  shift, and go to state 29
+    '('     shift, and go to state 30
+
+    Term  go to state 49
+    Fact  go to state 33
+
+
+State 46
+
+   23 Operator: '*' .
+
+    $default  reduce using rule 23 (Operator)
+
+
+State 47
+
+   24 Operator: '/' .
+
+    $default  reduce using rule 24 (Operator)
+
+
+State 48
+
+   22 FactList: FactList Operator . Fact
+
+    IDENT   shift, and go to state 28
+    NUMBER  shift, and go to state 29
+    '('     shift, and go to state 30
+
+    Fact  go to state 50
+
+
+State 49
+
+   17 TermList: TermList Sign Term .
+
+    $default  reduce using rule 17 (TermList)
+
+
+State 50
+
+   22 FactList: FactList Operator Fact .
+
+    $default  reduce using rule 22 (FactList)
