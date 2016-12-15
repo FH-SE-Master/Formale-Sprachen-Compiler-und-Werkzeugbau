@@ -1,0 +1,61 @@
+/* Comments are allowed here. COMPILER name is the same name as the file */
+COMPILER MiniC
+
+SEM<<
+  private static String identStr;
+  private static int   numberVal;
+>>
+
+CHARACTER SETS
+  letter = 'A' .. 'Z' + 'a' .. 'z' + '_'.
+  digit  = '0' ..'9'.
+  ignore = CHR(9) + EOL IGNORE.
+
+KEYWORDS
+  'int'.
+  'main'.
+  'printf'.
+  'scanf'.
+  'void'.
+
+TOKENS
+  '+'.
+  '-'.
+  '*'.
+  '/'.
+  '('.
+  ')'.
+  '{'.
+  '}'.
+  ','.
+  '='.
+  ';'.
+
+TOKEN CLASSES
+  ident  << out String identStr >> =
+    letter {letter | digit} LEX << identStr = tokenStr; >>.
+  number << out int numberVal >> =
+    digit {digit} LEX << numberVal=Convert.ToInt32(tokenStr); >>.
+
+NONTERMINALS
+  MiniC.
+  VarDecl.
+  StatSeq.
+  Stat.
+  Expr.
+  Term.
+  Fact.
+
+RULES
+  MiniC   = 'void' 'main' '(' ')' '{'  [ VarDecl ] StatSeq '}'.
+  VarDecl = 'int' ident<< out identStr >> { ',' ident<< out identStr >> } ';'.
+  StatSeq = Stat { Stat } .
+  Stat    = [ ident << out identStr >> '=' Expr
+            | 'scanf'  '(' ident<< out  identStr >> ')'
+            | 'printf' '(' Expr  ')'
+            ] ';' .
+  Expr    = Term { ( '+' | '-' ) Term } .
+  Term    = Fact { ( '*' | '/' ) Fact } .
+  Fact    = ident<< out identStr >> | number << out numberVal >> | '(' Expr ')' .
+
+END MiniC.

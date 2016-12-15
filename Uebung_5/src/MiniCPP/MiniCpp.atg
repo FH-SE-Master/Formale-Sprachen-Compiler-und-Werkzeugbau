@@ -1,0 +1,50 @@
+/* Attributed grammar for MiniCPP */
+COMPILE MiniCPP
+
+SEM<<
+>>
+
+CHARACTER SETS
+
+KEYWORDS
+
+TOKENS
+  'void'
+  'int'
+  'bool'
+  'string'
+  'cout'
+  'cin'
+  'endl'
+  'true'
+  'false'
+  'const'
+  'if'
+  'else'
+  'while'
+  'break'
+  'return'
+  'new'
+  'delete'
+  'or'
+  'and'
+  '>>'
+  '<<'
+
+ASSIGN
+NEQ
+EQ
+LE
+GE
+INC
+DEC
+ADD
+SUBST
+LT
+GT
+PLUS
+MINUS
+ASTERIX
+DIV
+MOD
+SIGNCALL

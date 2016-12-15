@@ -1,0 +1,203 @@
+Coco-2 PGT (source: ..\MiniC\MiniC.atg)
+
+    1| /* Comments are allowed here. COMPILER name is the same name as the file */
+    2| COMPILER MiniC
+    3| 
+    4| SEM<<
+    5|   private static String identStr;
+    6|   private static int   numberVal;
+    7| >>
+    8| 
+    9| CHARACTER SETS
+   10|   letter = 'A' .. 'Z' + 'a' .. 'z' + '_'.
+   11|   digit  = '0' ..'9'.
+   12|   ignore = CHR(9) + EOL IGNORE.
+   13| 
+   14| KEYWORDS
+   15|   'int'.
+   16|   'main'.
+   17|   'printf'.
+   18|   'scanf'.
+   19|   'void'.
+   20| 
+   21| TOKENS
+   22|   '+'.
+   23|   '-'.
+   24|   '*'.
+   25|   '/'.
+   26|   '('.
+   27|   ')'.
+   28|   '{'.
+   29|   '}'.
+   30|   ','.
+   31|   '='.
+   32|   ';'.
+   33| 
+   34| TOKEN CLASSES
+   35|   ident  << out String identStr >> =
+   36|     letter {letter | digit} LEX << identStr = tokenStr; >>.
+   37|   number << out int numberVal >> =
+   38|     digit {digit} LEX << numberVal=Convert.ToInt32(tokenStr); >>.
+   39| 
+   40| NONTERMINALS
+   41|   MiniC.
+   42|   VarDecl.
+   43|   StatSeq.
+   44|   Stat.
+   45|   Expr.
+   46|   Term.
+   47|   Fact.
+   48| 
+   49| RULES
+   50|   MiniC   = 'void' 'main' '(' ')' '{'  [ VarDecl ] StatSeq '}'.
+   51|   VarDecl = 'int' ident<< out identStr >> { ',' ident<< out identStr >> } ';'.
+   52|   StatSeq = Stat { Stat } .
+   53|   Stat    = [ ident << out identStr >> '=' Expr
+   54|             | 'scanf'  '(' ident<< out  identStr >> ')'
+   55|             | 'printf' '(' Expr  ')'
+   56|             ] ';' .
+   57|   Expr    = Term { ( '+' | '-' ) Term } .
+   58|   Term    = Fact { ( '*' | '/' ) Fact } .
+   59|   Fact    = ident<< out identStr >> | number << out numberVal >> | '(' Expr ')' .
+   60| 
+   61| END MiniC.
+
+
+error(s) and warning(s):
+-----------------------
+
+    0 lexical error(s) 
+    0 syntax error(s)  
+    0 semantic error(s)
+    0 warning(s)       
+
+
+statistics:
+----------
+
+   18 terminals
+    7 nonterminals
+   21 alternatives
+   48 nodes in top-down graph
+    3 eps sets (with look ahead)
+    1 any sets
+
+  166 bytes G-code
+
+grammar has no deletable nonterminals
+-------------------------------------
+
+
+
+G-code:
+
+======
+
+-----  MiniC  ------------------------------
+    1  T      void
+    3  T      main
+    5  T      '('
+    7  T      ')'
+    9  T      '{'
+   11  NTA    VarDecl                16   16
+   16  NT     StatSeq                 2
+   19  T      '}'
+   21  RET
+
+-----  VarDecl  ----------------------------
+   22  T      int
+   24  TC     ident                   1
+   27  TA     ','                    37
+   31  TC     ident                   2
+   34  JMP       27
+
+   37  T      ';'
+   39  RET
+
+-----  StatSeq  ----------------------------
+   40  NT     Stat                    1
+   43  NTA    Stat                   51   51
+   48  JMP       43
+
+   51  EPS        1
+   53  RET
+
+-----  Stat  -------------------------------
+   54  TCA    ident                  67   67
+   59  T      '='
+   61  NT     Expr                    2
+   64  T      ';'
+   66  RET
+
+   67  TA     scanf                  81
+   71  T      '('
+   73  TC     ident                   3
+   76  T      ')'
+   78  JMP       64
+
+   81  TA     printf                 64
+   85  T      '('
+   87  NT     Expr                    4
+   90  T      ')'
+   92  JMP       64
+
+-----  Expr  -------------------------------
+   95  NT     Term                    1
+   98  TA     '+'                   108
+  102  NT     Term                    2
+  105  JMP       98
+
+  108  TA     '-'                   115
+  112  JMP      102
+
+  115  EPS        2
+  117  RET
+
+-----  Term  -------------------------------
+  118  NT     Fact                    1
+  121  TA     '*'                   131
+  125  NT     Fact                    2
+  128  JMP      121
+
+  131  TA     '/'                   138
+  135  JMP      125
+
+  138  EPS        3
+  140  RET
+
+-----  Fact  -------------------------------
+  141  TCA    ident                 147  147
+  146  RET
+
+  147  TCA    number                153  153
+  152  RET
+
+  153  T      '('
+  155  NT     Expr                    3
+  158  T      ')'
+  160  RET
+
+-----  R o o t  ----------------------------
+  161  NT     MiniC                   1
+  164  T      'end of file'
+  166  RET
+
+
+nonterminals:
+============
+
+MiniC                     1     { void }
+VarDecl                  22     { int }
+StatSeq                  40     { printf, scanf, ';', ident }
+Stat                     54     { printf, scanf, ';', ident }
+Expr                     95     { '(', ident, number }
+Term                    118     { '(', ident, number }
+Fact                    141     { '(', ident, number }
+
+
+eps look-aheads:
+===============
+
+    1   { '}' }
+    2   { ')', ';' }
+    3   { '+', '-', ')', ';' }
