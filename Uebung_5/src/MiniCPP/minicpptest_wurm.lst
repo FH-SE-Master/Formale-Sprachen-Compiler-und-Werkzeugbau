@@ -1,0 +1,77 @@
+MiniCPP (file: "minicpptest_wurm.cpp")
+
+    1| void Sieve(int n); // declaration
+*SYN*                     ^expected: ConstDecl, VarDefOrFuncDeclOrDef
+    2| 
+    3| void main() {
+    4| 	int n;
+    5| 	int x = 0;
+    6| 	cout << "n > ";
+    7| 	cin >> n;
+    8| 	if (n > 2)
+    9| 		Sieve(n);
+   10| 	
+   11| 	if(n > 2) {
+   12| 		x++;
+   13| 	}
+   14| 	else {
+   15| 		x--;
+   16| 	}
+   17| 		
+   18| 	
+   19| } // main
+*SYN*    ^expected: ConstDecl, VarDefOrFuncDeclOrDef
+   20| 
+   21| void Sieve(int n) { // definition
+*SYN*                      ^expected: ConstDecl, Type, Stat, "}"
+   22| 	int col, i, j;
+   23| 	bool *sieve = 0;
+   24| 
+   25| 	sieve = new bool[n + 1];
+   26| 	i = 2;
+   27| 
+   28| 	while (i <= n) {
+   29| 		sieve[i] = true;
+   30| 		i++;
+   31| 	} // while
+*SYN*     ^syntax error
+   32| 
+   33| 	cout << 2 << " ";
+   34| 	col = 1;
+   35| 	i = 3;
+   36| 
+   37| 	while (i <= n) {
+   38| 		if (sieve[i]) {
+   39| 			if (col == 10) {
+   40| 				cout << endl;
+   41| 				col = 0;
+   42| 			} // if
+*SYN*       ^syntax error
+   43| 			
+   44| 			col++;
+   45| 			cout << i << " ";
+   46| 			j = i * i;
+   47| 			
+   48| 			while (j <= n) {
+   49| 				sieve[j] = false;
+   50| 				j = j + 2 * i;
+   51| 			} // while
+*SYN*       ^syntax error
+   52| 		} // if
+   53| 
+   54| 		i = i + 2;
+   55| 	} // while
+*SYN*     ^syntax error
+   56| 
+   57| 	delete[] sieve;
+   58| } // Sieve
+*SYN*    ^syntax error
+
+
+error(s) and warning(s):
+-----------------------
+
+    0 lexical error(s) 
+    8 syntax error(s)  
+    0 semantic error(s)
+    0 warning(s)       

@@ -1,50 +1,109 @@
 /* Attributed grammar for MiniCPP */
-COMPILE MiniCPP
+COMPILER MiniCPP
 
 SEM<<
+	private static int loc = 0;
+	private static int stc = 0;
+	private static int mc  = 0;
 >>
 
+
 CHARACTER SETS
+	digit		= '0' .. '9'.
+	letter		= 'a' .. 'z' + 'A' .. 'Z' .
+	whiteSpace	= CHR(9) + EOL IGNORE. /*' ' ignored by default*/
+	noquote		= ANY - '"'.
+
+COMMENTS
+	FROM '//' TO EOL.
+	FROM '/*' TO '*/'.
 
 KEYWORDS
+	'void'. 'scanf'. 'printf'. 'int'. 'false'. 'true'. 'const'. 'if'. 'while'. 'break'. 'cin'. 'cout'. 'else'. 'for'. 'delete'. 'new'. 'endl'. 'return'. 'bool'.
 
 TOKENS
-  'void'
-  'int'
-  'bool'
-  'string'
-  'cout'
-  'cin'
-  'endl'
-  'true'
-  'false'
-  'const'
-  'if'
-  'else'
-  'while'
-  'break'
-  'return'
-  'new'
-  'delete'
-  'or'
-  'and'
-  '>>'
-  '<<'
+	 '{'. '}'. ','. ';'. '='. '++'. '--'. '<<'. '>>'. '||'. '&&'. '=='. '!='. '<='. '>='.
+	 '+'. '-'. '*'. '['. ']'. '%'. '!'. '>'. '<'. '/'. '('. ')'.
 
-ASSIGN
-NEQ
-EQ
-LE
-GE
-INC
-DEC
-ADD
-SUBST
-LT
-GT
-PLUS
-MINUS
-ASTERIX
-DIV
-MOD
-SIGNCALL
+TOKEN CLASSES
+	number = digit { digit }.
+	ident = ( letter | '_' ) { letter | digit | '_' }.
+	string = '"' { noquote } '"'.
+
+NONTERMINALS
+	MiniCPP.
+	ConstDecl.
+	Init.
+	VarDef.
+	FuncHead.
+	FormParList.
+	Type.
+	Block.
+	Stat.
+	Expr.
+	Term.
+	Fact.
+	ActParList.
+	IfStat.
+	WhileStat.
+	BreakStat.
+	InputStat.
+	OutputStat.
+	DeleteStat.
+	ReturnStat.
+	OrExpr.
+	AndExpr.
+	RelExpr.
+	SimpleExpr.
+	NotFact.
+	VarDefOrFuncDeclOrDef.
+	FormParListRest.
+	NonVoidType.
+	IdentStat.
+
+	RULES
+
+		MiniCPP               = { ConstDecl | VarDefOrFuncDeclOrDef }
+														SEM<<
+																	Console.WriteLine($"Lines of code: {loc}");
+																  Console.WriteLine($"Lines of statements: {stc}");
+																  Console.WriteLine($"Complexity by McCabe: {mc}");
+														>>.
+		VarDefOrFuncDeclOrDef = Type [ '*' ] ident (VarDef | FuncHead (';' SEM<<loc++;>> | Block)) .
+		ConstDecl             = 'const' Type ident Init ';' SEM<<loc++;>> .
+		Init                  = '=' ( false | true | number ) .
+		VarDef                =	[ Init ] { ',' [ '*' ] ident [ Init ] } ';' SEM<<loc++;>>.
+		FuncHead              = '(' [ FormParList ] ')' .
+		FormParList           =	( 'void' [ FormParListRest ] | NonVoidType FormParListRest ).
+		FormParListRest       = [ '*' ] ident [ '[' ']' ] { ',' Type [ '*' ] ident [ '[' ']' ] } .
+		Type                  = 'void' | NonVoidType .
+		NonVoidType           = 'bool' | 'int' .
+		Block                 =	'{' { ConstDecl | Type [ '*' ] ident VarDef | Stat } '}'.
+		Stat                  = ( IdentStat | IfStat | WhileStat | BreakStat | InputStat
+		                        | OutputStat | DeleteStat | ReturnStat | Block | ';' )
+														SEM<<loc++; stc++;>>.
+		IdentStat             =	ident ('++' | '--' | [ '[' Expr ']' ] '=' Expr | '(' [ ActParList ] ')') ';'.
+		ActParList            = Expr { ',' Expr } .
+		IfStat                = 'if' '(' Expr ')' Stat [ 'else' Stat SEM<<mc++;>>] SEM<<loc++;mc++;>>.
+		WhileStat             = 'while' '(' Expr ')' Stat .
+		BreakStat             = 'break' ';' .
+		InputStat             = 'cin'  '>>' ident ';' .
+		OutputStat            = 'cout' '<<' ( Expr | string | 'endl' ) { '<<' ( Expr | string | 'endl' ) } ';' .
+		DeleteStat            = 'delete' '[' ']' ident ';' .
+		ReturnStat            = 'return' [ Expr ] ';' .
+		Expr                  =	OrExpr .
+		OrExpr                = AndExpr { '||' AndExpr } .
+		AndExpr               = RelExpr { '&&' RelExpr } .
+		RelExpr               =	SimpleExpr [ ( '==' | '!=' | '<' | '<=' | '>' | '>=' ) SimpleExpr ] .
+		SimpleExpr            = [ '+' | '-' ] Term { ( '+' | '-' ) Term } .
+		Term                  = NotFact { ( '*' | '/' | '%' )  NotFact } .
+		NotFact               = [ '!' ] Fact .
+		Fact                  = 'false'
+		                        | 'true'
+														| number
+														| ident [ ( '[' Expr ']' )
+														| ( '(' [ ActParList ] ')' ) ]
+														| 'new' Type '[' Expr ']'
+														| '(' Expr ')' .
+
+	END MiniCPP.

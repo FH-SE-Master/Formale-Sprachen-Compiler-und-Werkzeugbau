@@ -1,0 +1,64 @@
+MiniCPP (file: "test.cpp")
+
+    1| /**
+*SYN*  ^expected: ConstDecl, VarDefOrFuncDeclOrDef
+    2|  * Implements the algorithm sieve of Eratosthenes.
++LEX+                                                   ^invalid token start
+    3|  * @param n the count of items to use
++LEX+     ^invalid token start
+    4|  */
+    5| void Sieve(int n);
+    6| 
+    7| /**
+    8|  * Main entry of the program.
++LEX+                              ^invalid token start
+    9|  */
+   10| void main() {
+   11|     int n;
+   12|     cout << "n > ";
+   13|     cin >> n;
+   14|     if (n > 2) {
+   15|         Sieve(n);
+   16|     } // if
+   17| } // main
+   18| 
+   19| // Implementation of sieve
+   20| void Sieve(int n) {
+   21|     int col, i, j;
+   22|     bool *sieve = 0;
+   23|     sieve = new bool[n + 1];
+   24|     i = 2;
+   25|     while (i <= n) {
+   26|         sieve[i] = true;
+   27|         i++;
+   28|     } // while
+   29|     cout << 2 << " ";
+   30|     col = 1;
+   31|     i = 3;
+   32|     while (i <= n) {
+   33|         if (sieve[i]) {
+   34|             if (col == 10) {
+   35|                 cout << endl;
+   36|                 col = 0;
+   37|             } // if
+   38|             col++;
+   39|             cout << i << " ";
+   40|             j = i * i;
+   41|             while (j <= n) {
+   42|                 sieve[j] = false;
+   43|                 j = j + 2 * i;
+   44|             } // while
+   45|         } // if
+   46|         i = i + 2;
+   47|     } // while
+   48|     delete[] sieve;
+   49| } // Sieve
+
+
+error(s) and warning(s):
+-----------------------
+
+    3 lexical error(s) 
+    1 syntax error(s)  
+    0 semantic error(s)
+    0 warning(s)       

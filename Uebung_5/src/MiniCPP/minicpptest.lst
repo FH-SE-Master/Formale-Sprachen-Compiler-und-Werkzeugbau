@@ -1,0 +1,13 @@
+MiniCPP (file: "minicpptest.cpp")
+
+    1| void Sieve(int n);
+*SYN*  ^expected: ConstDecl, VarDefOrFuncDeclOrDef
+
+
+error(s) and warning(s):
+-----------------------
+
+    0 lexical error(s) 
+    1 syntax error(s)  
+    0 semantic error(s)
+    0 warning(s)       

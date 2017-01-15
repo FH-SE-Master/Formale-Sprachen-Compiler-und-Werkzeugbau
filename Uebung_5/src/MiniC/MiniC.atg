@@ -7,29 +7,23 @@ SEM<<
 >>
 
 CHARACTER SETS
-  letter = 'A' .. 'Z' + 'a' .. 'z' + '_'.
-  digit  = '0' ..'9'.
-  ignore = CHR(9) + EOL IGNORE.
+	digit	    	= '0' .. '9'.
+	letter		  = 'a' .. 'z' + 'A' .. 'Z' .
+	whiteSpace	= CHR(9) + EOL IGNORE. /*' ' ignored by default*/
+	noquote		  = ANY - '"'.
 
 KEYWORDS
-  'int'.
-  'main'.
-  'printf'.
-  'scanf'.
-  'void'.
+  'const'. 'void'. 'return'. 'delete'. 'new'.
+  'int'. 'bool'. 'false'. 'true'.
+  'if'. 'else'. 'while'. 'break'.
+  'cin'. 'cout'.
 
 TOKENS
-  '+'.
-  '-'.
-  '*'.
-  '/'.
-  '('.
-  ')'.
-  '{'.
-  '}'.
-  ','.
-  '='.
-  ';'.
+  ';'. ','.
+  '='. '+'. '-'. '++'. '--'. '/'. '*'. '%'
+  '||'. '&&'. '<'. '>'. '<<'. '>>'. '<='. '>='. '=='. '!='. '!'.
+  '<<'. '>>'.
+  '('. ')'. '['. ']'. '{'. '}'.
 
 TOKEN CLASSES
   ident  << out String identStr >> =

@@ -1,0 +1,95 @@
+COMPILER MiniCPP
+
+CHARACTER SETS
+	digit		= '0' .. '9'.
+	letter		= 'a' .. 'z' + 'A' .. 'Z' .
+	whiteSpace	= CHR(9) + EOL IGNORE. /*' ' ignored by default*/
+	noquote		= ANY - '"'.
+
+COMMENTS 
+	FROM '//' TO EOL.
+	FROM '/*' TO '*/'.
+  
+KEYWORDS
+	'void'. 'scanf'. 'printf'. 'int'. 'false'. 'true'. 'const'. 'if'. 'while'. 'break'. 'cin'. 'cout'. 'else'. 'for'. 'delete'. 'new'. 'endl'. 'return'. 'bool'.
+
+TOKENS                      
+	 '{'. '}'. ','. ';'. '='. '++'. '--'. '<<'. '>>'. '||'. '&&'. '=='. '!='. '<='. '>='.
+	 '+'. '-'. '*'. '['. ']'. '%'. '!'. '>'. '<'.
+	'/'. '('. ')'.
+
+TOKEN CLASSES           
+	number = digit { digit }.
+	ident = ( letter | '_' ) { letter | digit | '_' }.
+	string = '"' { noquote } '"'.
+
+NONTERMINALS
+	MiniCPP.
+	ConstDecl.
+	Init.
+	VarDef.
+	FuncHead.
+	FormParList.
+	Type.
+	Block.
+	IncStat.
+	DecStat.
+	AssignStat.
+	Stat.
+	Expr.
+	Term.
+	Fact.
+	CallStat.
+	ActParList.
+	IfStat.
+	WhileStat.
+	BreakStat.
+	InputStat.
+	OutputStat.
+	DeleteStat.
+	ReturnStat.
+	OrExpr.
+	AndExpr.
+	RelExpr.
+	SimpleExpr.
+	NotFact.
+	VarDefOrFuncDeclOrDef.
+	FormParListRest.
+	NonVoidType.
+	
+RULES
+
+	MiniCPP = 		{ ConstDecl | VarDefOrFuncDeclOrDef } SEM<<Console.WriteLine("test");>>.
+	VarDefOrFuncDeclOrDef = Type [ '*' ] ident (VarDef | FuncHead (';' | Block) ) .
+	ConstDecl = 	'const' Type ident Init ';' .
+	Init = 			'=' ( false | true | number ) .
+	VarDef = 		[ Init ] { ',' [ '*' ] ident [ Init ] } ';' .
+	FuncHead = 		'(' [ FormParList ] ')' .
+	FormParList =	( 'void' [ FormParListRest ] | NonVoidType FormParListRest ).
+	FormParListRest = [ '*' ] ident [ '[' ']' ] { ',' Type [ '*' ] ident [ '[' ']' ] } .
+	Type = 			'void' | NonVoidType .
+	NonVoidType = 	'bool' | 'int' .
+	Block = 		'{' { ConstDecl | Type [ '*' ] ident VarDef | Stat } '}' .
+	Stat = 			( IncStat | DecStat | AssignStat | CallStat | IfStat | WhileStat | BreakStat | InputStat | OutputStat | DeleteStat | ReturnStat | Block | ';' ) .
+	IncStat = 		ident '++' ';' .
+	DecStat = 		ident '--' ';' .
+	AssignStat = 	ident [ '[' Expr ']' ] '=' Expr ';' .
+	CallStat = 		ident '(' [ ActParList ] ')' ';' .
+	ActParList = 	Expr { ',' Expr } .
+	IfStat = 		'if' '(' Expr ')' Stat [ 'else' Stat ] .
+	WhileStat = 	'while' '(' Expr ')' Stat .
+	BreakStat = 	'break' ';' .
+	InputStat = 	'cin'  '>>' ident ';' .
+	OutputStat = 	'cout' '<<' ( Expr | string | 'endl' ) { '<<' ( Expr | string | 'endl' ) } ';' .
+	DeleteStat = 	'delete' '[' ']' ident ';' . 
+	ReturnStat = 	'return' [ Expr ] ';' .
+	Expr = 			OrExpr .
+	OrExpr = 		AndExpr { '||' AndExpr } . 
+	AndExpr = 		RelExpr { '&&' RelExpr } .
+	RelExpr = 		SimpleExpr [ ( '==' | '!=' | '<' | '<=' | '>' | '>=' ) SimpleExpr ] .
+	SimpleExpr = 	[ '+' | '-' ] Term { ( '+' | '-' ) Term } .
+	Term = 			NotFact { ( '*' | '/' | '%' )  NotFact } .
+	NotFact =  		[ '!' ] Fact .
+	Fact = 			'false' | 'true' | number | ident [ ( '[' Expr ']' ) | ( '(' [ ActParList ] ')' ) ] | 'new' Type '[' Expr ']' | '(' Expr ')' . 
+
+END MiniCPP.

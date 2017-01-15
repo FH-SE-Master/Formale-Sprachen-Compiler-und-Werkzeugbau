@@ -1,0 +1,41 @@
+Übung 5, 15.12.2016
+
+Coco-2 performs top down syntax analysis. Therefore the grammar must be LL-1-Grammar.
+
+// Generate lexical scanner
+#>  .\SG.exe ..\Calc\Calc.atg    // SG.exe generates a C# file names CalcLex.cs
+
+// Generate parser
+#>  .\PG[T].exe ..\Calc\Calc.atg    // PG[T].exe generates several files.
+// CalcSyn.cs   (Module: VM for g-code)
+// Calc.Sem.cs (Module: Sematic operations)
+// Calc.pgtList
+// PGT.exe, where the T stands for table based parser generator.
+
+// Compile all
+// Ensure that all c# classes, also they provided by coco-2, are located int he same directory
+// Ensure that the Main.frm contained class gets named the same way as the new file name.
+#> csc *.cs 
+
+
+Sem<<
+Semantic operations in C#
+>>
+
+CHARACTER SETS
+ name  = 'A' .. 'Z'.
+ ignore = 'a' .. 'z' + EOL IGNORE. // IGNORE marks this set containing ignore characters
+
+TOKEN CLASSES
+     ident  << out String identStr >> // Lexical action, execute by lexical analysis.
+                = letter {letter | digit}.    // This must be a regular language in EBNF, because we need an deterministic finite automat.
+
+NONTERMINALS
+  MiniC.                // Root symbol (sentence symbol) needs to have the name set by Compiler, which is the name of the file.
+                           // If semantics are supposed to be applied, then the argument list must be defined here.
+
+COMMENTS
+     FROM '/* TO ''/.
+     FROM '// TO EOL.
+
+MiniCPP Grammar is not LL-1 therefore it needs to be transformed !!!!!
