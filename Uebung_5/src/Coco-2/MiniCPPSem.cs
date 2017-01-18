@@ -79,11 +79,11 @@ public class MiniCPPSem {
         case 4:
           NT_FuncHead();
           break;
-        case 5: // SEM
-          loc++;
-          break;
-        case 6:
+        case 5:
           NT_Block();
+          break;
+        case 6: // SEM
+          loc++;
           break;
       } // switch
     } // for
@@ -232,6 +232,9 @@ public class MiniCPPSem {
         case 5:
           NT_Stat();
           break;
+        case 6: // SEM
+          loc++;
+          break;
       } // switch
     } // for
   } // NT_Block
@@ -269,7 +272,7 @@ public class MiniCPPSem {
           NT_Block();
           break;
         case 10: // SEM
-          loc++; stc++;
+          stc++;
           break;
       } // switch
     } // for

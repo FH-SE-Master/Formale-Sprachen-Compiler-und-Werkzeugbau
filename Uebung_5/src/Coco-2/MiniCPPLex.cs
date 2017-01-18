@@ -71,24 +71,24 @@ public class MiniCPPLex {
     // --- initialize keyword hash table  ---
     kwHt.Clear();
     EnterKeyword(  1, "void");
-    EnterKeyword(  2, "scanf");
-    EnterKeyword(  3, "printf");
-    EnterKeyword(  4, "int");
-    EnterKeyword(  5, "false");
-    EnterKeyword(  6, "true");
-    EnterKeyword(  7, "const");
-    EnterKeyword(  8, "if");
-    EnterKeyword(  9, "while");
-    EnterKeyword( 10, "break");
-    EnterKeyword( 11, "cin");
-    EnterKeyword( 12, "cout");
-    EnterKeyword( 13, "else");
-    EnterKeyword( 14, "for");
-    EnterKeyword( 15, "delete");
-    EnterKeyword( 16, "new");
-    EnterKeyword( 17, "endl");
-    EnterKeyword( 18, "return");
-    EnterKeyword( 19, "bool");
+    EnterKeyword(  2, "new");
+    EnterKeyword(  3, "return");
+    EnterKeyword(  4, "const");
+    EnterKeyword(  5, "break");
+    EnterKeyword(  6, "int");
+    EnterKeyword(  7, "false");
+    EnterKeyword(  8, "true");
+    EnterKeyword(  9, "bool");
+    EnterKeyword( 10, "scanf");
+    EnterKeyword( 11, "printf");
+    EnterKeyword( 12, "cin");
+    EnterKeyword( 13, "cout");
+    EnterKeyword( 14, "endl");
+    EnterKeyword( 15, "if");
+    EnterKeyword( 16, "while");
+    EnterKeyword( 17, "else");
+    EnterKeyword( 18, "for");
+    EnterKeyword( 19, "delete");
     // --- initialize name data structures  ---
     nHt.Clear();
     nl.Clear();
@@ -125,12 +125,12 @@ public class MiniCPPLex {
     public int[] startTab = {
           0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
           0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-          0, 30, 27,  0,  0, 21, 12,  0, 23, 24, 18, 31,  4, 32,  0, 22,
-         25, 25, 25, 25, 25, 25, 25, 25, 25, 25,  0,  5, 33, 34, 35,  0,
+          0, 30, 27,  0,  0,  8, 11,  0, 19, 20,  7, 31,  3, 32,  0,  6,
+         25, 25, 25, 25, 25, 25, 25, 25, 25, 25,  0,  2, 33, 34, 35,  0,
           0, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
-         26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 19,  0, 20,  0, 26,
+         26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 21,  0, 22,  0, 26,
           0, 29, 29, 29, 29, 29, 29, 26, 29, 29, 26, 29, 29, 26, 29, 29,
-         29, 26, 29, 29, 29, 29, 29, 29, 26, 26, 26,  2, 10,  3,  0,  0,
+         29, 26, 29, 29, 29, 29, 29, 29, 26, 26, 26, 23,  9, 24,  0,  0,
           0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
           0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
           0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -309,85 +309,85 @@ public class MiniCPPLex {
             break;                      // EOF recognized
           case 2:
             token = 20;
-            break;                      // '{' recognized
+            break;                      // ';' recognized
           case 3:
             token = 21;
-            break;                      // '}' recognized
-          case 4:
-            token = 22;
             break;                      // ',' recognized
-          case 5:
-            token = 23;
-            break;                      // ';' recognized
-          case 6:
+          case 4:
             token = 25;
             break;                      // '++' recognized
-          case 7:
+          case 5:
             token = 26;
             break;                      // '--' recognized
-          case 8:
+          case 6:
             token = 27;
-            break;                      // '<<' recognized
-          case 9:
+            break;                      // '/' recognized
+          case 7:
             token = 28;
-            break;                      // '>>' recognized
-          case 10:
-            if (curCh == '|') {
-              state = 11;
-              continue;
-            } // if
-            else {
-              HandleLexErr();
-              break;
-            } // else
-          case 11:
-            token = 29;
-            break;                      // '||' recognized
-          case 12:
-            if (curCh == '&') {
-              state = 13;
-              continue;
-            } // if
-            else {
-              HandleLexErr();
-              break;
-            } // else
-          case 13:
-            token = 30;
-            break;                      // '&&' recognized
-          case 14:
-            token = 31;
-            break;                      // '==' recognized
-          case 15:
-            token = 32;
-            break;                      // '!=' recognized
-          case 16:
-            token = 33;
-            break;                      // '<=' recognized
-          case 17:
-            token = 34;
-            break;                      // '>=' recognized
-          case 18:
-            token = 37;
             break;                      // '*' recognized
-          case 19:
-            token = 38;
-            break;                      // '[' recognized
-          case 20:
-            token = 39;
-            break;                      // ']' recognized
-          case 21:
-            token = 40;
+          case 8:
+            token = 29;
             break;                      // '%' recognized
+          case 9:
+            if (curCh == '|') {
+              state = 10;
+              continue;
+            } // if
+            else {
+              HandleLexErr();
+              break;
+            } // else
+          case 10:
+            token = 30;
+            break;                      // '||' recognized
+          case 11:
+            if (curCh == '&') {
+              state = 12;
+              continue;
+            } // if
+            else {
+              HandleLexErr();
+              break;
+            } // else
+          case 12:
+            token = 31;
+            break;                      // '&&' recognized
+          case 13:
+            token = 34;
+            break;                      // '<<' recognized
+          case 14:
+            token = 35;
+            break;                      // '>>' recognized
+          case 15:
+            token = 36;
+            break;                      // '<=' recognized
+          case 16:
+            token = 37;
+            break;                      // '>=' recognized
+          case 17:
+            token = 38;
+            break;                      // '==' recognized
+          case 18:
+            token = 39;
+            break;                      // '!=' recognized
+          case 19:
+            token = 41;
+            break;                      // '(' recognized
+          case 20:
+            token = 42;
+            break;                      // ')' recognized
+          case 21:
+            token = 43;
+            break;                      // '[' recognized
           case 22:
             token = 44;
-            break;                      // '/' recognized
+            break;                      // ']' recognized
           case 23:
             token = 45;
-            break;                      // '(' recognized
+            break;                      // '{' recognized
           case 24:
             token = 46;
-            break;                      // ')' recognized
+            break;                      // '}' recognized
           case 25:
             if (Sets.member(curCh, lt.cls[0])) {
               state = 25;
@@ -459,64 +459,64 @@ public class MiniCPPLex {
             } // else
           case 30:
             if (curCh == '=') {
-              state = 15;
+              state = 18;
               continue;
             } // if
             else {
-              token = 41;
+              token = 40;
               break;                    // '!' recognized
             } // else
           case 31:
             if (curCh == '+') {
-              state = 6;
+              state = 4;
               continue;
             } // if
             else {
-              token = 35;
+              token = 23;
               break;                    // '+' recognized
             } // else
           case 32:
             if (curCh == '-') {
-              state = 7;
-              continue;
-            } // if
-            else {
-              token = 36;
-              break;                    // '-' recognized
-            } // else
-          case 33:
-            if (curCh == '<') {
-              state = 8;
-              continue;
-            } // if
-            else if (curCh == '=') {
-              state = 16;
-              continue;
-            } // if
-            else {
-              token = 43;
-              break;                    // '<' recognized
-            } // else
-          case 34:
-            if (curCh == '=') {
-              state = 14;
+              state = 5;
               continue;
             } // if
             else {
               token = 24;
-              break;                    // '=' recognized
+              break;                    // '-' recognized
             } // else
-          case 35:
+          case 33:
+            if (curCh == '<') {
+              state = 13;
+              continue;
+            } // if
+            else if (curCh == '=') {
+              state = 15;
+              continue;
+            } // if
+            else {
+              token = 32;
+              break;                    // '<' recognized
+            } // else
+          case 34:
             if (curCh == '=') {
               state = 17;
               continue;
             } // if
+            else {
+              token = 22;
+              break;                    // '=' recognized
+            } // else
+          case 35:
+            if (curCh == '=') {
+              state = 16;
+              continue;
+            } // if
             else if (curCh == '>') {
-              state = 9;
+              state = 14;
               continue;
             } // if
             else {
-              token = 42;
+              token = 33;
               break;                    // '>' recognized
             } // else
         } // switch

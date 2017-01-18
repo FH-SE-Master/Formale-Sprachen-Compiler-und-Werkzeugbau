@@ -19,11 +19,16 @@ COMMENTS
 	FROM '/*' TO '*/'.
 
 KEYWORDS
-	'void'. 'scanf'. 'printf'. 'int'. 'false'. 'true'. 'const'. 'if'. 'while'. 'break'. 'cin'. 'cout'. 'else'. 'for'. 'delete'. 'new'. 'endl'. 'return'. 'bool'.
+	'void'.  'new'. 'return'. 'const'. 'break'.
+	'int'. 'false'. 'true'.  'bool'.
+	'scanf'. 'printf'. 'cin'. 'cout'. 'endl'.
+	'if'. 'while'.  'else'. 'for'. 'delete'.
 
 TOKENS
-	 '{'. '}'. ','. ';'. '='. '++'. '--'. '<<'. '>>'. '||'. '&&'. '=='. '!='. '<='. '>='.
-	 '+'. '-'. '*'. '['. ']'. '%'. '!'. '>'. '<'. '/'. '('. ')'.
+	';'. ','.
+	'='. '+'. '-'. '++'. '--'. '/'. '*'. '%'.
+	'||'. '&&'. '<'. '>'. '<<'. '>>'. '<='. '>='. '=='. '!='. '!'.
+	'('. ')'. '['. ']'. '{'. '}'.
 
 TOKEN CLASSES
 	number = digit { digit }.
@@ -69,7 +74,7 @@ NONTERMINALS
 																  Console.WriteLine($"Lines of statements: {stc}");
 																  Console.WriteLine($"Complexity by McCabe: {mc}");
 														>>.
-		VarDefOrFuncDeclOrDef = Type [ '*' ] ident (VarDef | FuncHead (';' SEM<<loc++;>> | Block)) .
+		VarDefOrFuncDeclOrDef = Type [ '*' ] ident (VarDef | FuncHead (';' | Block) SEM<<loc++;>>) .
 		ConstDecl             = 'const' Type ident Init ';' SEM<<loc++;>> .
 		Init                  = '=' ( false | true | number ) .
 		VarDef                =	[ Init ] { ',' [ '*' ] ident [ Init ] } ';' SEM<<loc++;>>.
@@ -78,10 +83,9 @@ NONTERMINALS
 		FormParListRest       = [ '*' ] ident [ '[' ']' ] { ',' Type [ '*' ] ident [ '[' ']' ] } .
 		Type                  = 'void' | NonVoidType .
 		NonVoidType           = 'bool' | 'int' .
-		Block                 =	'{' { ConstDecl | Type [ '*' ] ident VarDef | Stat } '}'.
+		Block                 =	'{' { ConstDecl | Type [ '*' ] ident VarDef | Stat } '}' SEM<<loc++;>>.
 		Stat                  = ( IdentStat | IfStat | WhileStat | BreakStat | InputStat
-		                        | OutputStat | DeleteStat | ReturnStat | Block | ';' )
-														SEM<<loc++; stc++;>>.
+		                        | OutputStat | DeleteStat | ReturnStat | Block | (';' SEM<<stc++;>>) ).
 		IdentStat             =	ident ('++' | '--' | [ '[' Expr ']' ] '=' Expr | '(' [ ActParList ] ')') ';'.
 		ActParList            = Expr { ',' Expr } .
 		IfStat                = 'if' '(' Expr ')' Stat [ 'else' Stat SEM<<mc++;>>] SEM<<loc++;mc++;>>.

@@ -13,16 +13,15 @@ CHARACTER SETS
 	noquote		  = ANY - '"'.
 
 KEYWORDS
-  'const'. 'void'. 'return'. 'delete'. 'new'.
+  'const'. 'void'. 'main'. 'return'. 'delete'. 'new'.
   'int'. 'bool'. 'false'. 'true'.
   'if'. 'else'. 'while'. 'break'.
-  'cin'. 'cout'.
+  'cin'. 'cout'. 'scanf'. 'printf'.
 
 TOKENS
   ';'. ','.
-  '='. '+'. '-'. '++'. '--'. '/'. '*'. '%'
+  '='. '+'. '-'. '++'. '--'. '/'. '*'. '%'.
   '||'. '&&'. '<'. '>'. '<<'. '>>'. '<='. '>='. '=='. '!='. '!'.
-  '<<'. '>>'.
   '('. ')'. '['. ']'. '{'. '}'.
 
 TOKEN CLASSES

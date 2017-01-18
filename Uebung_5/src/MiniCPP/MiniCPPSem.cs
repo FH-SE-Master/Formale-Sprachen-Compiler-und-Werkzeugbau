@@ -232,6 +232,9 @@ public class MiniCPPSem {
         case 5:
           NT_Stat();
           break;
+        case 6: // SEM
+          loc++;
+          break;
       } // switch
     } // for
   } // NT_Block

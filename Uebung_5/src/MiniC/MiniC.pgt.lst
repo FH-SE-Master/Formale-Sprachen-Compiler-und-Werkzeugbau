@@ -9,58 +9,51 @@ Coco-2 PGT (source: ..\MiniC\MiniC.atg)
     7| >>
     8| 
     9| CHARACTER SETS
-   10|   letter = 'A' .. 'Z' + 'a' .. 'z' + '_'.
-   11|   digit  = '0' ..'9'.
-   12|   ignore = CHR(9) + EOL IGNORE.
-   13| 
-   14| KEYWORDS
-   15|   'int'.
-   16|   'main'.
-   17|   'printf'.
-   18|   'scanf'.
-   19|   'void'.
+   10| 	digit	    	= '0' .. '9'.
+   11| 	letter		  = 'a' .. 'z' + 'A' .. 'Z' .
+   12| 	whiteSpace	= CHR(9) + EOL IGNORE. /*' ' ignored by default*/
+   13| 	noquote		  = ANY - '"'.
+   14| 
+   15| KEYWORDS
+   16|   'const'. 'void'. 'main'. 'return'. 'delete'. 'new'.
+   17|   'int'. 'bool'. 'false'. 'true'.
+   18|   'if'. 'else'. 'while'. 'break'.
+   19|   'cin'. 'cout'. 'scanf'. 'printf'.
    20| 
    21| TOKENS
-   22|   '+'.
-   23|   '-'.
-   24|   '*'.
-   25|   '/'.
-   26|   '('.
-   27|   ')'.
-   28|   '{'.
-   29|   '}'.
-   30|   ','.
-   31|   '='.
-   32|   ';'.
-   33| 
-   34| TOKEN CLASSES
-   35|   ident  << out String identStr >> =
-   36|     letter {letter | digit} LEX << identStr = tokenStr; >>.
-   37|   number << out int numberVal >> =
-   38|     digit {digit} LEX << numberVal=Convert.ToInt32(tokenStr); >>.
-   39| 
-   40| NONTERMINALS
-   41|   MiniC.
-   42|   VarDecl.
-   43|   StatSeq.
-   44|   Stat.
-   45|   Expr.
-   46|   Term.
-   47|   Fact.
-   48| 
-   49| RULES
-   50|   MiniC   = 'void' 'main' '(' ')' '{'  [ VarDecl ] StatSeq '}'.
-   51|   VarDecl = 'int' ident<< out identStr >> { ',' ident<< out identStr >> } ';'.
-   52|   StatSeq = Stat { Stat } .
-   53|   Stat    = [ ident << out identStr >> '=' Expr
-   54|             | 'scanf'  '(' ident<< out  identStr >> ')'
-   55|             | 'printf' '(' Expr  ')'
-   56|             ] ';' .
-   57|   Expr    = Term { ( '+' | '-' ) Term } .
-   58|   Term    = Fact { ( '*' | '/' ) Fact } .
-   59|   Fact    = ident<< out identStr >> | number << out numberVal >> | '(' Expr ')' .
-   60| 
-   61| END MiniC.
+   22|   ';'. ','.
+   23|   '='. '+'. '-'. '++'. '--'. '/'. '*'. '%'.
+   24|   '||'. '&&'. '<'. '>'. '<<'. '>>'. '<='. '>='. '=='. '!='. '!'.
+   25|   '('. ')'. '['. ']'. '{'. '}'.
+   26| 
+   27| TOKEN CLASSES
+   28|   ident  << out String identStr >> =
+   29|     letter {letter | digit} LEX << identStr = tokenStr; >>.
+   30|   number << out int numberVal >> =
+   31|     digit {digit} LEX << numberVal=Convert.ToInt32(tokenStr); >>.
+   32| 
+   33| NONTERMINALS
+   34|   MiniC.
+   35|   VarDecl.
+   36|   StatSeq.
+   37|   Stat.
+   38|   Expr.
+   39|   Term.
+   40|   Fact.
+   41| 
+   42| RULES
+   43|   MiniC   = 'void' 'main' '(' ')' '{'  [ VarDecl ] StatSeq '}'.
+   44|   VarDecl = 'int' ident<< out identStr >> { ',' ident<< out identStr >> } ';'.
+   45|   StatSeq = Stat { Stat } .
+   46|   Stat    = [ ident << out identStr >> '=' Expr
+   47|             | 'scanf'  '(' ident<< out  identStr >> ')'
+   48|             | 'printf' '(' Expr  ')'
+   49|             ] ';' .
+   50|   Expr    = Term { ( '+' | '-' ) Term } .
+   51|   Term    = Fact { ( '*' | '/' ) Fact } .
+   52|   Fact    = ident<< out identStr >> | number << out numberVal >> | '(' Expr ')' .
+   53| 
+   54| END MiniC.
 
 
 error(s) and warning(s):
@@ -75,7 +68,7 @@ error(s) and warning(s):
 statistics:
 ----------
 
-   18 terminals
+   47 terminals
     7 nonterminals
    21 alternatives
    48 nodes in top-down graph
@@ -188,8 +181,8 @@ nonterminals:
 
 MiniC                     1     { void }
 VarDecl                  22     { int }
-StatSeq                  40     { printf, scanf, ';', ident }
-Stat                     54     { printf, scanf, ';', ident }
+StatSeq                  40     { scanf, printf, ';', ident }
+Stat                     54     { scanf, printf, ';', ident }
 Expr                     95     { '(', ident, number }
 Term                    118     { '(', ident, number }
 Fact                    141     { '(', ident, number }
@@ -199,5 +192,5 @@ eps look-aheads:
 ===============
 
     1   { '}' }
-    2   { ')', ';' }
-    3   { '+', '-', ')', ';' }
+    2   { ';', ')' }
+    3   { ';', '+', '-', ')' }
