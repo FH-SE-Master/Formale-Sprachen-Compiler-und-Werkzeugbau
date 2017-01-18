@@ -127,6 +127,7 @@
 	\cppSourceFile{\srcDir/MiniCPP/MiniCPP.atg}
 	\label{src:minic-atg}
 \end{code}
+\ \newpage
 
 \begin{code}
 	\caption{C++ Testprogram}
@@ -139,6 +140,15 @@
 	\centering
 	\includegraphics[scale=0.48]{\imageDir/minicpp-build-console.JPG}
 	\caption{Konsolenausgabe des Erstellens des \emph{Parser} und \emph{Scanners}}
+	\label{fig:minicpp-test}
+\end{figure}
+\ \newline
+Der LL1-Konflikt wird durch das \emph{dangling else} verursacht, was aber kein Problem darstellt.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.65]{\imageDir/minicpp-test-console.JPG}
+	\caption{Konsolenausgabe des \emph{Parser}}
 	\label{fig:minicpp-test}
 \end{figure}
 

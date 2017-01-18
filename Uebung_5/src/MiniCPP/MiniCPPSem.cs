@@ -35,6 +35,13 @@ public class MiniCPPSem {
   
   private static int stc = 0;
   	private static int mc  = 0;
+  
+  	public static void printResults() {
+  				// it seems a line is count too much !?!
+  				Console.WriteLine($"Lines of code: {MiniCPPLex.tokenLine - 1}");
+  				Console.WriteLine($"Lines of statements: {stc}");
+  				Console.WriteLine($"Complexity by McCabe: {1 + mc}");
+  	}
 
   // *** end of global SYN and SEM declarations from ATG ***
 
@@ -52,8 +59,8 @@ public class MiniCPPSem {
           NT_VarDefOrFuncDeclOrDef();
           break;
         case 3: // SEM
-          Console.WriteLine($"Lines of code: {MiniCPPLex.tokenLine - 1}");
-          																  Console.WriteLine($"Lines of statements: {stc}");
+          Console.WriteLine($"Lines of code:        {MiniCPPLex.tokenLine - 1}");
+          																  Console.WriteLine($"Lines of statements:  {stc}");
           																  Console.WriteLine($"Complexity by McCabe: {mc}");
           														
           break;
@@ -315,11 +322,11 @@ public class MiniCPPSem {
         case 3:
           NT_Stat();
           break;
-        case 4:
-          NT_Stat();
-          break;
-        case 5: // SEM
+        case 4: // SEM
           mc++;
+          break;
+        case 5:
+          NT_Stat();
           break;
       } // switch
     } // for

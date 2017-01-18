@@ -4,6 +4,12 @@ COMPILER MiniCPP
 SEM<<
 	private static int stc = 0;
 	private static int mc  = 0;
+
+	public static void printResults() {
+				Console.WriteLine($"Lines of code: {MiniCPPLex.tokenLine - 1}");
+				Console.WriteLine($"Lines of statements: {stc}");
+				Console.WriteLine($"Complexity by McCabe: {1 + mc}");
+	}
 >>
 
 
@@ -69,8 +75,8 @@ NONTERMINALS
 
 		MiniCPP               = { ConstDecl | VarDefOrFuncDeclOrDef }
 														SEM<<
-																	Console.WriteLine($"Lines of code: {MiniCPPLex.tokenLine - 1}");
-																  Console.WriteLine($"Lines of statements: {stc}");
+																	Console.WriteLine($"Lines of code:        {MiniCPPLex.tokenLine - 1}");
+																  Console.WriteLine($"Lines of statements:  {stc}");
 																  Console.WriteLine($"Complexity by McCabe: {mc}");
 														>>.
 		VarDefOrFuncDeclOrDef = Type [ '*' ] ident (VarDef | FuncHead (';' | Block)) .
@@ -87,7 +93,7 @@ NONTERMINALS
 		                        | OutputStat | DeleteStat | ReturnStat | Block | ';' ).
 		IdentStat             =	ident ('++' | '--' | [ '[' Expr ']' ] '=' Expr | '(' [ ActParList ] ')') ';'.
 		ActParList            = Expr { ',' Expr } .
-		IfStat                = SEM<<mc++;>> 'if' '(' Expr ')' Stat [ 'else' Stat SEM<<mc++;>>].
+		IfStat                = SEM<<mc++;>> 'if' '(' Expr ')' Stat [ SEM<<mc++;>> 'else' Stat ].
 		WhileStat             = SEM<<mc++;>> 'while' '(' Expr ')' Stat .
 		BreakStat             = 'break' ';' .
 		InputStat             = 'cin'  '>>' ident ';' .

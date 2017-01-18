@@ -13,9 +13,7 @@ void main() {
 	}
 	else {
 		x--;
-	}
-		
-	
+	}	
 } // main
 
 void Sieve(int n) { // definition
@@ -53,6 +51,5 @@ void Sieve(int n) { // definition
 
 		i = i + 2;
 	} // while
-
 	delete[] sieve;
 } // Sieve

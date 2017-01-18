@@ -1,4 +1,4 @@
-Coco-2 SG (source: ..\MiniCPP\MiniCpp.atg)
+Coco-2 SG (source: ..\MiniCPP\MiniCPP.atg)
 
     1| /* Attributed grammar for MiniCPP */
     2| COMPILER MiniCPP
@@ -6,112 +6,119 @@ Coco-2 SG (source: ..\MiniCPP\MiniCpp.atg)
     4| SEM<<
     5| 	private static int stc = 0;
     6| 	private static int mc  = 0;
-    7| >>
-    8| 
-    9| 
-   10| CHARACTER SETS
-   11| 	digit		= '0' .. '9'.
-   12| 	letter		= 'a' .. 'z' + 'A' .. 'Z' .
-   13| 	whiteSpace	= CHR(9) + EOL IGNORE. /*' ' ignored by default*/
-   14| 	noquote		= ANY - '"'.
+    7| 
+    8| 	public static void printResults() {
+    9| 				// it seems a line is count too much !?!
+   10| 				Console.WriteLine($"Lines of code: {MiniCPPLex.tokenLine - 1}");
+   11| 				Console.WriteLine($"Lines of statements: {stc}");
+   12| 				Console.WriteLine($"Complexity by McCabe: {1 + mc}");
+   13| 	}
+   14| >>
    15| 
-   16| COMMENTS
-   17| 	FROM '//' TO EOL.
-   18| 	FROM '/*' TO '*/'.
-   19| 
-   20| KEYWORDS
-   21| 	'void'.  'new'. 'return'. 'const'. 'break'.
-   22| 	'int'. 'false'. 'true'.  'bool'.
-   23| 	'scanf'. 'printf'. 'cin'. 'cout'. 'endl'.
-   24| 	'if'. 'while'.  'else'. 'for'. 'delete'.
-   25| 
-   26| TOKENS
-   27| 	';'. ','.
-   28| 	'='. '+'. '-'. '++'. '--'. '/'. '*'. '%'.
-   29| 	'||'. '&&'. '<'. '>'. '<<'. '>>'. '<='. '>='. '=='. '!='. '!'.
-   30| 	'('. ')'. '['. ']'. '{'. '}'.
-   31| 
-   32| TOKEN CLASSES
-   33| 	number = digit { digit }.
-   34| 	ident = ( letter | '_' ) { letter | digit | '_' }.
-   35| 	string = '"' { noquote } '"'.
-   36| 
-   37| NONTERMINALS
-   38| 	MiniCPP.
-   39| 	ConstDecl.
-   40| 	Init.
-   41| 	VarDef.
-   42| 	FuncHead.
-   43| 	FormParList.
-   44| 	Type.
-   45| 	Block.
-   46| 	Stat.
-   47| 	Expr.
-   48| 	Term.
-   49| 	Fact.
-   50| 	ActParList.
-   51| 	IfStat.
-   52| 	WhileStat.
-   53| 	BreakStat.
-   54| 	InputStat.
-   55| 	OutputStat.
-   56| 	DeleteStat.
-   57| 	ReturnStat.
-   58| 	OrExpr.
-   59| 	AndExpr.
-   60| 	RelExpr.
-   61| 	SimpleExpr.
-   62| 	NotFact.
-   63| 	VarDefOrFuncDeclOrDef.
-   64| 	FormParListRest.
-   65| 	NonVoidType.
-   66| 	IdentStat.
-   67| 
-   68| 	RULES
-   69| 
-   70| 		MiniCPP               = { ConstDecl | VarDefOrFuncDeclOrDef }
-   71| 														SEM<<
-   72| 																	Console.WriteLine($"Lines of code: {MiniCPPLex.tokenLine - 1}");
-   73| 																  Console.WriteLine($"Lines of statements: {stc}");
-   74| 																  Console.WriteLine($"Complexity by McCabe: {mc}");
-   75| 														>>.
-   76| 		VarDefOrFuncDeclOrDef = Type [ '*' ] ident (VarDef | FuncHead (';' | Block)) .
-   77| 		ConstDecl             = 'const' Type ident Init ';'.
-   78| 		Init                  = '=' ( false | true | number ) .
-   79| 		VarDef                =	[ Init ] { ',' [ '*' ] ident [ Init ] } ';'.
-   80| 		FuncHead              = '(' [ FormParList ] ')' .
-   81| 		FormParList           =	( 'void' [ FormParListRest ] | NonVoidType FormParListRest ).
-   82| 		FormParListRest       = [ '*' ] ident [ '[' ']' ] { ',' Type [ '*' ] ident [ '[' ']' ] } .
-   83| 		Type                  = 'void' | NonVoidType .
-   84| 		NonVoidType           = 'bool' | 'int' .
-   85| 		Block                 =	'{' { ConstDecl | Type [ '*' ] ident VarDef | Stat } '}'.
-   86| 		Stat                  = SEM<<stc++;>> ( IdentStat | IfStat | WhileStat | BreakStat | InputStat
-   87| 		                        | OutputStat | DeleteStat | ReturnStat | Block | ';' ).
-   88| 		IdentStat             =	ident ('++' | '--' | [ '[' Expr ']' ] '=' Expr | '(' [ ActParList ] ')') ';'.
-   89| 		ActParList            = Expr { ',' Expr } .
-   90| 		IfStat                = SEM<<mc++;>> 'if' '(' Expr ')' Stat [ 'else' Stat SEM<<mc++;>>].
-   91| 		WhileStat             = SEM<<mc++;>> 'while' '(' Expr ')' Stat .
-   92| 		BreakStat             = 'break' ';' .
-   93| 		InputStat             = 'cin'  '>>' ident ';' .
-   94| 		OutputStat            = 'cout' '<<' ( Expr | string | 'endl' ) { '<<' ( Expr | string | 'endl' ) } ';' .
-   95| 		DeleteStat            = 'delete' '[' ']' ident ';' .
-   96| 		ReturnStat            = 'return' [ Expr ] ';' .
-   97| 		Expr                  =	OrExpr .
-   98| 		OrExpr                = AndExpr { '||' AndExpr } .
-   99| 		AndExpr               = RelExpr { '&&' RelExpr } .
-  100| 		RelExpr               =	SimpleExpr [ ( '==' | '!=' | '<' | '<=' | '>' | '>=' ) SimpleExpr ] .
-  101| 		SimpleExpr            = [ '+' | '-' ] Term { ( '+' | '-' ) Term } .
-  102| 		Term                  = NotFact { ( '*' | '/' | '%' )  NotFact } .
-  103| 		NotFact               = [ '!' ] Fact .
-  104| 		Fact                  = 'false'
-  105| 		                        | 'true'
-  106| 														| number
-  107| 														| ident [ ( '[' Expr ']' )
-  108| 														| ( '(' [ ActParList ] ')' ) ]
-  109| 														| 'new' Type '[' Expr ']'
-  110| 														| '(' Expr ')' .
-  111| 
-  112| 	END MiniCPP.
+   16| 
+   17| CHARACTER SETS
+   18| 	digit		= '0' .. '9'.
+   19| 	letter		= 'a' .. 'z' + 'A' .. 'Z' .
+   20| 	whiteSpace	= CHR(9) + EOL IGNORE. /*' ' ignored by default*/
+   21| 	noquote		= ANY - '"'.
+   22| 
+   23| COMMENTS
+   24| 	FROM '//' TO EOL.
+   25| 	FROM '/*' TO '*/'.
+   26| 
+   27| KEYWORDS
+   28| 	'void'.  'new'. 'return'. 'const'. 'break'.
+   29| 	'int'. 'false'. 'true'.  'bool'.
+   30| 	'scanf'. 'printf'. 'cin'. 'cout'. 'endl'.
+   31| 	'if'. 'while'.  'else'. 'for'. 'delete'.
+   32| 
+   33| TOKENS
+   34| 	';'. ','.
+   35| 	'='. '+'. '-'. '++'. '--'. '/'. '*'. '%'.
+   36| 	'||'. '&&'. '<'. '>'. '<<'. '>>'. '<='. '>='. '=='. '!='. '!'.
+   37| 	'('. ')'. '['. ']'. '{'. '}'.
+   38| 
+   39| TOKEN CLASSES
+   40| 	number = digit { digit }.
+   41| 	ident = ( letter | '_' ) { letter | digit | '_' }.
+   42| 	string = '"' { noquote } '"'.
+   43| 
+   44| NONTERMINALS
+   45| 	MiniCPP.
+   46| 	ConstDecl.
+   47| 	Init.
+   48| 	VarDef.
+   49| 	FuncHead.
+   50| 	FormParList.
+   51| 	Type.
+   52| 	Block.
+   53| 	Stat.
+   54| 	Expr.
+   55| 	Term.
+   56| 	Fact.
+   57| 	ActParList.
+   58| 	IfStat.
+   59| 	WhileStat.
+   60| 	BreakStat.
+   61| 	InputStat.
+   62| 	OutputStat.
+   63| 	DeleteStat.
+   64| 	ReturnStat.
+   65| 	OrExpr.
+   66| 	AndExpr.
+   67| 	RelExpr.
+   68| 	SimpleExpr.
+   69| 	NotFact.
+   70| 	VarDefOrFuncDeclOrDef.
+   71| 	FormParListRest.
+   72| 	NonVoidType.
+   73| 	IdentStat.
+   74| 
+   75| 	RULES
+   76| 
+   77| 		MiniCPP               = { ConstDecl | VarDefOrFuncDeclOrDef }
+   78| 														SEM<<
+   79| 																	Console.WriteLine($"Lines of code:        {MiniCPPLex.tokenLine - 1}");
+   80| 																  Console.WriteLine($"Lines of statements:  {stc}");
+   81| 																  Console.WriteLine($"Complexity by McCabe: {mc}");
+   82| 														>>.
+   83| 		VarDefOrFuncDeclOrDef = Type [ '*' ] ident (VarDef | FuncHead (';' | Block)) .
+   84| 		ConstDecl             = 'const' Type ident Init ';'.
+   85| 		Init                  = '=' ( false | true | number ) .
+   86| 		VarDef                =	[ Init ] { ',' [ '*' ] ident [ Init ] } ';'.
+   87| 		FuncHead              = '(' [ FormParList ] ')' .
+   88| 		FormParList           =	( 'void' [ FormParListRest ] | NonVoidType FormParListRest ).
+   89| 		FormParListRest       = [ '*' ] ident [ '[' ']' ] { ',' Type [ '*' ] ident [ '[' ']' ] } .
+   90| 		Type                  = 'void' | NonVoidType .
+   91| 		NonVoidType           = 'bool' | 'int' .
+   92| 		Block                 =	'{' { ConstDecl | Type [ '*' ] ident VarDef | Stat } '}'.
+   93| 		Stat                  = SEM<<stc++;>> ( IdentStat | IfStat | WhileStat | BreakStat | InputStat
+   94| 		                        | OutputStat | DeleteStat | ReturnStat | Block | ';' ).
+   95| 		IdentStat             =	ident ('++' | '--' | [ '[' Expr ']' ] '=' Expr | '(' [ ActParList ] ')') ';'.
+   96| 		ActParList            = Expr { ',' Expr } .
+   97| 		IfStat                = SEM<<mc++;>> 'if' '(' Expr ')' Stat [ SEM<<mc++;>> 'else' Stat ].
+   98| 		WhileStat             = SEM<<mc++;>> 'while' '(' Expr ')' Stat .
+   99| 		BreakStat             = 'break' ';' .
+  100| 		InputStat             = 'cin'  '>>' ident ';' .
+  101| 		OutputStat            = 'cout' '<<' ( Expr | string | 'endl' ) { '<<' ( Expr | string | 'endl' ) } ';' .
+  102| 		DeleteStat            = 'delete' '[' ']' ident ';' .
+  103| 		ReturnStat            = 'return' [ Expr ] ';' .
+  104| 		Expr                  =	OrExpr .
+  105| 		OrExpr                = AndExpr { '||' AndExpr } .
+  106| 		AndExpr               = RelExpr { '&&' RelExpr } .
+  107| 		RelExpr               =	SimpleExpr [ ( '==' | '!=' | '<' | '<=' | '>' | '>=' ) SimpleExpr ] .
+  108| 		SimpleExpr            = [ '+' | '-' ] Term { ( '+' | '-' ) Term } .
+  109| 		Term                  = NotFact { ( '*' | '/' | '%' )  NotFact } .
+  110| 		NotFact               = [ '!' ] Fact .
+  111| 		Fact                  = 'false'
+  112| 		                        | 'true'
+  113| 														| number
+  114| 														| ident [ ( '[' Expr ']' )
+  115| 														| ( '(' [ ActParList ] ')' ) ]
+  116| 														| 'new' Type '[' Expr ']'
+  117| 														| '(' Expr ')' .
+  118| 
+  119| 	END MiniCPP.
 
 
 error(s) and warning(s):
