@@ -2,7 +2,6 @@
 COMPILER MiniCPP
 
 SEM<<
-	private static int loc = 0;
 	private static int stc = 0;
 	private static int mc  = 0;
 >>
@@ -70,26 +69,26 @@ NONTERMINALS
 
 		MiniCPP               = { ConstDecl | VarDefOrFuncDeclOrDef }
 														SEM<<
-																	Console.WriteLine($"Lines of code: {loc}");
+																	Console.WriteLine($"Lines of code: {MiniCPPLex.tokenLine - 1}");
 																  Console.WriteLine($"Lines of statements: {stc}");
 																  Console.WriteLine($"Complexity by McCabe: {mc}");
 														>>.
-		VarDefOrFuncDeclOrDef = Type [ '*' ] ident (VarDef | FuncHead (';' | Block) SEM<<loc++;>>) .
-		ConstDecl             = 'const' Type ident Init ';' SEM<<loc++;>> .
+		VarDefOrFuncDeclOrDef = Type [ '*' ] ident (VarDef | FuncHead (';' | Block)) .
+		ConstDecl             = 'const' Type ident Init ';'.
 		Init                  = '=' ( false | true | number ) .
-		VarDef                =	[ Init ] { ',' [ '*' ] ident [ Init ] } ';' SEM<<loc++;>>.
+		VarDef                =	[ Init ] { ',' [ '*' ] ident [ Init ] } ';'.
 		FuncHead              = '(' [ FormParList ] ')' .
 		FormParList           =	( 'void' [ FormParListRest ] | NonVoidType FormParListRest ).
 		FormParListRest       = [ '*' ] ident [ '[' ']' ] { ',' Type [ '*' ] ident [ '[' ']' ] } .
 		Type                  = 'void' | NonVoidType .
 		NonVoidType           = 'bool' | 'int' .
-		Block                 =	'{' { ConstDecl | Type [ '*' ] ident VarDef | Stat } '}' SEM<<loc++;>>.
-		Stat                  = ( IdentStat | IfStat | WhileStat | BreakStat | InputStat
-		                        | OutputStat | DeleteStat | ReturnStat | Block | (';' SEM<<stc++;>>) ).
+		Block                 =	'{' { ConstDecl | Type [ '*' ] ident VarDef | Stat } '}'.
+		Stat                  = SEM<<stc++;>> ( IdentStat | IfStat | WhileStat | BreakStat | InputStat
+		                        | OutputStat | DeleteStat | ReturnStat | Block | ';' ).
 		IdentStat             =	ident ('++' | '--' | [ '[' Expr ']' ] '=' Expr | '(' [ ActParList ] ')') ';'.
 		ActParList            = Expr { ',' Expr } .
-		IfStat                = 'if' '(' Expr ')' Stat [ 'else' Stat SEM<<mc++;>>] SEM<<loc++;mc++;>>.
-		WhileStat             = 'while' '(' Expr ')' Stat .
+		IfStat                = SEM<<mc++;>> 'if' '(' Expr ')' Stat [ 'else' Stat SEM<<mc++;>>].
+		WhileStat             = SEM<<mc++;>> 'while' '(' Expr ')' Stat .
 		BreakStat             = 'break' ';' .
 		InputStat             = 'cin'  '>>' ident ';' .
 		OutputStat            = 'cout' '<<' ( Expr | string | 'endl' ) { '<<' ( Expr | string | 'endl' ) } ';' .

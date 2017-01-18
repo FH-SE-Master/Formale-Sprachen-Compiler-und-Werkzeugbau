@@ -33,8 +33,7 @@ public class MiniCPPSem {
 
   // *** start of global SYN and SEM declarations from ATG ***
   
-  private static int loc = 0;
-  	private static int stc = 0;
+  private static int stc = 0;
   	private static int mc  = 0;
 
   // *** end of global SYN and SEM declarations from ATG ***
@@ -53,7 +52,7 @@ public class MiniCPPSem {
           NT_VarDefOrFuncDeclOrDef();
           break;
         case 3: // SEM
-          Console.WriteLine($"Lines of code: {loc}");
+          Console.WriteLine($"Lines of code: {MiniCPPLex.tokenLine - 1}");
           																  Console.WriteLine($"Lines of statements: {stc}");
           																  Console.WriteLine($"Complexity by McCabe: {mc}");
           														
@@ -82,9 +81,6 @@ public class MiniCPPSem {
         case 5:
           NT_Block();
           break;
-        case 6: // SEM
-          loc++;
-          break;
       } // switch
     } // for
   } // NT_VarDefOrFuncDeclOrDef
@@ -102,9 +98,6 @@ public class MiniCPPSem {
           break;
         case 3:
           NT_Init();
-          break;
-        case 4: // SEM
-          loc++;
           break;
       } // switch
     } // for
@@ -135,9 +128,6 @@ public class MiniCPPSem {
           break;
         case 3:
           NT_Init();
-          break;
-        case 4: // SEM
-          loc++;
           break;
       } // switch
     } // for
@@ -232,9 +222,6 @@ public class MiniCPPSem {
         case 5:
           NT_Stat();
           break;
-        case 6: // SEM
-          loc++;
-          break;
       } // switch
     } // for
   } // NT_Block
@@ -244,35 +231,35 @@ public class MiniCPPSem {
       switch (Syn.Interpret()) {
         case 0:
           return;
-        case 1:
-          NT_IdentStat();
+        case 1: // SEM
+          stc++;
           break;
         case 2:
-          NT_IfStat();
+          NT_IdentStat();
           break;
         case 3:
-          NT_WhileStat();
+          NT_IfStat();
           break;
         case 4:
-          NT_BreakStat();
+          NT_WhileStat();
           break;
         case 5:
-          NT_InputStat();
+          NT_BreakStat();
           break;
         case 6:
-          NT_OutputStat();
+          NT_InputStat();
           break;
         case 7:
-          NT_DeleteStat();
+          NT_OutputStat();
           break;
         case 8:
-          NT_ReturnStat();
+          NT_DeleteStat();
           break;
         case 9:
-          NT_Block();
+          NT_ReturnStat();
           break;
-        case 10: // SEM
-          stc++;
+        case 10:
+          NT_Block();
           break;
       } // switch
     } // for
@@ -319,20 +306,20 @@ public class MiniCPPSem {
       switch (Syn.Interpret()) {
         case 0:
           return;
-        case 1:
-          NT_Expr();
+        case 1: // SEM
+          mc++;
           break;
         case 2:
-          NT_Stat();
+          NT_Expr();
           break;
         case 3:
           NT_Stat();
           break;
-        case 4: // SEM
-          mc++;
+        case 4:
+          NT_Stat();
           break;
         case 5: // SEM
-          loc++;mc++;
+          mc++;
           break;
       } // switch
     } // for
@@ -343,10 +330,13 @@ public class MiniCPPSem {
       switch (Syn.Interpret()) {
         case 0:
           return;
-        case 1:
-          NT_Expr();
+        case 1: // SEM
+          mc++;
           break;
         case 2:
+          NT_Expr();
+          break;
+        case 3:
           NT_Stat();
           break;
       } // switch
