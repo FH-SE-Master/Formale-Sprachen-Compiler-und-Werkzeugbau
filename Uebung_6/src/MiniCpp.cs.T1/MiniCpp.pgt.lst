@@ -1,0 +1,1573 @@
+Coco-2 PGT (source: ..\MiniCpp.cs.T1\MiniCpp.atg)
+
+
+
+    1| /* MiniCpp.atg:                                           HDO, 2006-08-28
+    2|    -----------                                            V.2  2006-12-19
+    3|    
+    4|    Attributed grammar for the (soon) famous MiniCpp Compiler.
+    5|    
+    6|    Simple MinCpp Syntax with several LL(1) conflicts
+    7|    (RULES section in the implementation is a transformed version
+    8|     with the dangling else conflict left only):
+    9|   
+   10|   -----------------------------------------------------------------------
+   11|    MiniCpp =          { ConstDecl | VarDef | FuncDecl | FuncDef } .
+   12|   -----------------------------------------------------------------------
+   13|    ConstDecl =        'const' Type ident Init ';' .
+   14|    Init =             '=' ( false | true | [ '+' | '-' ] number ) .
+   15|    VarDef =           Type  [ '*' ] ident [ Init ]
+   16|                       { ',' [ '*' ] ident [ Init ] } ';' .
+   17|    FuncDecl =         FuncHead ';' .
+   18|    FuncDef =          FuncHead Block .
+   19|    FuncHead =         Type [ '*' ] ident '(' [ FormParList ] ')' .
+   20|    FormParList =      ( 'void' |       
+   21|                               Type [ '*' ] ident [ '[' ']' ]
+   22|                         { ',' Type [ '*' ] ident [ '[' ']' ] } ) .
+   23|    Type =             'void' | 'bool' | 'int' .
+   24|    Block =            '{' { ConstDecl | VarDef | Stat } '}' .
+   25|   -----------------------------------------------------------------------
+   26|    Stat =             ( IncStat | DecStat | AssignStat
+   27|                       | CallStat | IfStat | WhileStat | BreakStat
+   28|                       | InputStat | OutputStat | DeleteStat | ReturnStat
+   29|                       | Block | ';' ) .
+   30|    IncStat =          ident '++' ';' .
+   31|    DecStat =          ident '--' ';' .
+   32|    AssignStat =       ident [ '[' Expr ']'  ] '=' Expr ';' .
+   33|    CallStat =         ident '(' [ ActParList ] ')' ';' .
+   34|    ActParList =       Expr { ',' Expr } .
+   35|    IfStat =           'if' '(' Expr ')' Stat [ 'else' Stat ] .
+   36|    WhileStat =        'while' '(' Expr ')' Stat .
+   37|    BreakStat =        'break' ';' .
+   38|    InputStat =        'cin'  '>>' ident ';' .
+   39|    OutputStat =       'cout' '<<' 
+   40|                              ( Expr | string | 'endl' ) 
+   41|                       { '<<' ( Expr | string | 'endl' ) } ';' .
+   42|    DeleteStat =       'delete' '[' ']' ident ';' .
+   43|    ReturnStat =       'return' [ Expr ] ';' .
+   44|   -----------------------------------------------------------------------
+   45|    Expr =             OrExpr .
+   46|    OrExpr =           AndExpr { '||' AndExpr } .
+   47|    AndExpr            RelExpr { '&&' RelExpr } .
+   48|    RelExpr =          SimpleExpr
+   49|                       [ ( '==' | '!=' | '<' | '<=' | '>' | '>=' ) 
+   50|                         SimpleExpr ] .
+   51|    SimpleExpr =       [ '+' | '-' ] 
+   52|                       Term    { ( '+' | '-' )        Term    } .
+   53|    Term =             NotFact { ( '*' | '/' | '%' )  NotFact } .
+   54|    NotFact =          [ '!' ] Fact .
+   55|    Fact =              'false' | 'true'
+   56|                       | number  
+   57|                       | ident [   ( '[' Expr        ']' )
+   58|                                 | ( '(' [ ActParList ] ')' )
+   59|                               ]
+   60|                       | 'new' Type '[' Expr ']'
+   61|                       |  '(' Expr ')' .
+   62|   -----------------------------------------------------------------------
+   63|    
+   64| =========================================================================*/
+   65| COMPILER MiniCpp
+   66| 
+   67|   SEM <<
+   68|   
+   69|     private static Symbol curFuncSy  = null;
+   70|     private static int    loopLevel  = 0;
+   71|   
+   72|     private static void SemErr(String msg) {
+   73|       Errors.SemError(MiniCppLex.tokenLine, MiniCppLex.tokenCol, msg);
+   74|     } // SemErr
+   75|   
+   76|   >>
+   77| 
+   78| CHARACTER SETS
+   79| /*===============================|=======================================*/
+   80|   letter      = 'A' .. 'Z' + 
+   81|                 'a' .. 'z' + 
+   82|                 '_' .             /* underscore is treated as letter*/
+   83|   digit       = '0' .. '9'.
+   84|   stringChar  = ' ' .. '!' + 
+   85|                 '#' .. '~' .
+   86|   whiteSpace  =  EOL + CHR(9) IGNORE .
+   87| 
+   88| 
+   89| COMMENTS
+   90| /*===============================|=======================================*/
+   91|   FROM '/*' TO '*/'.
+   92|   FROM '//' TO EOL.
+   93| 
+   94| 
+   95| /*SPECIAL                         (*  0 -  0 *)                          */
+   96| /*===============================|=======================================*/
+   97| /*EOF.                                                                   */
+   98| 
+   99| 
+  100| KEYWORDS                          /*  1 - 15 */
+  101| /*===============================|=======================================*/
+  102|   'bool'.
+  103|   'break'.
+  104|   'cin'.
+  105|   'const'.
+  106|   'cout'.
+  107|   'delete'.
+  108|   'else'.
+  109|   'endl'.
+  110|   'false'.
+  111|   'if'.
+  112|   'int'.
+  113|   'new'.
+  114|   'return'.
+  115|   'true'.
+  116|   'void'.
+  117|   'while'.
+  118| 
+  119| 
+  120| TOKENS                            /* 16 - 42 */
+  121| /*===============================|=======================================*/
+  122|   '+'.   '-'.   '*'.   '/'.   '%'.   '++'.  '--'.
+  123|   '('.   ')'.   '['.   ']'.   '{'.   '}'.    
+  124|   '!'.   '||'.  '&&'.  
+  125|   '=='.  '!='.  '<'.   '<='.   '>'.  '>='.  
+  126|   '<<'.  '>>'.  ','.   '='.    ';'.   
+  127| 
+  128| 
+  129| TOKEN CLASSES                     /* 43 - 45 */
+  130| /*===============================|=======================================*/
+  131|   ident<<out int spix>> =
+  132|       letter  
+  133|     { letter | digit 
+  134|     }                             LEX <<
+  135|                                     spix = NameList.SpixOf(tokenStr);
+  136|                                   >>
+  137|     .
+  138| /*-------------------------------|---------------------------------------*/
+  139|   number <<out int val>> =
+  140|       digit
+  141|     { digit
+  142|     }                             LEX <<
+  143|                                     val = Convert.ToInt32(tokenStr);
+  144|                                   >>
+  145|     .
+  146|     
+  147|   string<<out String str>> =      // string literals may contain
+  148|     '"'                           // all printable characters, but not '"'
+  149|     {                             // backslash '\' has no special meaning,
+  150|       stringChar                  // therefore: '\n', ... are not supported
+  151|     } 
+  152|     '"'                        
+  153|                                   LEX <<
+  154|                                     str = tokenStr.Substring(1, tokenStr.Length - 2);
+  155|                                   >>
+  156|     .
+  157| 
+  158| NONTERMINALS 
+  159| /*===============================|=======================================*/
+  160| 
+  161|   MiniCpp.
+  162|   
+  163|   ConstDecl.
+  164|   Init<<out Stat s, ref Symbol sy>>.
+  165|   VarDefOrFuncDeclOrDef.
+  166|   VarDef<<out Stat s>>.
+  167|   VarDefRest<<out Stat s, Symbol sy, bool ptr>>.
+  168|   FormParList<<Symbol funcSy>>.
+  169|   Type<<out Type t>>.
+  170|   
+  171|   Block<<out Symbol locSymbols, out Stat statList>>.
+  172|   Stat<<out Stat s>>.
+  173|   IncDecAssignOrCallStat<<out Stat s>>.
+  174|   ActParList<<out Expr e>>.
+  175|   IfStat<<out Stat s>>.
+  176|   WhileStat<<out Stat s>>.
+  177|   BreakStat<<out Stat s>>.
+  178|   InputStat<<out Stat s>>.
+  179|   OutputStat<<out Stat s>>.
+  180|   DeleteStat<<out Stat s>>.
+  181|   ReturnStat<<out Stat s>>.
+  182|   
+  183|   Expr<<out Expr e>>.
+  184|   OrExpr<<out Expr oe>>.
+  185|   AndExpr<<out Expr ae>>.
+  186|   RelExpr<<out Expr re>>.
+  187|   SimpleExpr<<out Expr se>>.
+  188|   Term<<out Expr t>>.
+  189|   NotFact<<out Expr nf>>.
+  190|   Fact<<out Expr f>>.
+  191| 
+  192| 
+  193| RULES
+  194| /*===============================|=======================================*/
+  195|   MiniCpp =                       
+  196|                                   SEM <<
+  197|                                     NameList.Init(true);
+  198|                                     SymTab.Init();
+  199|                                   >>
+  200|     { ConstDecl
+  201|     | VarDefOrFuncDeclOrDef
+  202|     }                             SEM <<
+  203|                                     if (!SymTab.MainFuncDefined())
+  204|                                       SemErr("no main func defined");
+  205|                                   >>
+  206|     .
+  207| /*-------------------------------|---------------------------------------*/
+  208|   ConstDecl =                     LOCAL <<
+  209|                                     Type t = null;
+  210|                                     Symbol sy = null;
+  211|                                     Stat s = null;
+  212|                                     int spix = 0;
+  213|                                   >>
+  214|     'const'
+  215|   /*[ '*' ] no constants of pointer types allowed*/
+  216|     Type<<out t>>                 
+  217|     ident<<out spix>>             SEM <<
+  218|                                     sy = SymTab.Insert(spix, Symbol.Kind.constKind,
+  219|                                                        t, false);
+  220|                                   >>
+  221|     Init<<out s, ref sy>>         /* s = null for constans*/
+  222|     ';'
+  223|     .
+  224| /*-------------------------------|---------------------------------------*/
+  225|   Init<<out Stat s,
+  226|         ref Symbol sy>> =         LOCAL <<
+  227|                                     int fact = 1, number = 0;
+  228|                                     s = null;
+  229|                                   >>
+  230|     '='                           
+  231|     ( 'false'                     SEM <<
+  232|                                     if (sy.type != Type.boolType)
+  233|                                       SemErr("invalid type");
+  234|                                     sy.val = 0;
+  235|                                   >>
+  236|     | 'true'                      SEM <<
+  237|                                     if (sy.type != Type.boolType)
+  238|                                       SemErr("invalid type");
+  239|                                     sy.val = 1;
+  240|                                   >>
+  241|     | [ '+' 
+  242|       | '-'                       SEM <<
+  243|                                     fact = -1;
+  244|                                   >>
+  245|       ] 
+  246|       number<<out number>>        SEM <<
+  247|                                     if (sy.type.IsPtrType()) {
+  248|                                       if (number != 0)
+  249|                                         SemErr("invalid value");
+  250|                                     } else if (sy.type.kind != Type.Kind.intKind)
+  251|                                       SemErr("invalid type");
+  252|                                     sy.val = fact * number;
+  253|                                   >>
+  254|     )                             SEM <<
+  255|                                     if (sy.kind == Symbol.Kind.varKind && loopLevel > 0)
+  256|                                       s = new AssignStat(new SrcPos(), 
+  257|                                             new VarOperand(sy), 
+  258|                                             new LitOperand(sy.type, sy.val));
+  259|                                   >>
+  260|     .
+  261|   
+  262| /*-------------------------------|---------------------------------------*/
+  263|   VarDefOrFuncDeclOrDef =         LOCAL <<
+  264|                                     Type t = null;
+  265|                                     Symbol funcSy = null, sy = null, locSymbols = null;
+  266|                                     Stat statList = null, s = null;
+  267|                                     int spix = 0; 
+  268|                                     bool ptr = false;
+  269|                                   >>
+  270|     Type<<out t>>
+  271|     [ '*'                         SEM <<
+  272|                                     ptr = true;
+  273|                                   >>
+  274|     ] 
+  275|     ident<<out spix>>
+  276|     ( ( /*VarDef*/                SEM <<
+  277|                                     sy = SymTab.Insert(spix, Symbol.Kind.varKind,
+  278|                                                        t, ptr);
+  279|                                   >>
+  280|         VarDefRest<<out s,        /*deliveres s = null*/
+  281|                     t, sy, ptr>>
+  282|       )
+  283|     | ( /*FuncDeclOrDef*/         SEM <<
+  284|                                     funcSy = SymTab.Lookup(spix);
+  285|                                     if (funcSy == null)
+  286|                                       funcSy = SymTab.Insert(spix, 
+  287|                                                       Symbol.Kind.funcKind, t, ptr);
+  288|                                     else if (funcSy.kind != Symbol.Kind.undefKind) {
+  289|                                       if (funcSy.kind == Symbol.Kind.funcKind && 
+  290|                                           funcSy.defined)
+  291|                                          SemErr("multiple function decl or def");
+  292|                                       else if (funcSy.kind != Symbol.Kind.funcKind) { 
+  293|                                          SemErr("invalid redefinition");
+  294|                                          funcSy.kind = Symbol.Kind.undefKind;
+  295|                                       } // else
+  296|                                     } // else
+  297|                                     SymTab.EnterScope();
+  298|                                     ptr = false;
+  299|                                   >>
+  300|         '('                       
+  301|           [ FormParList<<funcSy>>
+  302|           ]
+  303|         ')' 
+  304|         ( /*FuncDecl*/            SEM <<
+  305|                                     if (funcSy.kind == Symbol.Kind.funcKind) {
+  306|                                       if (funcSy.hadFuncDecl)
+  307|                                         SemErr("multiple function declaration");
+  308|                                       else {
+  309|                                         funcSy.hadFuncDecl = true;
+  310|                                         funcSy.funcDeclParList = SymTab.CurSymbols();
+  311|                                       } // else
+  312|                                     } // if
+  313|                                     SymTab.LeaveScope();
+  314|                                   >>
+  315|           ';'   
+  316|         | /*FuncDef*/             SEM <<
+  317|                                     funcSy.symbols = SymTab.CurSymbols();
+  318|                                     funcSy.FuncDef(); // do decl and def match?
+  319|                                     curFuncSy = funcSy;
+  320|                                     loopLevel = 0;
+  321|                                   >>
+  322|           Block<<out locSymbols, 
+  323|                  out statList>>
+  324|                                   SEM <<
+  325|                                     funcSy.symbols  = locSymbols;
+  326|                                     funcSy.statList = statList;
+  327|                                     SymTab.LeaveScope();
+  328|                                   >>
+  329|         )
+  330|       )
+  331|     )
+  332|     .
+  333| /*-------------------------------|---------------------------------------*/
+  334|   VarDef<<out Stat s>> =          LOCAL <<
+  335|                                     Type t = null;
+  336|                                     Symbol sy = null;
+  337|                                     int spix = 0; 
+  338|                                     bool ptr = false;
+  339|                                     s = null;
+  340|                                   >>
+  341|     Type<<out t>>
+  342|     [ '*'                         SEM <<
+  343|                                     ptr = true;
+  344|                                   >>
+  345|     ] 
+  346|     ident<<out spix>>             SEM <<
+  347|                                     sy = SymTab.Insert(spix, Symbol.Kind.varKind, 
+  348|                                                        t, ptr);
+  349|                                   >>
+  350|     VarDefRest<<out s, t, sy, ptr>>
+  351|     .
+  352| /*-------------------------------|---------------------------------------*/
+  353|   VarDefRest<<out Stat s,
+  354|               Type t,
+  355|               Symbol sy, 
+  356|               bool ptr>> =        LOCAL <<
+  357|                                     int spix = 0; 
+  358|                                     Stat statList = null, s2 = null;
+  359|                                     s = null;
+  360|                                   >>
+  361|     [ Init<<out statList, 
+  362|             ref sy>>              SEM <<
+  363|                                     sy.init = true;
+  364|                                   >>
+  365|     ]                             SEM <<
+  366|                                     ptr = false;
+  367|                                   >>
+  368|     { ',' 
+  369|       [ '*'                       SEM <<
+  370|                                     ptr = true;
+  371|                                   >>
+  372|       ] 
+  373|       ident<<out spix>>           SEM <<
+  374|                                     sy = SymTab.Insert(spix, Symbol.Kind.varKind, 
+  375|                                                        t, ptr);
+  376|                                   >>
+  377|       [ Init<<out s2, 
+  378|               ref sy>>            SEM <<
+  379|                                     sy.init = true;
+  380|                                     if (statList == null)
+  381|                                       statList = s2;
+  382|                                     else { // append s2 to statList
+  383|                                       s = statList;
+  384|                                       while (s.next != null) {
+  385|                                         s = s.next;
+  386|                                       } // while
+  387|                                       s.next = s2;
+  388|                                     } // else
+  389|                                       
+  390|                                   >>
+  391|       ]                           SEM <<
+  392|                                     ptr = false;
+  393|                                   >>
+  394|     }                             SEM <<
+  395|                                     s = statList;
+  396|                                   >>
+  397|     ';'
+  398|     .
+  399| /*-------------------------------|---------------------------------------*/
+  400|   FormParList<<Symbol funcSy>> =  LOCAL <<
+  401|                                     int spix = 0; bool ptr = false;
+  402|                                     Type t = null;
+  403|                                   >>
+  404|     Type<<out t>>
+  405|     (
+  406|       EPS                         SEM <<
+  407|                                     if (t.kind != Type.Kind.voidKind)
+  408|                                       SemErr("void expected");
+  409|                                   >>
+  410|     |
+  411|       (
+  412|         [ '*'                     SEM <<
+  413|                                     ptr = true;
+  414|                                   >>
+  415|         ] 
+  416|         ident<<out spix>>           
+  417|         [ '[' ']'                 SEM <<
+  418|                                     if (ptr)
+  419|                                       SemErr("pointer to array not supported");
+  420|                                     ptr = true;
+  421|                                   >>
+  422|         ] 
+  423|                                   SEM <<
+  424|                                     SymTab.Insert(spix, Symbol.Kind.parKind, 
+  425|                                                   t, ptr);
+  426|                                     ptr = false;
+  427|                                   >>
+  428|         { ','
+  429|           Type<<out t>>
+  430|           [ '*'                   SEM <<
+  431|                                     ptr = true;
+  432|                                   >>
+  433|           ] 
+  434|           ident<<out spix>>         
+  435|           [ '[' ']'               SEM <<
+  436|                                     if (ptr)
+  437|                                       SemErr("pointer to array not supported");
+  438|                                     ptr = true;
+  439|                                   >>
+  440|           ] 
+  441|                                   SEM <<
+  442|                                     SymTab.Insert(spix, Symbol.Kind.parKind, 
+  443|                                                   t, ptr);
+  444|                                     ptr = false;
+  445|                                   >>
+  446|         }
+  447|       )
+  448|     )
+  449|     .
+  450| /*-------------------------------|---------------------------------------*/
+  451|   Type<<out Type t>> =            LOCAL <<
+  452|                                     t = null;
+  453|                                   >>
+  454|       'void'                      SEM <<
+  455|                                     t = Type.voidType;
+  456|                                   >>
+  457|     | 'bool'                      SEM <<
+  458|                                     t = Type.boolType;
+  459|                                   >>
+  460|     | 'int'                       SEM <<
+  461|                                     t = Type.intType;
+  462|                                   >>
+  463|     .
+  464| /*-------------------------------|---------------------------------------*/
+  465|   Block<<out Symbol locSymbols, 
+  466|          out Stat   statList>> =  LOCAL <<
+  467|                                     locSymbols = null;
+  468|                                     Stat last = null, s = null;
+  469|                                     statList = null; 
+  470|                                   >>
+  471|     '{'                           
+  472|       { ( ConstDecl 
+  473|         | VarDef<<out s>>         /*possibly returns list of assignment stats*/
+  474|         | Stat<<out s>>
+  475|         )                         SEM <<
+  476|                                     if (s != null) {
+  477|                                       if (statList == null)
+  478|                                         statList = s;
+  479|                                       else // statList != null
+  480|                                         last.next = s;
+  481|                                       while (s.next != null) {
+  482|                                         s = s.next;
+  483|                                       } // while
+  484|                                       last = s;
+  485|                                       s = null;
+  486|                                     } // if
+  487|                                   >>
+  488|       }                           SEM<<
+  489|                                     locSymbols = SymTab.CurSymbols();
+  490|                                   >>
+  491|     '}'                           
+  492|     .
+  493| /*-------------------------------|---------------------------------------*/
+  494|   Stat<<out Stat s>> =            LOCAL <<
+  495|                                     Symbol locSymbols = null;
+  496|                                     Stat statList = null;
+  497|                                     SrcPos sp = null;
+  498|                                     s = null;
+  499|                                   >>
+  500|     ( IncDecAssignOrCallStat<<out s>>
+  501|     | IfStat<<out s>>
+  502|     | WhileStat<<out s>>
+  503|     | BreakStat<<out s>>
+  504|     | InputStat<<out s>>
+  505|     | OutputStat<<out s>>
+  506|     | DeleteStat<<out s>>
+  507|     | ReturnStat<<out s>>
+  508|     |                              SEM <<
+  509|                                      sp = new SrcPos();
+  510|                                    >>
+  511|       Block<<out locSymbols, 
+  512|              out statList>>
+  513|                                    SEM << 
+  514|                                      s = new BlockStat(sp, statList);
+  515|                                    >>
+  516|     | ';'                          SEM <<
+  517|                                      s = new EmptyStat(null);
+  518|                                    >>
+  519|     )                              
+  520|     .
+  521| /*-------------------------------|---------------------------------------*/
+  522|   IncDecAssignOrCallStat<<out Stat s>> = 
+  523|                                   LOCAL <<
+  524|                                     int spix = 0;
+  525|                                     Symbol sy = null;
+  526|                                     Expr lhs = null, e = null;
+  527|                                     SrcPos sp = null;
+  528|                                     s = null;
+  529|                                   >>
+  530|     ident<<out spix>>             SEM <<
+  531|                                     sy = SymTab.SymbolOf(spix, Symbol.Kind.varKind, 
+  532|                                                                Symbol.Kind.parKind,
+  533|                                                                Symbol.Kind.funcKind);
+  534|                                   >>
+  535|     ( 
+  536|       ( /*AssignStat*/            
+  537|         (  '++'                   SEM <<
+  538|                                     s = new IncStat(sp, new VarOperand(sy));
+  539|                                   >>
+  540|         |  '--'                   SEM <<
+  541|                                     s = new DecStat(sp, new VarOperand(sy));
+  542|                                   >>
+  543|         |  ( EPS                 SEM <<
+  544|                                     lhs = new VarOperand(sy);
+  545|                                   >>
+  546|            | '['                  SEM <<
+  547|                                     sp = new SrcPos();
+  548|                                   >>
+  549|                Expr<<out e>>
+  550|              ']'                  SEM <<
+  551|                                     lhs = new ArrIdxOperator(sp, new VarOperand(sy), e);
+  552|                                   >>
+  553|            ) 
+  554|            '='                    SEM <<
+  555|                                     sp = new SrcPos();
+  556|                                   >>
+  557|            Expr<<out e>>          SEM <<
+  558|                                     s = new AssignStat(sp, lhs, e);
+  559|                                   >>
+  560|         )
+  561|       )
+  562|     | ( /*CallStat*/              
+  563|        '('                        SEM <<
+  564|                                     sp = new SrcPos();
+  565|                                   >>
+  566|           [ ActParList<<out e>>
+  567|           ]
+  568|         ')'                       SEM <<
+  569|                                     s = new CallStat(sp, sy, e);
+  570|                                   >>
+  571|       )
+  572|     )
+  573|     ';'
+  574|     .
+  575| /*-------------------------------|---------------------------------------*/
+  576|   ActParList<<out Expr apl>> =    LOCAL <<
+  577|                                     Expr e = null, last = null;
+  578|                                     apl = null;
+  579|                                   >>
+  580|     Expr<<out e>>                 SEM <<
+  581|                                     apl = e;
+  582|                                     last = apl;
+  583|                                   >>
+  584|     { ',' 
+  585|       Expr<<out e>>               SEM <<
+  586|                                     last.next = e;
+  587|                                     last = e;
+  588|                                   >>
+  589|     }
+  590|     .
+  591| /*-------------------------------|---------------------------------------*/
+  592|   IfStat<<out Stat s>> =          LOCAL <<
+  593|                                     Expr e = null;
+  594|                                     Stat thenStat = null, elseStat = null;
+  595|                                     SrcPos sp = null;
+  596|                                     s = null;
+  597|                                   >>
+  598|     'if'                          SEM <<
+  599|                                     sp = new SrcPos();
+  600|                                   >>
+  601|     '(' 
+  602|       Expr<<out e>>
+  603|     ')'
+  604|     Stat<<out thenStat>>
+  605|     [ 'else' /*LL(1) conflict: the famous dangling else problem*/
+!WRN!        ^LL(1) error (start AND succ): else
+  606|        Stat<<out elseStat>>              
+  607|     ]                            SEM <<
+  608|                                    s = new IfStat(sp, e, thenStat, elseStat);
+  609|                                  >>
+  610|     .
+  611| /*-------------------------------|---------------------------------------*/
+  612|   WhileStat<<out Stat s>> =       LOCAL <<
+  613|                                     Expr e = null;
+  614|                                     Stat body = null;
+  615|                                     SrcPos sp = null;
+  616|                                     s = null;
+  617|                                   >>
+  618|     'while'                       SEM <<
+  619|                                     sp = new SrcPos();
+  620|                                   >>
+  621|     '(' 
+  622|       Expr<<out e>>
+  623|     ')'                           SEM <<
+  624|                                     loopLevel++;
+  625|                                   >>
+  626|     Stat<<out body>>              SEM <<
+  627|                                     s = new WhileStat(sp, e, body);
+  628|                                     loopLevel--;
+  629|                                   >>
+  630|     .
+  631| /*-------------------------------|---------------------------------------*/
+  632|   BreakStat<<out Stat s>> =       LOCAL <<
+  633|                                     s = null;
+  634|                                   >>
+  635|     'break'                       SEM <<
+  636|                                     if (loopLevel <= 0)
+  637|                                       SemErr("no loop around");
+  638|                                     s = new BreakStat(new SrcPos());
+  639|                                   >>
+  640|     ';'
+  641|     .
+  642| /*-------------------------------|---------------------------------------*/
+  643|   InputStat<<out Stat s>> =       LOCAL <<
+  644|                                     int spix = 0;
+  645|                                     Symbol sy = null;
+  646|                                     SrcPos sp = null;
+  647|                                     s = null;
+  648|                                   >>
+  649|     'cin'                         SEM <<
+  650|                                     sp = new SrcPos();
+  651|                                   >>
+  652|     '>>' 
+  653|     ident<<out spix>>             SEM <<
+  654|                                     sy = SymTab.SymbolOf(spix, Symbol.Kind.varKind, 
+  655|                                                                Symbol.Kind.parKind);
+  656|                                     s = new InputStat(sp, new VarOperand(sy));
+  657|                                   >>
+  658|     ';'
+  659|     .
+  660| /*-------------------------------|---------------------------------------*/
+  661|   OutputStat<<out Stat s>> =      LOCAL <<
+  662|                                     Expr e = null;
+  663|                                     String str = null;
+  664|                                     SrcPos sp = null;
+  665|                                     System.Collections.ArrayList values = 
+  666|                                       new System.Collections.ArrayList();
+  667|                                     s = null;
+  668|                                   >>
+  669|     'cout'                        SEM <<
+  670|                                     sp = new SrcPos();
+  671|                                   >>
+  672|     '<<' 
+  673|     ( Expr<<out e>>               SEM <<
+  674|                                     values.Add(e);
+  675|                                   >>
+  676|     | string<<out str>>           SEM <<
+  677|                                     values.Add(str);
+  678|                                   >>
+  679|     | 'endl'                      SEM <<
+  680|                                     values.Add("\n");
+  681|                                   >>
+  682|     )
+  683|     { '<<'
+  684|       ( Expr<<out e>>             SEM <<
+  685|                                     values.Add(e);
+  686|                                   >>
+  687|       | string<<out str>>         SEM <<
+  688|                                     values.Add(str);
+  689|                                   >>
+  690|       | 'endl'                    SEM <<
+  691|                                     values.Add("\n");
+  692|                                   >>
+  693|       )
+  694|     }                             SEM <<
+  695|                                     s = new OutputStat(sp, values);
+  696|                                   >>
+  697|     ';'
+  698|     .
+  699| /*-------------------------------|---------------------------------------*/
+  700|   DeleteStat<<out Stat s>> =      LOCAL <<
+  701|                                     int spix = 0;
+  702|                                     Symbol sy = null;
+  703|                                     SrcPos sp = null;
+  704|                                     s = null;
+  705|                                   >>
+  706|     'delete'                      SEM <<
+  707|                                     sp = new SrcPos();
+  708|                                   >>
+  709|     '[' ']'
+  710|     ident<<out spix>>             SEM <<
+  711|                                     sy = SymTab.SymbolOf(spix, Symbol.Kind.varKind, 
+  712|                                                                Symbol.Kind.parKind);
+  713|                                     s = new DeleteStat(sp, new VarOperand(sy));
+  714|                                   >>
+  715|     ';'
+  716|     .
+  717| 
+  718| /*-------------------------------|---------------------------------------*/
+  719|   ReturnStat<<out Stat s>> =      LOCAL <<
+  720|                                     Expr e = null;
+  721|                                     SrcPos sp = null;
+  722|                                     s = null;
+  723|                                   >>
+  724|     'return'                      SEM <<
+  725|                                     sp = new SrcPos();
+  726|                                   >>
+  727|     [ 
+  728|       Expr<<out e>>
+  729|     ]                             SEM <<
+  730|                                     s = new ReturnStat(sp, curFuncSy, e);
+  731|                                   >>
+  732|     ';'
+  733|     .
+  734| /*-------------------------------|---------------------------------------*/
+  735|   Expr<<out Expr e>> =            LOCAL <<
+  736|                                     e = null;
+  737|                                   >>
+  738|     OrExpr<<out e>>
+  739|     .
+  740|   
+  741| /*-------------------------------|---------------------------------------*/
+  742|   OrExpr<<out Expr oe>> =         LOCAL <<
+  743|                                     Expr ae = null;
+  744|                                     SrcPos sp = null;
+  745|                                     BinaryOperator.Operation binOp = 
+  746|                                       BinaryOperator.Operation.undefOp;
+  747|                                     oe = null;
+  748|                                   >>
+  749|     AndExpr<<out ae>>             SEM <<
+  750|                                     oe = ae;
+  751|                                   >>
+  752|     { '||'                        SEM <<
+  753|                                     binOp = BinaryOperator.Operation.orOp;
+  754|                                     sp = new SrcPos();
+  755|                                   >>
+  756|       AndExpr<<out ae>>           SEM <<
+  757|                                     oe = new BinaryOperator(sp, binOp, oe, ae);
+  758|                                   >>
+  759|     }
+  760|     .
+  761| /*-------------------------------|---------------------------------------*/
+  762|   AndExpr<<out Expr ae>> =        LOCAL <<
+  763|                                     Expr re = null;
+  764|                                     SrcPos sp = null;
+  765|                                     BinaryOperator.Operation binOp = 
+  766|                                       BinaryOperator.Operation.undefOp;
+  767|                                     ae = null;
+  768|                                   >>
+  769|     RelExpr<<out re>>             SEM <<
+  770|                                     ae = re;
+  771|                                   >>
+  772|     { '&&'                        SEM <<
+  773|                                     binOp = BinaryOperator.Operation.andOp;
+  774|                                     sp = new SrcPos();
+  775|                                   >>
+  776|       RelExpr<<out re>>           SEM <<
+  777|                                     ae = new BinaryOperator(sp, binOp, ae, re);
+  778|                                   >>
+  779|     }
+  780|     .
+  781| /*-------------------------------|---------------------------------------*/
+  782|   RelExpr<<out Expr re>> =        LOCAL <<
+  783|                                     Expr se = null;
+  784|                                     SrcPos sp = null;
+  785|                                     BinaryOperator.Operation binOp = 
+  786|                                       BinaryOperator.Operation.undefOp;
+  787|                                     re = null;
+  788|                                   >>
+  789|     SimpleExpr<<out se>>          SEM <<
+  790|                                     re = se;
+  791|                                   >>
+  792|     [ ( '=='                      SEM <<
+  793|                                     binOp = BinaryOperator.Operation.eqOp;
+  794|                                     sp = new SrcPos();
+  795|                                   >>
+  796|       | '!='                      SEM <<
+  797|                                     binOp = BinaryOperator.Operation.neOp;
+  798|                                     sp = new SrcPos();
+  799|                                   >>
+  800|       | '<'                       SEM <<
+  801|                                     binOp = BinaryOperator.Operation.ltOp;
+  802|                                     sp = new SrcPos();
+  803|                                   >>
+  804|       | '<='                      SEM <<
+  805|                                     binOp = BinaryOperator.Operation.leOp;
+  806|                                     sp = new SrcPos();
+  807|                                   >>
+  808|       | '>'                       SEM <<
+  809|                                     binOp = BinaryOperator.Operation.gtOp;
+  810|                                     sp = new SrcPos();
+  811|                                   >>
+  812|       | '>='                      SEM <<
+  813|                                     binOp = BinaryOperator.Operation.geOp;
+  814|                                     sp = new SrcPos();
+  815|                                   >>
+  816|       ) 
+  817|       SimpleExpr<<out se>>        SEM <<
+  818|                                     re = new BinaryOperator(sp, binOp, re, se);
+  819|                                   >>
+  820|     ]                             
+  821|     .
+  822| /*-------------------------------|---------------------------------------*/
+  823|   SimpleExpr<<out Expr se>> =     LOCAL <<
+  824|                                     Expr t = null;
+  825|                                     SrcPos sp = null;
+  826|                                     UnaryOperator.Operation unOp = 
+  827|                                       UnaryOperator.Operation.undefOp;
+  828|                                     BinaryOperator.Operation binOp = 
+  829|                                       BinaryOperator.Operation.undefOp;
+  830|                                     se = null;
+  831|                                   >>
+  832|     [ '+'                         SEM <<
+  833|                                     unOp = UnaryOperator.Operation.posOp;
+  834|                                     sp = new SrcPos();
+  835|                                   >>
+  836|     | '-'                         SEM <<
+  837|                                     unOp = UnaryOperator.Operation.negOp;
+  838|                                     sp = new SrcPos();
+  839|                                   >>
+  840|     ]
+  841|     Term<<out t>>                 SEM <<
+  842|                                     if (unOp != UnaryOperator.Operation.undefOp)
+  843|                                       se = new UnaryOperator(sp, unOp, t);
+  844|                                     else
+  845|                                       se = t;
+  846|                                   >>
+  847|     { ( '+'                       SEM <<
+  848|                                     binOp = BinaryOperator.Operation.addOp;
+  849|                                     sp = new SrcPos();
+  850|                                   >>
+  851|       | '-'                       SEM <<
+  852|                                     binOp = BinaryOperator.Operation.subOp;
+  853|                                     sp = new SrcPos();
+  854|                                   >>
+  855|       ) 
+  856|       Term<<out t>>               SEM <<
+  857|                                     se = new BinaryOperator(sp, binOp, se, t);
+  858|                                   >>
+  859|     }
+  860|     .
+  861| /*-------------------------------|---------------------------------------*/
+  862|   Term<<out Expr t>> =            LOCAL <<
+  863|                                     Expr f = null;
+  864|                                     SrcPos sp = null;
+  865|                                     BinaryOperator.Operation binOp = 
+  866|                                       BinaryOperator.Operation.undefOp;
+  867|                                     t = null;
+  868|                                   >>
+  869|     NotFact<<out f>>              SEM <<
+  870|                                     t = f;
+  871|                                   >>
+  872|     { ( '*'                       SEM <<
+  873|                                     binOp = BinaryOperator.Operation.mulOp;
+  874|                                     sp = new SrcPos();
+  875|                                   >>
+  876|       | '/'                       SEM <<
+  877|                                     binOp = BinaryOperator.Operation.divOp;
+  878|                                     sp = new SrcPos();
+  879|                                   >>
+  880|       | '%'                       SEM <<
+  881|                                     binOp = BinaryOperator.Operation.modOp;
+  882|                                     sp = new SrcPos();
+  883|                                   >>
+  884|       ) 
+  885|       NotFact<<out f>>            SEM <<
+  886|                                     t = new BinaryOperator(sp, binOp, t, f);
+  887|                                   >>
+  888|     } 
+  889|     .
+  890| /*-------------------------------|---------------------------------------*/
+  891|   NotFact<<out Expr nf>> =        LOCAL <<
+  892|                                     SrcPos sp = null;
+  893|                                     bool hasNot = false;
+  894|                                     nf = null;
+  895|                                   >>
+  896|     [ '!'                         SEM <<
+  897|                                     hasNot = true;
+  898|                                     sp = new SrcPos();
+  899|                                   >>
+  900|     ]
+  901|     Fact<<out nf>>                SEM <<
+  902|                                     if (hasNot)
+  903|                                       nf = new UnaryOperator(sp, 
+  904|                                         UnaryOperator.Operation.notOp, nf);
+  905|                                   >>
+  906|     .
+  907| /*-------------------------------|---------------------------------------*/
+  908|   Fact<<out Expr f>> =            LOCAL <<
+  909|                                     Expr e = null;
+  910|                                     SrcPos sp = null;
+  911|                                     Symbol sy = null;
+  912|                                     int spix = 0; int number = 0;
+  913|                                     Type t = null;
+  914|                                     f = null;
+  915|                                   >>
+  916|       'false'                     SEM <<
+  917|                                     f = new LitOperand(Type.boolType, 0);
+  918|                                   >>
+  919|     | 'true'                      SEM <<
+  920|                                     f = new LitOperand(Type.boolType, 1);
+  921|                                   >>
+  922|     | number<<out number>>        SEM <<
+  923|                                     f = new LitOperand(Type.intType, number);
+  924|                                   >>
+  925|     | ident<<out spix>>           SEM <<
+  926|                                     sp = new SrcPos();
+  927|                                   >>
+  928|       ( EPS /*variable*/          SEM <<
+  929|                                     sy = SymTab.SymbolOf(spix, Symbol.Kind.constKind, 
+  930|                                                                Symbol.Kind.varKind, 
+  931|                                                                Symbol.Kind.parKind);
+  932|                                     f = new VarOperand(sy);
+  933|                                   >>
+  934|       | 
+  935|         ( /*array index*/         SEM <<
+  936|                                     sy = SymTab.SymbolOf(spix, Symbol.Kind.varKind, 
+  937|                                                                Symbol.Kind.parKind);
+  938|                                   >>
+  939|           '['                     SEM <<
+  940|                                     sp = new SrcPos();
+  941|                                   >>
+  942|              Expr<<out e>> 
+  943|           ']'                     SEM <<
+  944|                                     f = new ArrIdxOperator(sp, new VarOperand(sy), e);
+  945|                                   >>
+  946|          )
+  947|       |
+  948|         ( /*function call*/       SEM <<
+  949|                                     sy = SymTab.SymbolOf(spix, Symbol.Kind.funcKind);
+  950|                                   >>
+  951|           '(' [ ActParList<<out e>> 
+  952|               ]
+  953|           ')'                     SEM <<
+  954|                                     f = new FuncCallOperator(sp, sy, e);
+  955|                                   >>
+  956|         )
+  957|       ) 
+  958|     | 'new'                       SEM <<
+  959|                                     sp = new SrcPos();
+  960|                                   >>
+  961|       Type<<out t>> 
+  962|       '[' 
+  963|         Expr<<out e>> 
+  964|       ']'                         SEM <<
+  965|                                     f = new NewOperator(sp, t, e);
+  966|                                   >>
+  967|     | '(' 
+  968|         Expr<<out e>>             SEM <<
+  969|                                     f = e;
+  970|                                   >>
+  971|        ')'
+  972|     .
+  973| /*-------------------------------|---------------------------------------*/
+  974| 
+  975| END MiniCpp.
+  976| 
+  977| 
+  978| /* End of MiniCpp.atg
+  979| =========================================================================*/
+
+
+error(s) and warning(s):
+-----------------------
+
+    0 lexical error(s) 
+    0 syntax error(s)  
+    0 semantic error(s)
+    1 warning(s)       
+
+
+statistics:
+----------
+
+   46 terminals
+   27 nonterminals
+  121 alternatives
+  211 nodes in top-down graph
+   18 eps sets (with look ahead)
+    1 any sets
+
+  850 bytes G-code
+
+deletable nonterminal(s):
+------------------------
+
+  MiniCpp
+
+
+G-code:
+
+======
+
+-----  MiniCpp  ----------------------------
+    1  SEM        1
+    2  NTA    ConstDecl              10   10
+    7  JMP        2
+
+   10  NTA    VarDefOrFuncDeclOrD.   18   18
+   15  JMP        2
+
+   18  EPS        1
+   20  SEM        4
+   21  RET
+
+-----  ConstDecl  --------------------------
+   22  T      const
+   24  NT     Type                    1
+   27  TC     ident                   2
+   30  SEM        3
+   31  NT     Init                    4
+   34  T      ';'
+   36  RET
+
+-----  Init  -------------------------------
+   37  T      '='
+   39  TA     false                  48
+   43  SEM        1
+   44  EPS        2
+   46  SEM        6
+   47  RET
+
+   48  TA     true                   56
+   52  SEM        2
+   53  JMP       44
+
+   56  TA     '+'                    67
+   60  TC     number                  4
+   63  SEM        5
+   64  JMP       44
+
+   67  TA     '-'                    60
+   71  SEM        3
+   72  JMP       60
+
+-----  VarDefOrFuncDeclOrDef  --------------
+   75  NT     Type                    1
+   78  TA     '*'                    83
+   82  SEM        2
+   83  TC     ident                   3
+   86  EPSA       3          95
+   90  SEM        4
+   91  NT     VarDefRest              5
+   94  RET
+
+   95  EPS        4
+   97  SEM        6
+   98  T      '('
+  100  NTA    FormParList           105  105
+  105  T      ')'
+  107  EPSA       5         115
+  111  SEM        8
+  112  T      ';'
+  114  RET
+
+  115  EPS        6
+  117  SEM        9
+  118  NT     Block                  10
+  121  SEM       11
+  122  RET
+
+-----  VarDef  -----------------------------
+  123  NT     Type                    1
+  126  TA     '*'                   131
+  130  SEM        2
+  131  TC     ident                   3
+  134  SEM        4
+  135  NT     VarDefRest              5
+  138  RET
+
+-----  VarDefRest  -------------------------
+  139  NTA    Init                  145  145
+  144  SEM        2
+  145  EPS        2
+  147  SEM        3
+  148  TA     ','                   173
+  152  TA     '*'                   157
+  156  SEM        4
+  157  TC     ident                   5
+  160  SEM        6
+  161  NTA    Init                  167  167
+  166  SEM        8
+  167  EPS        2
+  169  SEM        9
+  170  JMP      148
+
+  173  EPS        5
+  175  SEM       10
+  176  T      ';'
+  178  RET
+
+-----  FormParList  ------------------------
+  179  NT     Type                    1
+  182  EPSA       7         188
+  186  SEM        2
+  187  RET
+
+  188  TA     '*'                   193
+  192  SEM        3
+  193  TC     ident                   4
+  196  TA     '['                   203
+  200  T      ']'
+  202  SEM        5
+  203  EPS        8
+  205  SEM        6
+  206  TA     ','                   234
+  210  NT     Type                    7
+  213  TA     '*'                   218
+  217  SEM        8
+  218  TC     ident                   9
+  221  TA     '['                   228
+  225  T      ']'
+  227  SEM       10
+  228  EPS        8
+  230  SEM       11
+  231  JMP      206
+
+  234  EPS        7
+  236  RET
+
+-----  Type  -------------------------------
+  237  TA     void                  243
+  241  SEM        1
+  242  RET
+
+  243  TA     bool                  249
+  247  SEM        2
+  248  RET
+
+  249  T      int
+  251  SEM        3
+  252  RET
+
+-----  Block  ------------------------------
+  253  T      '{'
+  255  NTA    ConstDecl             264  264
+  260  SEM        4
+  261  JMP      255
+
+  264  NTA    VarDef                272  272
+  269  JMP      260
+
+  272  NTA    Stat                  280  280
+  277  JMP      260
+
+  280  EPS        9
+  282  SEM        5
+  283  T      '}'
+  285  RET
+
+-----  Stat  -------------------------------
+  286  NTA    IncDecAssignOrCallS.  292  292
+  291  RET
+
+  292  NTA    IfStat                298  298
+  297  RET
+
+  298  NTA    WhileStat             304  304
+  303  RET
+
+  304  NTA    BreakStat             310  310
+  309  RET
+
+  310  NTA    InputStat             316  316
+  315  RET
+
+  316  NTA    OutputStat            322  322
+  321  RET
+
+  322  NTA    DeleteStat            328  328
+  327  RET
+
+  328  NTA    ReturnStat            334  334
+  333  RET
+
+  334  EPSA       6         344
+  338  SEM        9
+  339  NT     Block                  10
+  342  SEM       11
+  343  RET
+
+  344  T      ';'
+  346  SEM       12
+  347  RET
+
+-----  IncDecAssignOrCallStat  -------------
+  348  TC     ident                   1
+  351  SEM        2
+  352  TA     '++'                  360
+  356  SEM        3
+  357  T      ';'
+  359  RET
+
+  360  TA     '--'                  368
+  364  SEM        4
+  365  JMP      357
+
+  368  EPSA      10         383
+  372  SEM        5
+  373  T      '='
+  375  SEM        9
+  376  NT     Expr                   10
+  379  SEM       11
+  380  JMP      357
+
+  383  TA     '['                   397
+  387  SEM        6
+  388  NT     Expr                    7
+  391  T      ']'
+  393  SEM        8
+  394  JMP      373
+
+  397  T      '('
+  399  SEM       12
+  400  NTA    ActParList            405  405
+  405  T      ')'
+  407  SEM       14
+  408  JMP      357
+
+-----  ActParList  -------------------------
+  411  NT     Expr                    1
+  414  SEM        2
+  415  TA     ','                   426
+  419  NT     Expr                    3
+  422  SEM        4
+  423  JMP      415
+
+  426  EPS        7
+  428  RET
+
+-----  IfStat  -----------------------------
+  429  T      if
+  431  SEM        1
+  432  T      '('
+  434  NT     Expr                    2
+  437  T      ')'
+  439  NT     Stat                    3
+  442  TA     else                  449
+  446  NT     Stat                    4
+  449  EPS       11
+  451  SEM        5
+  452  RET
+
+-----  WhileStat  --------------------------
+  453  T      while
+  455  SEM        1
+  456  T      '('
+  458  NT     Expr                    2
+  461  T      ')'
+  463  SEM        3
+  464  NT     Stat                    4
+  467  SEM        5
+  468  RET
+
+-----  BreakStat  --------------------------
+  469  T      break
+  471  SEM        1
+  472  T      ';'
+  474  RET
+
+-----  InputStat  --------------------------
+  475  T      cin
+  477  SEM        1
+  478  T      '>>'
+  480  TC     ident                   2
+  483  SEM        3
+  484  T      ';'
+  486  RET
+
+-----  OutputStat  -------------------------
+  487  T      cout
+  489  SEM        1
+  490  T      '<<'
+  492  NTA    Expr                  532  532
+  497  SEM        3
+  498  TA     '<<'                  526
+  502  NTA    Expr                  511  511
+  507  SEM        8
+  508  JMP      498
+
+  511  TCA    string                520  520
+  516  SEM       10
+  517  JMP      498
+
+  520  T      endl
+  522  SEM       11
+  523  JMP      498
+
+  526  EPS        5
+  528  SEM       12
+  529  T      ';'
+  531  RET
+
+  532  TCA    string                541  541
+  537  SEM        5
+  538  JMP      498
+
+  541  T      endl
+  543  SEM        6
+  544  JMP      498
+
+-----  DeleteStat  -------------------------
+  547  T      delete
+  549  SEM        1
+  550  T      '['
+  552  T      ']'
+  554  TC     ident                   2
+  557  SEM        3
+  558  T      ';'
+  560  RET
+
+-----  ReturnStat  -------------------------
+  561  T      return
+  563  SEM        1
+  564  NTA    Expr                  569  569
+  569  EPS        5
+  571  SEM        3
+  572  T      ';'
+  574  RET
+
+-----  Expr  -------------------------------
+  575  NT     OrExpr                  1
+  578  RET
+
+-----  OrExpr  -----------------------------
+  579  NT     AndExpr                 1
+  582  SEM        2
+  583  TA     '||'                  595
+  587  SEM        3
+  588  NT     AndExpr                 4
+  591  SEM        5
+  592  JMP      583
+
+  595  EPS       12
+  597  RET
+
+-----  AndExpr  ----------------------------
+  598  NT     RelExpr                 1
+  601  SEM        2
+  602  TA     '&&'                  614
+  606  SEM        3
+  607  NT     RelExpr                 4
+  610  SEM        5
+  611  JMP      602
+
+  614  EPS       13
+  616  RET
+
+-----  RelExpr  ----------------------------
+  617  NT     SimpleExpr              1
+  620  SEM        2
+  621  TA     '=='                  631
+  625  SEM        3
+  626  NT     SimpleExpr              9
+  629  SEM       10
+  630  RET
+
+  631  TA     '!='                  639
+  635  SEM        4
+  636  JMP      626
+
+  639  TA     '<'                   647
+  643  SEM        5
+  644  JMP      626
+
+  647  TA     '<='                  655
+  651  SEM        6
+  652  JMP      626
+
+  655  TA     '>'                   663
+  659  SEM        7
+  660  JMP      626
+
+  663  TA     '>='                  671
+  667  SEM        8
+  668  JMP      626
+
+  671  EPS       14
+  673  RET
+
+-----  SimpleExpr  -------------------------
+  674  TA     '+'                   706
+  678  SEM        1
+  679  NT     Term                    3
+  682  SEM        4
+  683  TA     '+'                   695
+  687  SEM        5
+  688  NT     Term                    7
+  691  SEM        8
+  692  JMP      683
+
+  695  TA     '-'                   703
+  699  SEM        6
+  700  JMP      688
+
+  703  EPS       15
+  705  RET
+
+  706  TA     '-'                   679
+  710  SEM        2
+  711  JMP      679
+
+-----  Term  -------------------------------
+  714  NT     NotFact                 1
+  717  SEM        2
+  718  TA     '*'                   730
+  722  SEM        3
+  723  NT     NotFact                 6
+  726  SEM        7
+  727  JMP      718
+
+  730  TA     '/'                   738
+  734  SEM        4
+  735  JMP      723
+
+  738  TA     '%'                   746
+  742  SEM        5
+  743  JMP      723
+
+  746  EPS       16
+  748  RET
+
+-----  NotFact  ----------------------------
+  749  TA     '!'                   754
+  753  SEM        1
+  754  NT     Fact                    2
+  757  SEM        3
+  758  RET
+
+-----  Fact  -------------------------------
+  759  TA     false                 765
+  763  SEM        1
+  764  RET
+
+  765  TA     true                  771
+  769  SEM        2
+  770  RET
+
+  771  TCA    number                778  778
+  776  SEM        4
+  777  RET
+
+  778  TCA    ident                 819  819
+  783  SEM        6
+  784  EPSA      17         790
+  788  SEM        7
+  789  RET
+
+  790  EPSA      18         805
+  794  SEM        8
+  795  T      '['
+  797  SEM        9
+  798  NT     Expr                   10
+  801  T      ']'
+  803  SEM       11
+  804  RET
+
+  805  EPS        4
+  807  SEM       12
+  808  T      '('
+  810  NTA    ActParList            815  815
+  815  T      ')'
+  817  SEM       14
+  818  RET
+
+  819  TA     new                   836
+  823  SEM       15
+  824  NT     Type                   16
+  827  T      '['
+  829  NT     Expr                   17
+  832  T      ']'
+  834  SEM       18
+  835  RET
+
+  836  T      '('
+  838  NT     Expr                   19
+  841  SEM       20
+  842  T      ')'
+  844  RET
+
+-----  R o o t  ----------------------------
+  845  NT     MiniCpp                 1
+  848  T      'end of file'
+  850  RET
+
+
+nonterminals:
+============
+
+MiniCpp                   1 del { bool, const, int, void }
+ConstDecl                22     { const }
+Init                     37     { '=' }
+VarDefOrFuncDeclOrD.     75     { bool, int, void }
+VarDef                  123     { bool, int, void }
+VarDefRest              139     { ',', '=', ';' }
+FormParList             179     { bool, int, void }
+Type                    237     { bool, int, void }
+Block                   253     { '{' }
+Stat                    286     { break, cin, cout, delete, if, return, while, 
+                                '{', ';', ident }
+IncDecAssignOrCallS.    348     { ident }
+ActParList              411     { false, new, true, '+', '-', '(', '!', ident, 
+                                number }
+IfStat                  429     { if }
+WhileStat               453     { while }
+BreakStat               469     { break }
+InputStat               475     { cin }
+OutputStat              487     { cout }
+DeleteStat              547     { delete }
+ReturnStat              561     { return }
+Expr                    575     { false, new, true, '+', '-', '(', '!', ident, 
+                                number }
+OrExpr                  579     { false, new, true, '+', '-', '(', '!', ident, 
+                                number }
+AndExpr                 598     { false, new, true, '+', '-', '(', '!', ident, 
+                                number }
+RelExpr                 617     { false, new, true, '+', '-', '(', '!', ident, 
+                                number }
+SimpleExpr              674     { false, new, true, '+', '-', '(', '!', ident, 
+                                number }
+Term                    714     { false, new, true, '(', '!', ident, number }
+NotFact                 749     { false, new, true, '(', '!', ident, number }
+Fact                    759     { false, new, true, '(', ident, number }
+
+
+eps look-aheads:
+===============
+
+    1   { 'end of file' }
+    2   { ',', ';' }
+    3   { ',', '=', ';' }
+    4   { '(' }
+    5   { ';' }
+    6   { '{' }
+    7   { ')' }
+    8   { ')', ',' }
+    9   { '}' }
+   10   { '=' }
+   11   { bool, break, cin, const, cout, delete, else, if, int, return, void, 
+        while, '{', '}', ';', ident }
+   12   { ')', ']', '<<', ',', ';' }
+   13   { ')', ']', '||', '<<', ',', ';' }
+   14   { ')', ']', '||', '&&', '<<', ',', ';' }
+   15   { ')', ']', '||', '&&', '==', '!=', '<', '<=', '>', '>=', '<<', ',', ';' }
+   16   { '+', '-', ')', ']', '||', '&&', '==', '!=', '<', '<=', '>', '>=', '<<', 
+        ',', ';' }
+   17   { '+', '-', '*', '/', '%', ')', ']', '||', '&&', '==', '!=', '<', '<=', 
+        '>', '>=', '<<', ',', ';' }
+   18   { '[' }

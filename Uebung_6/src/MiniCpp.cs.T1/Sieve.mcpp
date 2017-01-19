@@ -1,0 +1,60 @@
+// Sieve.mcpp                                HDO, 2006-09-13
+// ----------
+// Sieve of Erathostenes in MiniCpp.
+//=====================================|====================
+
+void main() {
+
+  int n, col, i, j;
+  bool *sieve = 0;
+
+  cout << "n > ";
+  cin >> n;
+  
+  if (n < 3) {
+    cout << "error: number too small (min. 3)" << endl;
+    return;
+  } else if (n > 46340) {
+    cout << "error: number too large (max. 46340)" << endl;
+    return;
+  } // if
+  
+  sieve = new bool[n + 1];
+  
+  i = 2;
+  while (i <= n) {
+    sieve[i] = true;
+    i++;
+  } // while
+  
+  cout << 2 << " ";
+  
+  col = 1;
+  i = 3;
+  while (i <= n) {
+    if (sieve[i]) {
+      if (col == 10) {
+        cout << endl;
+        col = 0;
+      } // if
+      col++;
+      cout << i  << " ";
+      j = i * i; // attention: 46341 * 46341 > 2**31
+      while (j <= n) {
+        sieve[j] = false;
+        j = j + 2 * i;
+      } // while
+    } // if
+    i = i + 2;
+  } // while
+  
+  delete[] sieve;
+
+  // int dummy;
+  // cin >> dummy;
+  
+} // main
+
+// End of Sieve.mcpp
+//=====================================|====================
+

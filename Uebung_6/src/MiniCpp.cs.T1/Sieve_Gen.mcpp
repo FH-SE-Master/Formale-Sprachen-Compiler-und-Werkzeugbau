@@ -1,0 +1,68 @@
+/*Dump of Symbol Table:
+  --------------------
+  main: func, type = void, addr = 0, defined = True
+    n: var, type = int, init = False, addr = 0
+    col: var, type = int, init = False, addr = 1
+    i: var, type = int, init = False, addr = 2
+    j: var, type = int, init = False, addr = 3
+    sieve: var, type = bool*, init = True, addr = 4
+*/
+
+/*Program Source (from AST):
+  -------------------------*/
+
+
+  void main();
+
+  void main() {
+    int n;
+    int col;
+    int i;
+    int j;
+    bool* sieve = 0;
+    cout << "n > ";
+    cin >> n;
+    if ((n) < (3))
+      {
+        cout << "error: number too small (min. 3)" << endl;
+        return;
+      }
+    else 
+      if ((n) > (46340))
+        {
+          cout << "error: number too large (max. 46340)" << endl;
+          return;
+        }
+    sieve = new bool[(n) + (1)];
+    i = 2;
+    while ((i) <= (n))
+      {
+        sieve[i] = true;
+        i++;
+      }
+    cout << 2 << " ";
+    col = 1;
+    i = 3;
+    while ((i) <= (n))
+      {
+        if (sieve[i])
+          {
+            if ((col) == (10))
+              {
+                cout << endl;
+                col = 0;
+              }
+            col++;
+            cout << i << " ";
+            j = (i) * (i);
+            while ((j) <= (n))
+              {
+                sieve[j] = false;
+                j = (j) + ((2) * (i));
+              }
+          }
+        i = (i) + (2);
+      }
+    delete[] sieve;
+  } // main
+

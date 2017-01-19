@@ -1,0 +1,8 @@
+How to extend Grammar:
+
+1. Tranform to LL1, but dangling else can remain (factoring)
+2. Make a c# programm and take allok at the generate IL-Code
+
+
+Errors.SemError -> util method for reporting errors
+ 
